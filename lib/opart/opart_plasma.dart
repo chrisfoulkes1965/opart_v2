@@ -8,12 +8,12 @@ import '../model_opart.dart';
 import '../model_palette.dart';
 import '../model_settings.dart';
 
-List shades;
-List cells;
-List colorList;
-int shadeOffset;
-int recursionDepthOld;
-double randomizerOld;
+List shades = [];
+List cells = [];
+List colorList = [];
+int shadeOffset = 0;
+int recursionDepthOld = 0;
+double randomizerOld = 0.0;
 
 SettingsModel reDraw = SettingsModel(
   name: 'reDraw',
@@ -151,12 +151,11 @@ void paintPlasma(
           (opArt.palette.colorList.length) * (colorDepth.value as num)) {
     // generate the palette
     shadeOffset = 0;
-    shades = null;
     colorList = opArt.palette.colorList;
 
     final int numberOfColors = opArt.palette.colorList.length;
     final int numberOfShades = numberOfColors * (colorDepth.value as int);
-    shades = List(numberOfShades);
+    shades = List.filled(numberOfShades, Colors.black);
     shades[0] = opArt.palette.colorList[0];
     for (int i = 0; i < numberOfColors; i++) {
       for (int j = 0; j < (colorDepth.value as num); j++) {
@@ -189,15 +188,14 @@ void paintPlasma(
     rnd = Random(DateTime.now().millisecond);
 
     // generate the plasma
-    cells = null;
 
     // create the grid
     final int numberOfCells = pow(2, recursionDepth.value as num) as int;
     // print('numberOfCells: $numberOfCells');
 
-    cells = List(numberOfCells + 1);
+    cells = List.filled(numberOfCells + 1, []);
     for (int i = 0; i <= numberOfCells; i++) {
-      cells[i] = List(numberOfCells + 1);
+      cells[i] = List.filled(numberOfCells + 1, 0.0);
     }
 
     // populate the corners

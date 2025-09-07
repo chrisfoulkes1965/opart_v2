@@ -10,7 +10,7 @@ import '../model_settings.dart';
 
 // List<String> list = [];
 
-List squaresI;
+List squaresI = [];
 
 SettingsModel reDraw = SettingsModel(
   name: 'reDraw',

@@ -40,7 +40,9 @@ class _SettingsIntSliderState extends State<SettingsIntSlider> {
               ),
               Checkbox(
                 value: widget.locked,
-                onChanged: widget.toggleLock as Function(bool),
+                onChanged: widget.toggleLock != null
+                    ? (bool? value) => widget.toggleLock!(value ?? false)
+                    : null,
               ),
             ],
           ),

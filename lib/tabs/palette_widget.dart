@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:opart_v2/model_settings.dart';
-import 'package:opart_v2/opart_page.dart';
+import 'package:opart_v2/opart_page.dart' as opart_page;
 
 import '../model_opart.dart';
 import '../model_palette.dart';
@@ -19,10 +19,14 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
     int lengthOfAdditionalColors = 0;
     // List<Widget> additionalColors = [];
     void _additionalColors() {
-      for (int i = 0; i < opArt.attributes.length; i++) {
-        if (opArt.attributes[i].settingType == SettingType.color) {
-          if (opArt.attributes[i].name == 'lineColor' &&
-              opArt.attributes
+      for (int i = 0;
+          i < (opart_page.currentOpArtPageState?.opArt.attributes.length ?? 0);
+          i++) {
+        if (opart_page.currentOpArtPageState?.opArt.attributes[i].settingType ==
+            SettingType.color) {
+          if (opart_page.currentOpArtPageState?.opArt.attributes[i].name ==
+                  'lineColor' &&
+              opart_page.currentOpArtPageState?.opArt.attributes
                       .firstWhere((element) => element.name == 'lineWidth')
                       .value ==
                   0) {
@@ -33,17 +37,20 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
               child: GestureDetector(
                 onTap: () {
                   currentColor = i + 100;
-                  showCustomColorPicker = true;
+                  opart_page.currentOpArtPageState?.showCustomColorPicker =
+                      true;
                   rebuildColorPicker.value++;
                   rebuildOpArtPage.value++;
                 },
                 child: Container(
                   decoration: BoxDecoration(
                       border: Border.all(
-                          width: i == currentColor && showCustomColorPicker
+                          width: i == currentColor &&
+                                  (opart_page.currentOpArtPageState?.showCustomColorPicker ?? false)
                               ? 2
                               : 0),
-                      color: opArt.attributes[i].value as Color,
+                      color: opart_page.currentOpArtPageState?.opArt
+                          .attributes[i].value as Color,
                       shape: BoxShape.circle),
                   height: 30,
                   width: 30,
@@ -90,14 +97,15 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
               rebuildCanvas.value++;
             },
             onChangeEnd: (value) {
-              opArt.saveToCache();
+              opart_page.currentOpArtPageState?.opArt.saveToCache();
             },
           ),
         ),
       );
     }
 
-    final int paletteLength = opArt.palette.colorList.length;
+    final int paletteLength =
+        (opart_page.currentOpArtPageState?.opArt.palette.colorList.length ?? 0);
 
     return ValueListenableBuilder<int>(
         valueListenable: rebuildTab,
@@ -114,10 +122,13 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
 
                       if (numberOfColors.value as int > 1) {
                         numberOfColors.value--;
-                        opArt.palette.colorList.removeLast();
+                        opart_page
+                            .currentOpArtPageState?.opArt.palette.colorList
+                            .removeLast();
                         if (numberOfColors.value as int > paletteLength) {
-                          opArt.palette.randomize(paletteType.value.toString(),
-                              numberOfColors.value as int);
+                          opart_page.currentOpArtPageState?.opArt.palette
+                              .randomize(paletteType.value.toString(),
+                                  numberOfColors.value as int);
                         }
                         height =
                             ((numberOfColors.value.toDouble() as double) + 2) *
@@ -125,7 +136,7 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                         if (height > MediaQuery.of(context).size.height * 0.7) {
                           height = MediaQuery.of(context).size.height * 0.7;
                         }
-                        opArt.saveToCache();
+                        opart_page.currentOpArtPageState?.opArt.saveToCache();
                         rebuildTab.value++;
                         rebuildCanvas.value++;
                       }
@@ -154,18 +165,20 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                       enableButton = false;
 
                       numberOfColors.value++;
-                      opArt.attributes
+                      opart_page.currentOpArtPageState?.opArt.attributes
                           .firstWhere(
                               (element) => element.name == 'numberOfColors')
                           .value = numberOfColors.value;
                       if (numberOfColors.value as int > paletteLength) {
-                        final String paletteType = opArt.attributes
+                        final String paletteType = (opart_page
+                            .currentOpArtPageState?.opArt.attributes
                             .firstWhere(
                                 (element) => element.name == 'paletteType')
                             .value
-                            .toString();
-                        opArt.palette.randomize(
-                            paletteType, numberOfColors.value as int);
+                            .toString()) ?? 'random';
+                        opart_page.currentOpArtPageState?.opArt.palette
+                            .randomize(
+                                paletteType, numberOfColors.value as int);
                       }
                       height =
                           ((numberOfColors.value.toDouble() as double) + 2) *
@@ -173,7 +186,7 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                       if (height > MediaQuery.of(context).size.height * 0.7) {
                         height = MediaQuery.of(context).size.height * 0.7;
                       }
-                      opArt.saveToCache();
+                      opart_page.currentOpArtPageState?.opArt.saveToCache();
                       rebuildTab.value++;
                       rebuildCanvas.value++;
                     }
@@ -187,17 +200,20 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
               child: GestureDetector(
                 onTap: () {
                   currentColor = i;
-                  showCustomColorPicker = true;
+                  opart_page.currentOpArtPageState?.showCustomColorPicker =
+                      true;
                   rebuildColorPicker.value++;
                   rebuildOpArtPage.value++;
                 },
                 child: Container(
                   decoration: BoxDecoration(
                       border: Border.all(
-                          width: i == currentColor && showCustomColorPicker
+                          width: i == currentColor &&
+                                  (opart_page.currentOpArtPageState?.showCustomColorPicker ?? false)
                               ? 2
                               : 0),
-                      color: opArt.palette.colorList[i],
+                      color: opart_page
+                          .currentOpArtPageState?.opArt.palette.colorList[i],
                       shape: BoxShape.circle),
                   height: 30,
                   width: 30,

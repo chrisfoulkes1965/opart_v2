@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
 import '../main.dart';
 import '../model_opart.dart';
@@ -113,7 +112,6 @@ SettingsModel shape = SettingsModel(
   proFeature: false,
 );
 
-
 SettingsModel pointiness = SettingsModel(
   name: 'pointiness',
   settingType: SettingType.double,
@@ -128,7 +126,6 @@ SettingsModel pointiness = SettingsModel(
   proFeature: false,
 );
 
-
 SettingsModel resetColors = SettingsModel(
   name: 'resetColors',
   settingType: SettingType.bool,
@@ -142,7 +139,6 @@ SettingsModel resetColors = SettingsModel(
   silent: true,
 );
 
-
 SettingsModel aspectRatio = SettingsModel(
   name: 'aspectRatio',
   settingType: SettingType.list,
@@ -150,11 +146,7 @@ SettingsModel aspectRatio = SettingsModel(
   tooltip: 'The aspect ration of the image',
   defaultValue: 'full screen',
   icon: const Icon(Icons.aspect_ratio),
-  options: [
-    'full screen',
-    '1:1',
-    '4:3'
-  ],
+  options: ['full screen', '1:1', '4:3'],
   settingCategory: SettingCategory.tool,
   proFeature: false,
 );
@@ -178,7 +170,6 @@ SettingsModel paletteType = SettingsModel(
   },
   proFeature: false,
 );
-
 
 SettingsModel paletteList = SettingsModel(
   name: 'paletteList',
@@ -229,13 +220,13 @@ List<SettingsModel> initializeDiagonalAttributes() {
   ];
 }
 
-void paintDiagonal(Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+void paintDiagonal(
+    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
   canvas.drawRect(
       Offset(0, 0) & Size(size.width, size.height),
       Paint()
         ..color = Colors.black.withOpacity(1.0)
         ..style = PaintingStyle.fill);
-
 
   rnd = Random(seed);
   // print('seed: $seed');
@@ -247,8 +238,8 @@ void paintDiagonal(Canvas canvas, Size size, int seed, double animationVariable,
   // Initialise the canvas
   double canvasWidth = size.width;
   double canvasHeight = size.height;
-  print('canvasWidth: '+canvasWidth.toString());
-  print('canvasHeight: '+canvasHeight.toString());
+  print('canvasWidth: ' + canvasWidth.toString());
+  print('canvasHeight: ' + canvasHeight.toString());
 
   //double sideLength = zoomOpArt.value as double;
   // print("sideLength: "+sideLength.toString());
@@ -257,48 +248,45 @@ void paintDiagonal(Canvas canvas, Size size, int seed, double animationVariable,
 
   switch (aspectRatio.value.toString()) {
     case '1:1':
-      if (canvasWidth > canvasHeight){
+      if (canvasWidth > canvasHeight) {
         canvasWidth = canvasHeight;
-        }
-      else {
-          canvasHeight = canvasWidth;
-        }
+      } else {
+        canvasHeight = canvasWidth;
+      }
       break;
 
     case '4:3':
-      if (canvasWidth / canvasHeight > 4/3){
-        canvasWidth = canvasHeight * 4/3;
-      }
-      else if (canvasHeight / canvasWidth > 4/3){
-        canvasHeight = canvasWidth * 4/3;
-      }
-      else if (canvasWidth > canvasHeight) {
-        canvasHeight = canvasWidth * 3/4;
-      }
-      else {
-        canvasWidth = canvasHeight * 3/4;
+      if (canvasWidth / canvasHeight > 4 / 3) {
+        canvasWidth = canvasHeight * 4 / 3;
+      } else if (canvasHeight / canvasWidth > 4 / 3) {
+        canvasHeight = canvasWidth * 4 / 3;
+      } else if (canvasWidth > canvasHeight) {
+        canvasHeight = canvasWidth * 3 / 4;
+      } else {
+        canvasWidth = canvasHeight * 3 / 4;
       }
       break;
   }
 
-  double marginX = (size.width - canvasWidth)/2;
-  double marginY = (size.height - canvasHeight)/2;
-  print('marginX: '+marginX.toString());
-  print('marginY: '+marginY.toString());
+  double marginX = (size.width - canvasWidth) / 2;
+  double marginY = (size.height - canvasHeight) / 2;
+  print('marginX: ' + marginX.toString());
+  print('marginY: ' + marginY.toString());
 
-  double minHeightWidth = (canvasWidth<canvasHeight) ? canvasWidth : canvasHeight;
-  print('minHeightWidth: '+minHeightWidth.toString());
+  double minHeightWidth =
+      (canvasWidth < canvasHeight) ? canvasWidth : canvasHeight;
+  print('minHeightWidth: ' + minHeightWidth.toString());
 
   int numberOfGroups = groups.value as int;
-  print("numberOfGroups: "+numberOfGroups.toString());
+  print("numberOfGroups: " + numberOfGroups.toString());
 
   double borderWidth = border.value as double;
-  if (borderWidth>minHeightWidth/2){
-    borderWidth = minHeightWidth/2;
+  if (borderWidth > minHeightWidth / 2) {
+    borderWidth = minHeightWidth / 2;
     numberOfGroups = 0;
   }
-  print('borderWidth: '+borderWidth.toString());
-  print("numberOfGroups: "+numberOfGroups.toString());
+  print('borderWidth: ' + borderWidth.toString());
+  print("numberOfGroups: " + numberOfGroups.toString());
 
   // Work out the X and Y
   int cellsX;
@@ -307,47 +295,44 @@ void paintDiagonal(Canvas canvas, Size size, int seed, double animationVariable,
   double borderY;
   double sideLength;
 
-  if (canvasWidth <= canvasHeight){
+  if (canvasWidth <= canvasHeight) {
     cellsX = numberOfGroups;
     borderX = borderWidth;
-    sideLength = (canvasWidth - borderWidth*2) / numberOfGroups;
-    cellsY = ((canvasHeight - borderWidth*2) / sideLength).floor();
-    borderY = (canvasHeight - sideLength*cellsY)/2;
-  }
-  else {
+    sideLength = (canvasWidth - borderWidth * 2) / numberOfGroups;
+    cellsY = ((canvasHeight - borderWidth * 2) / sideLength).floor();
+    borderY = (canvasHeight - sideLength * cellsY) / 2;
+  } else {
     cellsY = numberOfGroups;
     borderY = borderWidth;
-    sideLength = (canvasHeight - borderWidth*2) / numberOfGroups;
-    cellsX = ((canvasWidth - borderWidth*2) / sideLength).floor();
-    borderX = (canvasWidth - borderWidth*2 - sideLength*cellsX)/2;
+    sideLength = (canvasHeight - borderWidth * 2) / numberOfGroups;
+    cellsX = ((canvasWidth - borderWidth * 2) / sideLength).floor();
+    borderX = (canvasWidth - borderWidth * 2 - sideLength * cellsX) / 2;
   }
 
-
-  print("sideLength: "+sideLength.toString());
-  print("cellsX: "+cellsX.toString());
-  print("cellsY: "+cellsY.toString());
-  print("borderX: "+borderX.toString());
-  print("borderY: "+borderY.toString());
+  print("sideLength: " + sideLength.toString());
+  print("cellsX: " + cellsX.toString());
+  print("cellsY: " + cellsY.toString());
+  print("borderX: " + borderX.toString());
+  print("borderY: " + borderY.toString());
 
   // Now make some art
   drawDiagonal(
-    canvas,
-    canvasWidth,
-    canvasHeight,
-    cellsX,
-    cellsY,
-    marginX,
-    marginY,
-    borderX,
-    borderY,
-    sideLength,
-    opArt.palette.colorList,
-    backgroundColor.value as Color,
-    oneDirection.value == true,
-    numberOfPipes.value as int,
-    shape.value as String,
-    pointiness.value as double
-  );
+      canvas,
+      canvasWidth,
+      canvasHeight,
+      cellsX,
+      cellsY,
+      marginX,
+      marginY,
+      borderX,
+      borderY,
+      sideLength,
+      opArt.palette.colorList,
+      backgroundColor.value as Color,
+      oneDirection.value == true,
+      numberOfPipes.value as int,
+      shape.value as String,
+      pointiness.value as double);
 }
 
 void drawDiagonal(
@@ -368,11 +353,10 @@ void drawDiagonal(
   String shape,
   double pointiness,
 ) {
-
-  bool parity;
-  List centre1;
-  List centre2;
-  double startAngle;
+  bool parity = false;
+  List centre1 = [];
+  List centre2 = [];
+  double startAngle = 0.0;
   int colourOrder = 0;
   int nextColorOrder;
   Color nextColor;
@@ -392,10 +376,22 @@ void drawDiagonal(
     for (int j = 0; j < cellsY; ++j) {
       parity = (i + j) % 2 == 0;
 
-      final p0 = [marginX + borderX + i * sideLength, marginY + borderY + j * sideLength];
-      final p1 = [marginX + borderX + (i + 1) * sideLength, marginY + borderY + j * sideLength];
-      final p2 = [marginX + borderX + (i + 1) * sideLength, marginY + borderY + (j + 1) * sideLength];
-      final p3 = [marginX + borderX + i * sideLength, marginY + borderY + (j + 1) * sideLength];
+      final p0 = [
+        marginX + borderX + i * sideLength,
+        marginY + borderY + j * sideLength
+      ];
+      final p1 = [
+        marginX + borderX + (i + 1) * sideLength,
+        marginY + borderY + j * sideLength
+      ];
+      final p2 = [
+        marginX + borderX + (i + 1) * sideLength,
+        marginY + borderY + (j + 1) * sideLength
+      ];
+      final p3 = [
+        marginX + borderX + i * sideLength,
+        marginY + borderY + (j + 1) * sideLength
+      ];
 
       // Quarter Circles
       final int orientation = oneDirection ? 0 : rnd.nextInt(4);
@@ -444,83 +440,129 @@ void drawDiagonal(
               .withOpacity(opacity.value) as Color;
         }
 
-        radius1 = sideLength / pipes * (k - 0.5 + (ratio.value as double) / 2) - offset;
-        radius2 = sideLength / pipes * (k - 0.5 - (ratio.value as double) / 2) - offset;
+        radius1 = sideLength / pipes * (k - 0.5 + (ratio.value as double) / 2) -
+            offset;
+        radius2 = sideLength / pipes * (k - 0.5 - (ratio.value as double) / 2) -
+            offset;
         width = sideLength / pipes * (ratio.value as double);
 
         switch (shape) {
           case 'circle':
             drawQuarterArc(canvas, centre1, radius1, startAngle, nextColor);
-            drawQuarterArc(canvas, centre1, radius2, startAngle, backgroundColor.withOpacity(1.0));
+            drawQuarterArc(canvas, centre1, radius2, startAngle,
+                backgroundColor.withOpacity(1.0));
             break;
 
           case 'triangle':
-            drawTriangle(canvas, centre1, radius1, startAngle, nextColor, pointiness);
-            drawTriangle(canvas, centre1, radius2, startAngle, backgroundColor.withOpacity(1.0), pointiness);
+            drawTriangle(
+                canvas, centre1, radius1, startAngle, nextColor, pointiness);
+            drawTriangle(canvas, centre1, radius2, startAngle,
+                backgroundColor.withOpacity(1.0), pointiness);
             break;
 
           case 'line':
-            drawTriangle(canvas, centre1, radius1, startAngle, nextColor, 1/sqrt(2));
-            drawTriangle(canvas, centre1, radius2, startAngle, backgroundColor.withOpacity(1.0), 1/sqrt(2));
+            drawTriangle(
+                canvas, centre1, radius1, startAngle, nextColor, 1 / sqrt(2));
+            drawTriangle(canvas, centre1, radius2, startAngle,
+                backgroundColor.withOpacity(1.0), 1 / sqrt(2));
             break;
 
           case 'square':
-            drawSquare(canvas, centre1, radius1, startAngle, nextColor, pointiness);
-            drawSquare(canvas, centre1, radius2, startAngle, backgroundColor.withOpacity(1.0), pointiness);
+            drawSquare(
+                canvas, centre1, radius1, startAngle, nextColor, pointiness);
+            drawSquare(canvas, centre1, radius2, startAngle,
+                backgroundColor.withOpacity(1.0), pointiness);
             break;
-
         }
 
-
-
         // fill in the left border
-        if (i==0){
-          if (centre1 == p0){
-            canvas.drawRect(Offset(marginX, (centre1[1] + radius2) as double) & Size(borderX, width), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+        if (i == 0) {
+          if (centre1 == p0) {
+            canvas.drawRect(
+                Offset(marginX, (centre1[1] + radius2) as double) &
+                    Size(borderX, width),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
             //drawRect (fullsize, thumbnail, colour, 0, centre1[1] + group / numberOfColours * (k - 0.5 - ratio / 2), border, group / numberOfColours * ratio);
           }
-          if (centre1 == p3){
-              canvas.drawRect(Offset(marginX, (centre1[1] - radius2 - width) as double) & Size(borderX, width), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+          if (centre1 == p3) {
+            canvas.drawRect(
+                Offset(marginX, (centre1[1] - radius2 - width) as double) &
+                    Size(borderX, width),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
           }
         }
         // fill in the right border
-        if (i==cellsX-1){
-          if (centre1 == p1){
-            canvas.drawRect(Offset(centre1[0] as double, (centre1[1] + radius2) as double) & Size(borderX, width), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+        if (i == cellsX - 1) {
+          if (centre1 == p1) {
+            canvas.drawRect(
+                Offset(centre1[0] as double, (centre1[1] + radius2) as double) &
+                    Size(borderX, width),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
           }
-          if (centre1 == p2){
-            canvas.drawRect(Offset(centre1[0] as double, (centre1[1] - radius2 - width) as double) & Size(borderX, width), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+          if (centre1 == p2) {
+            canvas.drawRect(
+                Offset(centre1[0] as double,
+                        (centre1[1] - radius2 - width) as double) &
+                    Size(borderX, width),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
             // drawRect (fullsize, thumbnail, colour, centre1[0], centre1[1] - group / numberOfColours * (k - 0.5 + ratio / 2), border, group / numberOfColours * ratio);
           }
         }
 
         // fill in the top border
-        if (j==0){
-          if (centre1 == p0){
-            canvas.drawRect(Offset(centre1[0]+radius2 as double, (marginY) as double) & Size(width, borderY), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+        if (j == 0) {
+          if (centre1 == p0) {
+            canvas.drawRect(
+                Offset(centre1[0] + radius2 as double, (marginY) as double) &
+                    Size(width, borderY),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
             // drawRect (fullsize, thumbnail, colour, centre1[0] + group / numberOfColours * (k - 0.5 - ratio / 2), 0, group / numberOfColours * ratio, border);
           }
-          if (centre1 == p1){
-            canvas.drawRect(Offset(centre1[0]-radius2-width as double, (marginY) as double) & Size(width, borderY), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+          if (centre1 == p1) {
+            canvas.drawRect(
+                Offset(centre1[0] - radius2 - width as double,
+                        (marginY) as double) &
+                    Size(width, borderY),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
             // drawRect (fullsize, thumbnail, colour, centre1[0] - group / numberOfColours * (k - 0.5 + ratio / 2), 0, group / numberOfColours * ratio, border);
           }
         }
 
         // fill in the bottom border
-        if (j==cellsY-1){
-          if (centre1 == p3){
-            canvas.drawRect(Offset(centre1[0]+radius2 as double, (centre1[1]) as double) & Size(width, borderY), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+        if (j == cellsY - 1) {
+          if (centre1 == p3) {
+            canvas.drawRect(
+                Offset(centre1[0] + radius2 as double, (centre1[1]) as double) &
+                    Size(width, borderY),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
             // drawRect (fullsize, thumbnail, colour, centre1[0] + group / numberOfColours * (k - 0.5 - ratio / 2), centre1[1], group / numberOfColours * ratio, border);
           }
-          if (centre1 == p2){
-            canvas.drawRect(Offset(centre1[0]-radius2-width as double, (centre1[1]) as double) & Size(width, borderY), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+          if (centre1 == p2) {
+            canvas.drawRect(
+                Offset(centre1[0] - radius2 - width as double,
+                        (centre1[1]) as double) &
+                    Size(width, borderY),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
             // canvas.drawRect(Offset(centre2[0]-radius2 as double, (centre2[1]) as double) & Size(width, borderY), Paint() ..color = nextColor ..style = PaintingStyle.fill);
             // drawRect (fullsize, thumbnail, colour, centre1[0] - group / numberOfColours * (k - 0.5 + ratio / 2), centre1[1], group / numberOfColours * ratio, border);
           }
         }
-
-
-
       }
 
       if (resetColors.value == true) {
@@ -540,87 +582,136 @@ void drawDiagonal(
               .withOpacity(opacity.value) as Color;
         }
 
-        radius1 = sideLength / pipes * (k - 0.5 + (ratio.value as double) / 2) + offset;
-        radius2 = sideLength / pipes * (k - 0.5 - (ratio.value as double) / 2) + offset;
+        radius1 = sideLength / pipes * (k - 0.5 + (ratio.value as double) / 2) +
+            offset;
+        radius2 = sideLength / pipes * (k - 0.5 - (ratio.value as double) / 2) +
+            offset;
         double width = sideLength / pipes * (ratio.value as double);
 
         switch (shape) {
           case 'circle':
-            drawQuarterArc(canvas, centre2, radius1, startAngle + pi, nextColor);
-            drawQuarterArc(canvas, centre2, radius2, startAngle + pi, backgroundColor.withOpacity(1.0));
+            drawQuarterArc(
+                canvas, centre2, radius1, startAngle + pi, nextColor);
+            drawQuarterArc(canvas, centre2, radius2, startAngle + pi,
+                backgroundColor.withOpacity(1.0));
             break;
 
           case 'triangle':
-            drawTriangle(canvas, centre2, radius1, startAngle + pi, nextColor, pointiness);
-            drawTriangle(canvas, centre2, radius2, startAngle + pi, backgroundColor.withOpacity(1.0), pointiness);
+            drawTriangle(canvas, centre2, radius1, startAngle + pi, nextColor,
+                pointiness);
+            drawTriangle(canvas, centre2, radius2, startAngle + pi,
+                backgroundColor.withOpacity(1.0), pointiness);
             break;
 
           case 'line':
-            drawTriangle(canvas, centre2, radius1, startAngle + pi, nextColor, 1/sqrt(2));
-            drawTriangle(canvas, centre2, radius2, startAngle + pi, backgroundColor.withOpacity(1.0), 1/sqrt(2));
+            drawTriangle(canvas, centre2, radius1, startAngle + pi, nextColor,
+                1 / sqrt(2));
+            drawTriangle(canvas, centre2, radius2, startAngle + pi,
+                backgroundColor.withOpacity(1.0), 1 / sqrt(2));
             break;
 
           case 'square':
-            drawSquare(canvas, centre2, radius1, startAngle + pi, nextColor, pointiness);
-            drawSquare(canvas, centre2, radius2, startAngle + pi, backgroundColor.withOpacity(1.0), pointiness);
+            drawSquare(canvas, centre2, radius1, startAngle + pi, nextColor,
+                pointiness);
+            drawSquare(canvas, centre2, radius2, startAngle + pi,
+                backgroundColor.withOpacity(1.0), pointiness);
             break;
         }
 
         // fill in the left border
-        if (i==0){
-          if (centre2 == p0){
-            canvas.drawRect(Offset(marginX, (centre2[1] + radius2) as double) & Size(borderX, width), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+        if (i == 0) {
+          if (centre2 == p0) {
+            canvas.drawRect(
+                Offset(marginX, (centre2[1] + radius2) as double) &
+                    Size(borderX, width),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
           }
-          if (centre2 == p3){
-            canvas.drawRect(Offset(marginX, (centre2[1] - radius2 - width) as double) & Size(borderX, width), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+          if (centre2 == p3) {
+            canvas.drawRect(
+                Offset(marginX, (centre2[1] - radius2 - width) as double) &
+                    Size(borderX, width),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
           }
         }
         // fill in the right border
-        if (i==cellsX-1){
-          if (centre2 == p1){
-            canvas.drawRect(Offset(centre2[0] as double, (centre2[1] + radius2) as double) & Size(borderX, width), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+        if (i == cellsX - 1) {
+          if (centre2 == p1) {
+            canvas.drawRect(
+                Offset(centre2[0] as double, (centre2[1] + radius2) as double) &
+                    Size(borderX, width),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
             // drawRect (fullsize, thumbnail, colour, centre2[0], centre2[1] + group / numberOfColours * (k - 0.5 - ratio / 2), border, group / numberOfColours * ratio);
           }
-          if (centre2 == p2){
-            canvas.drawRect(Offset(centre2[0] as double, (centre2[1] - radius2 - width) as double) & Size(borderX, width), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+          if (centre2 == p2) {
+            canvas.drawRect(
+                Offset(centre2[0] as double,
+                        (centre2[1] - radius2 - width) as double) &
+                    Size(borderX, width),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
             // drawRect (fullsize, thumbnail, colour, centre2[0], centre2[1] - group / numberOfColours * (k - 0.5 + ratio / 2), border, group / numberOfColours * ratio);
           }
         }
 
-
         // fill in the top border
-        if (j==0){
-          if (centre2 == p0){
-            canvas.drawRect(Offset(centre2[0]+radius2 as double, (marginY) as double) & Size(width, borderY), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+        if (j == 0) {
+          if (centre2 == p0) {
+            canvas.drawRect(
+                Offset(centre2[0] + radius2 as double, (marginY) as double) &
+                    Size(width, borderY),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
             // drawRect (fullsize, thumbnail, colour, centre2[0] + group / numberOfColours * (k - 0.5 - ratio / 2), 0, group / numberOfColours * ratio, border);
           }
-          if (centre2 == p1){
-            canvas.drawRect(Offset(centre2[0]-radius2-width as double, (marginY) as double) & Size(width, borderY), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+          if (centre2 == p1) {
+            canvas.drawRect(
+                Offset(centre2[0] - radius2 - width as double,
+                        (marginY) as double) &
+                    Size(width, borderY),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
             // drawRect (fullsize, thumbnail, colour, centre2[0] - group / numberOfColours * (k - 0.5 + ratio / 2), 0, group / numberOfColours * ratio, border);
           }
         }
 
         // fill in the bottom border
-        if (j==cellsY-1){
-          if (centre2 == p3){
-            canvas.drawRect(Offset(centre2[0]+radius2 as double, (centre2[1]) as double) & Size(width, borderY), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+        if (j == cellsY - 1) {
+          if (centre2 == p3) {
+            canvas.drawRect(
+                Offset(centre2[0] + radius2 as double, (centre2[1]) as double) &
+                    Size(width, borderY),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
             // drawRect (fullsize, thumbnail, colour, centre2[0] + group / numberOfColours * (k - 0.5 - ratio / 2), centre2[1], group / numberOfColours * ratio, border);
           }
-          if (centre2 == p2){
-            canvas.drawRect(Offset(centre2[0]-radius2-width as double, (centre2[1]) as double) & Size(width, borderY), Paint() ..color = nextColor ..style = PaintingStyle.fill);
+          if (centre2 == p2) {
+            canvas.drawRect(
+                Offset(centre2[0] - radius2 - width as double,
+                        (centre2[1]) as double) &
+                    Size(width, borderY),
+                Paint()
+                  ..color = nextColor
+                  ..style = PaintingStyle.fill);
             // drawRect (fullsize, thumbnail, colour, centre2[0] - group / numberOfColours * (k - 0.5 + ratio / 2), centre2[1], group / numberOfColours * ratio, border);
           }
         }
-
-
-
-
       }
     }
   }
 }
 
-void drawQuarterArc(Canvas canvas, List centre, double radius2, double startAngle, Color color) {
+void drawQuarterArc(Canvas canvas, List centre, double radius2,
+    double startAngle, Color color) {
   canvas.drawArc(
       Rect.fromCenter(
           center: Offset(centre[0] as double, centre[1] as double),
@@ -636,16 +727,20 @@ void drawQuarterArc(Canvas canvas, List centre, double radius2, double startAngl
         ..style = PaintingStyle.fill);
 }
 
-
-void drawTriangle(Canvas canvas, List centre, double radius2, double startAngle, Color color, double pointiness) {
-
+void drawTriangle(Canvas canvas, List centre, double radius2, double startAngle,
+    Color color, double pointiness) {
   var path = Path();
   path.moveTo(centre[0] as double, centre[1] as double);
-  path.lineTo(centre[0]+radius2*cos(startAngle) as double, centre[1]+radius2*sin(startAngle) as double);
-  path.lineTo(centre[0]+pointiness*radius2*cos(startAngle+pi/4) as double, centre[1]+pointiness*radius2*sin(startAngle+pi/4) as double);
-  path.lineTo(centre[0]+radius2*cos(startAngle+pi/2) as double, centre[1]+radius2*sin(startAngle+pi/2) as double);
+  path.lineTo(centre[0] + radius2 * cos(startAngle) as double,
+      centre[1] + radius2 * sin(startAngle) as double);
+  path.lineTo(
+      centre[0] + pointiness * radius2 * cos(startAngle + pi / 4) as double,
+      centre[1] + pointiness * radius2 * sin(startAngle + pi / 4) as double);
+  path.lineTo(centre[0] + radius2 * cos(startAngle + pi / 2) as double,
+      centre[1] + radius2 * sin(startAngle + pi / 2) as double);
   path.close();
-  canvas.drawPath(path,
+  canvas.drawPath(
+      path,
       Paint()
         ..isAntiAlias = false
         ..strokeWidth = 0.0
@@ -653,22 +748,26 @@ void drawTriangle(Canvas canvas, List centre, double radius2, double startAngle,
         ..style = PaintingStyle.fill);
 }
 
-
-void drawSquare(Canvas canvas, List centre, double radius2, double startAngle, Color color, double pointiness) {
-
+void drawSquare(Canvas canvas, List centre, double radius2, double startAngle,
+    Color color, double pointiness) {
   var path = Path();
   path.moveTo(centre[0] as double, centre[1] as double);
-  path.lineTo(centre[0]+radius2*cos(startAngle) as double, centre[1]+radius2*sin(startAngle) as double);
-  path.lineTo(centre[0]+pointiness*radius2*cos(startAngle+pi/6) as double, centre[1]+pointiness*radius2*sin(startAngle+pi/6) as double);
-  path.lineTo(centre[0]+pointiness*radius2*cos(startAngle+pi/3) as double, centre[1]+pointiness*radius2*sin(startAngle+pi/3) as double);
-  path.lineTo(centre[0]+radius2*cos(startAngle+pi/2) as double, centre[1]+radius2*sin(startAngle+pi/2) as double);
+  path.lineTo(centre[0] + radius2 * cos(startAngle) as double,
+      centre[1] + radius2 * sin(startAngle) as double);
+  path.lineTo(
+      centre[0] + pointiness * radius2 * cos(startAngle + pi / 6) as double,
+      centre[1] + pointiness * radius2 * sin(startAngle + pi / 6) as double);
+  path.lineTo(
+      centre[0] + pointiness * radius2 * cos(startAngle + pi / 3) as double,
+      centre[1] + pointiness * radius2 * sin(startAngle + pi / 3) as double);
+  path.lineTo(centre[0] + radius2 * cos(startAngle + pi / 2) as double,
+      centre[1] + radius2 * sin(startAngle + pi / 2) as double);
   path.close();
-  canvas.drawPath(path,
+  canvas.drawPath(
+      path,
       Paint()
         ..isAntiAlias = false
         ..strokeWidth = 0.0
         ..color = color
         ..style = PaintingStyle.fill);
 }
-
-

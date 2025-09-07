@@ -9,53 +9,54 @@ import 'main.dart';
 // bool proVersion = true;
 
 enum SettingType { double, int, bool, button, color, list }
+
 enum SettingCategory { palette, tool, other }
 
 class SettingsModel {
   SettingType settingType;
   String name;
   String label;
-  String tooltip;
-  Icon icon;
-  SettingCategory settingCategory;
-  bool proFeature;
+  String? tooltip;
+  Icon? icon;
+  SettingCategory? settingCategory;
+  bool? proFeature;
   dynamic options;
-  Function onChange;
-  bool silent;
+  Function? onChange;
+  bool? silent;
 
   dynamic min;
   dynamic max;
   dynamic randomMin;
   dynamic randomMax;
-  double randomTrue;
-  double zoom;
+  double? randomTrue;
+  double? zoom;
   dynamic defaultValue;
 
   bool locked = false;
   dynamic value;
 
   SettingsModel({
-    this.settingType,
-    this.name,
-    this.label,
-    this.tooltip,
-    this.icon,
-    this.settingCategory,
-    this.proFeature,
+    required this.settingType,
+    required this.name,
+    required this.label,
+    String? tooltip,
+    Icon? icon,
+    SettingCategory? settingCategory,
+    bool? proFeature,
     this.min,
     this.max,
     this.randomMin,
     this.randomMax,
-    this.randomTrue,
-    this.zoom,
+    double? randomTrue,
+    double? zoom,
     this.defaultValue,
     this.options,
-    this.onChange,
-    this.silent,
+    Function? onChange,
+    bool? silent,
   });
 
   void randomize(Random rnd) {
-    if (!locked && (proVersion || !proVersion && !proFeature)) {
+    if (!locked && (proVersion || !proVersion && !(proFeature ?? false))) {
       // print('Name: ${name}: ${settingType}');
 
       switch (settingType) {
@@ -77,10 +78,10 @@ class SettingsModel {
         case SettingType.int:
           final int min = (randomMin != null)
               ? randomMin.toInt() as int
-              : this.min.toInt() as int;
+              : this.min.toInt() ?? 5;
           final int max = (randomMax != null)
               ? randomMax.toInt() as int
-              : this.max.toInt() as int;
+              : this.max.toInt() ?? 5;
 
           // half the time use the default
           value = (rnd.nextBool() == true)
@@ -91,7 +92,7 @@ class SettingsModel {
 
         case SettingType.bool:
           value = (randomTrue != null)
-              ? rnd.nextDouble() < randomTrue
+              ? rnd.nextDouble() < randomTrue!
               : rnd.nextBool();
 
           break;
@@ -120,32 +121,38 @@ class SettingsModel {
 }
 
 void resetAllDefaults() {
-  opArt.setDefault();
+  currentOpArtPageState?.opArt.setDefault();
 }
 
 void generatePalette() {
-  final int numberOfColours = opArt.attributes
-      .firstWhere((element) => element.name == 'numberOfColors')
-      .value
-      .toInt() as int;
-  final String paletteType = opArt.attributes
-      .firstWhere((element) => element.name == 'paletteType')
-      .value
-      .toString();
-  opArt.palette.randomize(paletteType, numberOfColours);
+  final int numberOfColours = currentOpArtPageState?.opArt.attributes
+          .firstWhere((element) => element.name == 'numberOfColors')
+          .value
+          .toInt() ??
+      5;
+  final String paletteType = currentOpArtPageState?.opArt.attributes
+          .firstWhere((element) => element.name == 'paletteType')
+          .value
+          .toString() ??
+      'random';
+  currentOpArtPageState?.opArt.palette.randomize(paletteType, numberOfColours);
 }
 
 void checkNumberOfColors() {
-  final int numberOfColours = opArt.attributes
-      .firstWhere((element) => element.name == 'numberOfColors')
-      .value
-      .toInt() as int;
-  final int paletteLength = opArt.palette.colorList.length;
+  final int numberOfColours = currentOpArtPageState?.opArt.attributes
+          .firstWhere((element) => element.name == 'numberOfColors')
+          .value
+          .toInt() ??
+      5;
+  final int paletteLength =
+      currentOpArtPageState?.opArt.palette.colorList.length ?? 0;
   if (numberOfColours > paletteLength) {
-    final String paletteType = opArt.attributes
-        .firstWhere((element) => element.name == 'paletteType')
-        .value
-        .toString();
-    opArt.palette.randomize(paletteType, numberOfColours);
+    final String paletteType = currentOpArtPageState?.opArt.attributes
+            .firstWhere((element) => element.name == 'paletteType')
+            .value
+            .toString() ??
+        'random';
+    currentOpArtPageState?.opArt.palette
+        .randomize(paletteType, numberOfColours);
   }
 }

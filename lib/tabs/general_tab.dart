@@ -3,17 +3,17 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:opart_v2/tabs/tools_widget.dart';
 
 import '../model_opart.dart';
-import '../opart_page.dart';
+import '../opart_page.dart' as opart_page;
 import 'choose_pallette_widget.dart';
 import 'palette_widget.dart';
 
 abstract class GeneralTab {
   bool open = false;
-  double position;
-  double width;
-  double tabHeight;
-  bool left;
-  IconData icon;
+  double position = 0.0;
+  double width = 0.0;
+  double tabHeight = 0.0;
+  bool left = true;
+  late IconData icon;
   bool hidden = false;
 
   void closeTab() {
@@ -24,13 +24,13 @@ abstract class GeneralTab {
     choosePaletteTab.position = -choosePaletteTab.width;
     choosePaletteTab.open = false;
     position = -width;
-    showCustomColorPicker = false;
+    opart_page.currentOpArtPageState?.showCustomColorPicker = false;
     rebuildOpArtPage.value++;
     rebuildTab.value++;
   }
 
   void openTab() {
-    showCustomColorPicker = false;
+    opart_page.currentOpArtPageState?.showCustomColorPicker = false;
     rebuildOpArtPage.value++;
     paletteTab.position = -paletteTab.width;
     paletteTab.open = false;
@@ -40,7 +40,7 @@ abstract class GeneralTab {
     choosePaletteTab.open = false;
     open = true;
     position = 0;
-    showCustomColorPicker = false;
+    opart_page.currentOpArtPageState?.showCustomColorPicker = false;
     rebuildOpArtPage.value++;
     rebuildTab.value++;
   }
@@ -56,9 +56,9 @@ abstract class GeneralTab {
   }
 }
 
-ToolsTab toolsTab;
-PaletteTab paletteTab;
-ChoosePaletteTab choosePaletteTab;
+late ToolsTab toolsTab;
+late PaletteTab paletteTab;
+late ChoosePaletteTab choosePaletteTab;
 
 class ToolsTab implements GeneralTab {
   @override
@@ -89,7 +89,7 @@ class ToolsTab implements GeneralTab {
   }
 
   @override
-  bool hidden;
+  bool hidden = false;
 
   @override
   void closeTab() {
@@ -100,7 +100,7 @@ class ToolsTab implements GeneralTab {
     choosePaletteTab.position = -choosePaletteTab.width;
     choosePaletteTab.open = false;
     position = -width;
-    showCustomColorPicker = false;
+    opart_page.currentOpArtPageState?.showCustomColorPicker = false;
     rebuildOpArtPage.value++;
     rebuildTab.value++;
   }
@@ -114,7 +114,7 @@ class ToolsTab implements GeneralTab {
 
   @override
   void openTab() {
-    showCustomColorPicker = false;
+    opart_page.currentOpArtPageState?.showCustomColorPicker = false;
     rebuildOpArtPage.value++;
     paletteTab.position = -paletteTab.width;
     paletteTab.open = false;
@@ -124,7 +124,7 @@ class ToolsTab implements GeneralTab {
     choosePaletteTab.open = false;
     open = true;
     position = 0;
-    showCustomColorPicker = false;
+    opart_page.currentOpArtPageState?.showCustomColorPicker = false;
     rebuildOpArtPage.value++;
     rebuildTab.value++;
   }
@@ -166,7 +166,7 @@ class PaletteTab implements GeneralTab {
   double position = -50;
 
   @override
-  bool hidden;
+  bool hidden = false;
 
   @override
   void closeTab() {
@@ -177,7 +177,7 @@ class PaletteTab implements GeneralTab {
     choosePaletteTab.position = -choosePaletteTab.width;
     choosePaletteTab.open = false;
     position = -width;
-    showCustomColorPicker = false;
+    opart_page.currentOpArtPageState?.showCustomColorPicker = false;
     rebuildOpArtPage.value++;
     rebuildTab.value++;
   }
@@ -224,7 +224,7 @@ class ChoosePaletteTab implements GeneralTab {
   double position = -80;
 
   @override
-  bool hidden;
+  bool hidden = false;
 
   @override
   void closeTab() {
@@ -235,7 +235,7 @@ class ChoosePaletteTab implements GeneralTab {
     choosePaletteTab.position = -choosePaletteTab.width;
     choosePaletteTab.open = false;
     position = -width;
-    showCustomColorPicker = false;
+    opart_page.currentOpArtPageState?.showCustomColorPicker = false;
     rebuildOpArtPage.value++;
     rebuildTab.value++;
   }

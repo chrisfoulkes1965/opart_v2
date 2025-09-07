@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'database_helper.dart';
@@ -10,7 +8,7 @@ import 'main.dart';
 import 'model_opart.dart';
 import 'opart_page.dart';
 
-CarouselController buttonCarouselController = CarouselController();
+CarouselSliderController buttonCarouselController = CarouselSliderController();
 
 class MyGallery extends StatefulWidget {
   final int currentImage;
@@ -22,7 +20,7 @@ class MyGallery extends StatefulWidget {
 
 class _MyGalleryState extends State<MyGallery> {
   bool carouselView = true;
-  int currentIndex;
+  int currentIndex = 0;
   String currentSize = "8' x 10'";
   Color frameColor = Colors.black;
 
@@ -32,9 +30,15 @@ class _MyGalleryState extends State<MyGallery> {
   Widget build(BuildContext context) {
     if (widget.paid) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        buttonCarouselController.nextPage();
+        buttonCarouselController.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
         rebuildGallery.value++;
-        buttonCarouselController.nextPage();
+        buttonCarouselController.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
       });
     }
 
@@ -61,7 +65,8 @@ class _MyGalleryState extends State<MyGallery> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const MyHomePage()));
+                                builder: (context) =>
+                                    const MyHomePage(title: 'OpArt Lab')));
                       }),
                   actions: [
                     IconButton(
@@ -97,7 +102,8 @@ class _MyGalleryState extends State<MyGallery> {
                                     enlargeCenterPage: true,
                                     initialPage: widget.currentImage - 1),
                                 itemCount: savedOpArt.length,
-                                itemBuilder: (BuildContext context, int index) {
+                                itemBuilder: (BuildContext context, int index,
+                                    int realIndex) {
                                   currentIndex = index;
                                   return GestureDetector(
                                     onLongPress: () {
@@ -173,6 +179,8 @@ class _MyGalleryState extends State<MyGallery> {
                                                                                 true,
                                                                             opArtSettings:
                                                                                 savedOpArt[index],
+                                                                            animationValue:
+                                                                                0.0,
                                                                           )));
                                                             })
                                                       ],
@@ -215,7 +223,7 @@ class _MyGalleryState extends State<MyGallery> {
                                                                           content:
                                                                               const Text('You have paid for this image. If you delete it you will not be able to download it again.'),
                                                                           actions: [
-                                                                            RaisedButton(
+                                                                            ElevatedButton(
                                                                               onPressed: () {
                                                                                 final DatabaseHelper helper = DatabaseHelper.instance;
                                                                                 helper.delete(savedOpArt[index]['id'] as int);
@@ -226,7 +234,7 @@ class _MyGalleryState extends State<MyGallery> {
                                                                               },
                                                                               child: const Text('Delete'),
                                                                             ),
-                                                                            RaisedButton(
+                                                                            ElevatedButton(
                                                                               onPressed: () {
                                                                                 Navigator.pop(context);
                                                                               },
@@ -315,6 +323,7 @@ class _MyGalleryState extends State<MyGallery> {
                                                     downloadNow: false,
                                                     opArtSettings:
                                                         savedOpArt[index],
+                                                    animationValue: 0.0,
                                                   )));
                                     },
                                     child: Stack(

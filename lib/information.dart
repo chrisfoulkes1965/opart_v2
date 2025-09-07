@@ -1,6 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:launch_review/launch_review.dart';
+// import 'package:launch_review/launch_review.dart'; // Package discontinued
 import 'package:url_launcher/url_launcher.dart';
 
 class InformationPage extends StatefulWidget {
@@ -13,7 +12,7 @@ class _InformationPageState extends State<InformationPage> {
   bool showDelete = false;
   @override
   Widget build(BuildContext context) {
-    final Uri _emailLaunchUri = Uri(
+    final Uri emailLaunchUri = Uri(
         scheme: 'mailto',
         path: 'info@amovada.com',
         queryParameters: {'subject': 'OpArt Lab'});
@@ -44,7 +43,7 @@ class _InformationPageState extends State<InformationPage> {
               IconButton(
                 icon: const Icon(Icons.mail),
                 onPressed: () {
-                  launch(_emailLaunchUri.toString());
+                  launch(emailLaunchUri.toString());
                 },
               ),
               const SizedBox(height: 18),
@@ -56,10 +55,10 @@ class _InformationPageState extends State<InformationPage> {
                 child: IconButton(
                   icon: const Icon(Icons.star),
                   onPressed: () {
-                    LaunchReview.launch(
-                      androidAppId: 'com.opartlab',
-                      iOSAppId: '1538193511',
-                    );
+                    // LaunchReview.launch( // Package discontinued
+                    //   androidAppId: 'com.opartlab',
+                    //   iOSAppId: '1538193511',
+                    // );
                   },
                 ),
               ),

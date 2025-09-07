@@ -11,7 +11,7 @@ class TabWidget extends StatefulWidget {
 }
 
 class _TabWidgetState extends State<TabWidget> {
-  GeneralTab tab;
+  late GeneralTab tab;
 
   @override
   Widget build(BuildContext context) {

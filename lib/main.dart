@@ -4,14 +4,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
-
 // import 'package:opart_v2/loading.dart';
-import 'database_helper.dart';
-import 'information.dart';
-import 'model_opart.dart';
-import 'mygallery.dart';
-import 'opart_page.dart';
+import 'package:opart_v2/database_helper.dart';
+import 'package:opart_v2/information.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/mygallery.dart';
+import 'package:opart_v2/opart_page.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 bool showDelete = false;
 bool proVersion = true;
@@ -19,7 +18,7 @@ Random rnd = Random();
 int seed = DateTime.now().millisecond;
 double aspectRatio = 2 / 3;
 
-Offerings offerings;
+Offerings? offerings;
 
 void main() {
   runApp(MaterialApp(
@@ -60,8 +59,8 @@ class _MyAppState extends State<MyApp> {
     try {
       offerings = await Purchases.getOfferings();
       print(offerings);
-      if (offerings.current != null &&
-          offerings.current.availablePackages.isNotEmpty) {
+      if (offerings?.current != null &&
+          offerings!.current!.availablePackages.isNotEmpty) {
         // Display packages for sale
       }
     } on PlatformException catch (e) {
@@ -83,7 +82,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key key, this.title}) : super(key: key);
+  const MyHomePage({super.key, required this.title});
 
   final String title;
 
@@ -93,7 +92,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _rebuildDelete = ValueNotifier(0);
-  List<OpArtTypes> opArtTypes;
+  List<OpArtTypes> opArtTypes = [];
 
   @override
   Widget build(BuildContext context) {
@@ -127,57 +126,67 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Expanded(
               child: SingleChildScrollView(
-                child: Wrap(alignment: WrapAlignment.spaceAround,  children: opArtTypes.map((opArtType)=>
-                    Container(height: 120, width: 120,
-                      padding: const EdgeInsets.all(8.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => OpArtPage(
-                                    opArtType.opArtType,
-                                    downloadNow: false)),
-                          );
-                        },
-                        child: Hero(
-                          tag: opArtType.name,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.9),
-                                  blurRadius: 5,
-                                  offset: const Offset(5, 5),
-                                )
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: GridTile(
-                                footer: Container(
-                                  color: Colors.white.withOpacity(0.7),
-                                  width: double.infinity,
-                                  child: Text(
-                                    opArtType.name,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: 'Righteous',
-                                      // fontWeight: FontWeight.bold,
+                child: Wrap(
+                  alignment: WrapAlignment.spaceAround,
+                  children: opArtTypes
+                      .map(
+                        (opArtType) => Container(
+                          height: 120,
+                          width: 120,
+                          padding: const EdgeInsets.all(8.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => OpArtPage(
+                                        opArtType.opArtType,
+                                        downloadNow: false,
+                                        animationValue: 0.0)),
+                              );
+                            },
+                            child: Hero(
+                              tag: opArtType.name,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.9),
+                                      blurRadius: 5,
+                                      offset: const Offset(5, 5),
+                                    )
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: GridTile(
+                                    footer: Container(
+                                      color: Colors.white.withOpacity(0.7),
+                                      width: double.infinity,
+                                      child: Text(
+                                        opArtType.name,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontFamily: 'Righteous',
+                                          // fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
+                                    child: Image.asset(opArtType.image),
                                   ),
                                 ),
-                                child: Image.asset(opArtType.image),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ),).toList(),),
-              ),),
+                      )
+                      .toList(),
+                ),
+              ),
+            ),
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -269,7 +278,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                           const Text(
                                                                               'You have paid for this image. If you delete it you will not be able to download it again.'),
                                                                       actions: [
-                                                                        RaisedButton(
+                                                                        ElevatedButton(
                                                                           onPressed:
                                                                               () {
                                                                             final DatabaseHelper
@@ -286,7 +295,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                           child:
                                                                               const Text('Delete'),
                                                                         ),
-                                                                        RaisedButton(
+                                                                        ElevatedButton(
                                                                           onPressed:
                                                                               () {
                                                                             Navigator.pop(context);

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:opart_v2/opart_page.dart';
+import 'package:opart_v2/opart_page.dart' as opart_page;
 
 import '../model_opart.dart';
 import '../model_settings.dart';
-import '../opart_page.dart';
 import 'general_tab.dart';
 
 int slider = 100;
 Widget toolBoxTab() {
-  final List<SettingsModel> tools = opArt.attributes
-      .where((element) => element.settingCategory == SettingCategory.tool)
-      .toList();
+  final List<SettingsModel> tools = opart_page
+          .currentOpArtPageState?.opArt.attributes
+          .where((element) => element.settingCategory == SettingCategory.tool)
+          .toList() ??
+      [];
 
   return StatefulBuilder(builder: (context, setState) {
     Widget sliderWidget(int slider) {
@@ -36,7 +37,7 @@ Widget toolBoxTab() {
                       });
                     },
                     onChangeEnd: (value) {
-                      opArt.saveToCache();
+                      opart_page.currentOpArtPageState?.opArt.saveToCache();
                     },
                   )
                 : Slider(
@@ -50,7 +51,7 @@ Widget toolBoxTab() {
                       rebuildCanvas.value++;
                     },
                     onChangeEnd: (value) {
-                      opArt.saveToCache();
+                      opart_page.currentOpArtPageState?.opArt.saveToCache();
                     },
                     divisions: attribute.max - attribute.min as int,
                   ),
@@ -90,7 +91,8 @@ Widget toolBoxTab() {
                                           : Colors.cyan,
                                       width: 4)),
                               child: IconButton(
-                                  icon: tools[index].icon,
+                                  icon:
+                                      tools[index].icon ?? Icon(Icons.settings),
                                   color: index == slider
                                       ? Colors.black
                                       : Colors.cyan,
@@ -106,19 +108,17 @@ Widget toolBoxTab() {
 
                                         rebuildTab.value++;
                                       }
-                                      if (tools[index].silent != null &&
-                                          tools[index].silent) {
+                                      if (tools[index].silent == true) {
                                         if (tools[index].settingType ==
                                             SettingType.bool) {
                                           tools[index].value =
                                               !(tools[index].value as bool);
                                         }
 
-                                        if (tools[index].onChange != null) {
-                                          tools[index].onChange();
-                                        }
+                                        tools[index].onChange?.call();
 
-                                        opArt.saveToCache();
+                                        opart_page.currentOpArtPageState?.opArt
+                                            .saveToCache();
                                         rebuildCanvas.value++;
                                       } else if (tools[index].settingType ==
                                               SettingType.double ||
@@ -143,10 +143,10 @@ Widget toolBoxTab() {
                                               ? 0
                                               : currentValue + 1];
                                           rebuildCanvas.value++;
-                                          Scaffold.of(context)
-                                              .removeCurrentSnackBar();
-                                          Scaffold.of(context).showSnackBar(
-                                              SnackBar(
+                                          ScaffoldMessenger.of(context)
+                                              .hideCurrentSnackBar();
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
                                                   backgroundColor: Colors.white
                                                       .withOpacity(0.8),
                                                   duration: const Duration(
@@ -162,7 +162,9 @@ Widget toolBoxTab() {
                                                           TextAlign.center,
                                                     ),
                                                   )));
-                                          opArt.saveToCache();
+                                          opart_page
+                                              .currentOpArtPageState?.opArt
+                                              .saveToCache();
                                         }
                                       }
                                     });

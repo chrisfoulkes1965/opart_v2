@@ -6,6 +6,8 @@ import '../opart_page.dart';
 import 'palette_widget.dart';
 
 class ColorPickerWidget extends StatefulWidget {
+  final OpArt opArt;
+  const ColorPickerWidget({required this.opArt});
   @override
   _ColorPickerWidgetState createState() => _ColorPickerWidgetState();
 }
@@ -14,8 +16,8 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
   @override
   Widget build(BuildContext context) {
     Color oldColor = currentColor > 100
-        ? opArt.attributes[currentColor - 100].value as Color
-        : opArt.palette.colorList[currentColor];
+        ? widget.opArt.attributes[currentColor - 100].value as Color
+        : widget.opArt.palette.colorList[currentColor];
     if (oldColor.red == oldColor.blue && oldColor.blue == oldColor.green) {
       if (oldColor.red < 255) {
         oldColor =
@@ -56,10 +58,10 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
                                   oldColor = color;
 
                                   if (currentColor > 100) {
-                                    opArt.attributes[currentColor - 100].value =
+                                    widget.opArt.attributes[currentColor - 100].value =
                                         color;
                                   } else {
-                                    opArt.palette.colorList[currentColor] =
+                                    widget.opArt.palette.colorList[currentColor] =
                                         color;
                                   }
                                   rebuildTab.value++;
@@ -76,8 +78,8 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
                         child: IconButton(
                           icon: const Icon(Icons.close),
                           onPressed: () {
-                            showCustomColorPicker = false;
-                            opArt.saveToCache();
+                            currentOpArtPageState?.showCustomColorPicker = false;
+                            widget.opArt.saveToCache();
                             rebuildOpArtPage.value++;
                           },
                         ),

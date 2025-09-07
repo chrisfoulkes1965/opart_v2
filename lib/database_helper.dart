@@ -18,11 +18,12 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
   // Only allow a single open connection to the database.
-  static Database _database;
+  static Database? _database;
 
   Future<Database> get database async {
-    if (_database != null) return _database;
-    return _initDatabase();
+    if (_database != null) return _database!;
+    _database = await _initDatabase();
+    return _database!;
   }
 
   // open the database
@@ -65,7 +66,7 @@ class DatabaseHelper {
       return maps;
     }
 
-    return null;
+    return [];
   }
 
   Future<void> delete(int id) async {

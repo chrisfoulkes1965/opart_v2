@@ -3,7 +3,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import 'model_opart.dart';
 
-Widget customBottomAppBar({BuildContext context, OpArt opArt}) {
+Widget customBottomAppBar(
+    {required BuildContext context, required OpArt opArt, required bool enableButton}) {
   final double width = MediaQuery.of(context).size.width;
 
   return SizedBox(
@@ -15,10 +16,13 @@ Widget customBottomAppBar({BuildContext context, OpArt opArt}) {
           SizedBox(
             height: 70,
             width: (width > 400) ? 111 : 50,
-            child: FlatButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-              color: Colors.white.withOpacity(0.8),
+            child: TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.white.withOpacity(0.8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
               onPressed: () {
                 if (enableButton) {
                   opArt.randomizeSettings();
@@ -36,7 +40,7 @@ Widget customBottomAppBar({BuildContext context, OpArt opArt}) {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 textDirection: TextDirection.ltr,
                 children: <Widget>[
-                  const Icon(
+                  Icon(
                     MdiIcons.shape,
                     color: Colors.cyan,
                   ),
@@ -53,12 +57,13 @@ Widget customBottomAppBar({BuildContext context, OpArt opArt}) {
           // ignore: sized_box_for_whitespace
           Container(
             height: 70,
-            child: FlatButton(
-              splashColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
+            child: TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.white.withOpacity(0.8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
               ),
-              color: Colors.white.withOpacity(0.8),
               onPressed: () async {
                 if (enableButton) {
                   opArt.randomizeSettings();
@@ -71,7 +76,7 @@ Widget customBottomAppBar({BuildContext context, OpArt opArt}) {
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: const <Widget>[
+                children: <Widget>[
                   Icon(
                     MdiIcons.autoFix,
                     color: Colors.cyan,
@@ -89,10 +94,13 @@ Widget customBottomAppBar({BuildContext context, OpArt opArt}) {
           SizedBox(
             height: 70,
             width: (width > 400) ? 111 : 50,
-            child: FlatButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-              color: Colors.white.withOpacity(0.8),
+            child: TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.white.withOpacity(0.8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
               onPressed: () {
                 if (enableButton) {
                   opArt.randomizePalette();

@@ -12,25 +12,28 @@ import 'opart_page.dart';
 class CanvasWidget extends StatefulWidget {
   final bool fullScreen;
   final double animationValue;
-  const CanvasWidget({this.fullScreen, this.animationValue});
+  final OpArt opArt;
+  const CanvasWidget(
+      {this.fullScreen = false,
+      required this.animationValue,
+      required this.opArt});
   @override
   _CanvasWidgetState createState() => _CanvasWidgetState();
 }
 
-bool showControls = false;
-AnimationController animationController;
-Animation<double> currentAnimation;
-
 class _CanvasWidgetState extends State<CanvasWidget>
     with TickerProviderStateMixin {
   bool playing = true;
+  late AnimationController animationController;
+  late Animation<double> currentAnimation;
+  bool showControls = false;
 
   @override
   void initState() {
     _forward = true;
     timeDilation = 1;
 
-    if (opArt.animation) {
+    if (widget.opArt.animation) {
       animationController = AnimationController(
         duration: const Duration(seconds: 72000),
         vsync: this,
@@ -57,11 +60,11 @@ class _CanvasWidgetState extends State<CanvasWidget>
     super.initState();
   }
 
-  Hero hero1;
-  Hero hero2;
+  late Hero hero1;
+  late Hero hero2;
   bool _forward = true;
-  double dx;
-  double dy;
+  late double dx;
+  late double dy;
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +84,7 @@ class _CanvasWidgetState extends State<CanvasWidget>
                         height: constraints.heightConstraints().maxHeight,
                         child: CustomPaint(
                           painter: OpArtPainter(seed, rnd,
-                              opArt.animation ? currentAnimation.value : 1),
+                              widget.opArt.animation ? currentAnimation.value : 1, widget.opArt),
                         ),
                       ),
                     ),
@@ -89,13 +92,13 @@ class _CanvasWidgetState extends State<CanvasWidget>
                 ],
               );
             }),
-        if (showSettings)
+        if (widget.fullScreen)
           Align(
             alignment: Alignment.bottomCenter,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (opArt.animation)
+                if (widget.opArt.animation)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: SizedBox(
@@ -206,7 +209,7 @@ class _CanvasWidgetState extends State<CanvasWidget>
 
   @override
   void dispose() {
-    if (opArt.animation) {
+    if (widget.opArt.animation) {
       animationController.dispose();
     }
     super.dispose();
@@ -217,12 +220,14 @@ class OpArtPainter extends CustomPainter {
   int seed;
   Random rnd;
   double animationVariable;
+  OpArt opArt;
   // double fill;
 
   OpArtPainter(
     this.seed,
     this.rnd,
     this.animationVariable,
+    this.opArt,
     // this.fill
   );
 

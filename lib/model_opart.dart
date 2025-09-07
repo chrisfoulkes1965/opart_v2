@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:opart_v2/opart/opart_life.dart';
@@ -81,143 +82,115 @@ class OpArt {
   List<SettingsModel> attributes = [];
   List<Map<String, dynamic>> cache = [];
   // Random rnd = Random();
-  OpArtPalette palette;
-  String name;
+  late OpArtPalette palette;
+  late String name;
   bool animation = true;
+  AnimationController? animationController;
 
   // Initialise
-  OpArt({this.opArtType}) {
+  OpArt({required this.opArtType}) {
+    // Initialize required fields first to prevent LateInitializationError
+    palette = OpArtPalette();
+    name = 'Default';
+
     switch (opArtType) {
       case OpArtType.Diagonal:
         attributes = initializeDiagonalAttributes();
-        palette = OpArtPalette();
         name = 'Diagonal';
         animation = false;
 
-        break;
 
       case OpArtType.Eye:
         attributes = initializeEyeAttributes();
-        palette = OpArtPalette();
         name = 'Eye';
         animation = false;
-
         break;
 
       case OpArtType.Fibonacci:
         attributes = initializeFibonacciAttributes();
-        palette = OpArtPalette();
-        name = 'Spirals';
 
         break;
 
       case OpArtType.Hexagons:
         attributes = initializeHexagonsAttributes();
-        palette = OpArtPalette();
-        name = 'Hexagons';
         animation = false;
 
         break;
 
       case OpArtType.Life:
         attributes = initializeLifeAttributes();
-        palette = OpArtPalette();
         name = 'Life';
         animation = true;
 
         break;
 
       case OpArtType.Maze:
-        attributes = initializeMazeAttributes();
-        palette = OpArtPalette();
         name = 'Maze';
         animation = false;
 
         break;
 
-      case OpArtType.Neighbour:
         attributes = initializeNeighbourAttributes();
-        palette = OpArtPalette();
         name = 'Neighbours';
         animation = false;
 
         break;
-
       case OpArtType.Plasma:
         attributes = initializePlasmaAttributes();
-        palette = OpArtPalette();
         name = 'Plasma';
         animation = true;
 
-        break;
 
       case OpArtType.Quads:
         attributes = initializeQuadsAttributes();
-        palette = OpArtPalette();
         name = 'Quads';
         animation = false;
-
         break;
 
       case OpArtType.Rhombus:
         attributes = initializeRhombusAttributes();
-        palette = OpArtPalette();
         name = 'Rhombus';
-        animation = false;
 
         break;
 
       case OpArtType.Riley:
         attributes = initializeRileyAttributes();
-        palette = OpArtPalette();
-        name = 'Riley';
         animation = false;
 
         break;
 
       case OpArtType.Flow:
         attributes = initializeFlowAttributes();
-        palette = OpArtPalette();
         name = 'Flow ';
         animation = true;
 
         break;
 
       case OpArtType.Shapes:
-        attributes = initializeShapesAttributes();
-        palette = OpArtPalette();
         name = 'Shapes';
         animation = false;
 
         break;
 
-      case OpArtType.Squares:
         attributes = initializeSquaresAttributes();
-        palette = OpArtPalette();
         name = 'Squares';
         animation = false;
 
         break;
-
       case OpArtType.String:
         attributes = initializeStringAttributes();
-        palette = OpArtPalette();
         name = 'String';
         animation = false;
 
-        break;
 
       case OpArtType.Tree:
         attributes = initializeTreeAttributes();
-        palette = OpArtPalette();
         name = 'Tree';
         animation = true;
-
         break;
 
       case OpArtType.Triangles:
         attributes = initializeTrianglesAttributes();
-        palette = OpArtPalette();
         name = 'Triangles';
         animation = false;
 
@@ -225,7 +198,6 @@ class OpArt {
 
       case OpArtType.Wallpaper:
         attributes = initializeWallpaperAttributes();
-        palette = OpArtPalette();
         name = 'Wallpaper';
         animation = false;
 
@@ -233,9 +205,28 @@ class OpArt {
 
       case OpArtType.Wave:
         attributes = initializeWaveAttributes();
-        palette = OpArtPalette();
         name = 'Wave';
 
+        break;
+
+      case OpArtType.Neighbour:
+        attributes = initializeNeighbourAttributes();
+        name = 'Neighbour';
+        animation = false;
+
+        break;
+
+      case OpArtType.Squares:
+        attributes = initializeSquaresAttributes();
+        name = 'Squares';
+        animation = false;
+
+        break;
+
+      default:
+        attributes = initializeDiagonalAttributes();
+        name = 'Default';
+        animation = false;
         break;
     }
 
@@ -243,13 +234,15 @@ class OpArt {
   }
 
   Future<int> saveToLocalDB(bool paid) async {
-    await screenshotController
-        .capture(
-      delay: const Duration(milliseconds: 100),
-    )
-        .then((File image) async {
-      final List<int> imageBytes = image.readAsBytesSync();
-      final String base64Image = base64Encode(imageBytes);
+    try {
+      final Uint8List? imageBytes = await screenshotController
+          .capture(
+        delay: const Duration(milliseconds: 200),
+      );
+
+    if (imageBytes == null) return 0;
+
+    final String base64Image = base64Encode(imageBytes);
       Map<String, dynamic> map = {};
       for (int i = 0; i < attributes.length; i++) {
         map.addAll({attributes[i].label: attributes[i].value});
@@ -261,7 +254,7 @@ class OpArt {
         'paletteName': palette.paletteName,
         'type': opArtType,
         'paid': paid,
-        'animationControllerValue': animation ? animationController.value : 1.0,
+        'animationControllerValue': animation && animationController != null ? animationController!.value : 1.0,
       });
 
       Map<String, dynamic> sqlMap = {};
@@ -280,7 +273,7 @@ class OpArt {
         'paletteName': palette.paletteName,
         'type': opArtType.toString(),
         'paid': paid,
-        'animationControllerValue': animation ? animationController.value : 1.0
+        'animationControllerValue': animation && animationController != null ? animationController!.value : 1.0
       });
 
       DatabaseHelper helper = DatabaseHelper.instance;
@@ -290,45 +283,58 @@ class OpArt {
         rebuildMain.value++;
         rebuildGallery.value++;
       });
-    });
     return savedOpArt.length;
+    } catch (e) {
+      print('Error saving to local DB: $e');
+      return 0;
+    }
   }
 
   void saveToCache() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => screenshotController
-            .capture(delay: const Duration(milliseconds: 100), pixelRatio: 0.2)
-            .then((File image) async {
-          Map<String, dynamic> map = {};
-          for (int i = 0; i < attributes.length; i++) {
-            map.addAll({attributes[i].label: attributes[i].value});
-          }
-          map.addAll({
-            'seed': seed,
-            'image': image,
-            'paletteName': palette.paletteName,
-            'colors': palette.colorList,
-            'numberOfColors': numberOfColors.value,
-            'animationControllerValue':
-                animation ? animationController.value : 1.0
-          });
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        final Uint8List? imageBytes = await screenshotController
+            .capture(delay: const Duration(milliseconds: 200), pixelRatio: 0.2);
 
-          cache.add(map);
+      if (imageBytes != null) {
+        Map<String, dynamic> map = {};
+        for (int i = 0; i < attributes.length; i++) {
+          map.addAll({attributes[i].label: attributes[i].value});
+        }
+        map.addAll({
+          'seed': seed,
+          'image': imageBytes,
+          'paletteName': palette.paletteName,
+          'colors': palette.colorList,
+          'numberOfColors': numberOfColors.value,
+          'animationControllerValue':
+              animation && animationController != null ? animationController!.value : 1.0
+        });
 
-          rebuildCache.value++;
-          if (scrollController.hasClients) {
-            await scrollController.animateTo(
-                scrollController.position.maxScrollExtent,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.fastOutSlowIn);
-          }
-          enableButton = true;
-        }));
+        cache.add(map);
+
+        rebuildCache.value++;
+        if (scrollController.hasClients) {
+          await scrollController.animateTo(
+              scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.fastOutSlowIn);
+        }
+        enableButton = true;
+      } else {
+        enableButton = true;
+      }
+    } catch (e) {
+      print('Error saving to cache: $e');
+      enableButton = true;
+    }
+    });
   }
 
   void revertToCache(int index) {
     seed = cache[index]['seed'] as int;
-    if (animation) {
-      animationController.forward(
+    if (animation && animationController != null) {
+      animationController!.forward(
           from: cache[index]['animationControllerValue'] as double);
     }
     for (int i = 0; i < attributes.length; i++) {
