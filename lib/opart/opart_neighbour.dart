@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../main.dart';
-import '../model_opart.dart';
-import '../model_palette.dart';
-import '../model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
 
 List<String> list = [];
 
@@ -211,7 +211,7 @@ Future<void> drawNeighbours(
   }
 
   // process each point
-  points.forEach((point) {
+  for (final point in points) {
     final List sortedPoints = points;
     sortedPoints.sort((point1, point2) =>
         ((pow((point1[0] as double) - (point[0] as double), 2) +
@@ -244,5 +244,5 @@ Future<void> drawNeighbours(
             // ..strokeWidth = 1
             ..strokeCap = StrokeCap.round);
     }
-  });
+  }
 }

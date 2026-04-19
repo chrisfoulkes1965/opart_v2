@@ -3,17 +3,16 @@ import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-import 'database_helper.dart';
-import 'main.dart';
-import 'model_opart.dart';
-import 'opart_page.dart';
+import 'package:opart_v2/database_helper.dart';
+import 'package:opart_v2/home_page.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/opart_page.dart';
 
 CarouselSliderController buttonCarouselController = CarouselSliderController();
 
 class MyGallery extends StatefulWidget {
   final int currentImage;
-  final bool paid;
-  const MyGallery(this.currentImage, this.paid);
+  const MyGallery(this.currentImage);
   @override
   _MyGalleryState createState() => _MyGalleryState();
 }
@@ -28,20 +27,6 @@ class _MyGalleryState extends State<MyGallery> {
   bool showDelete = false;
   @override
   Widget build(BuildContext context) {
-    if (widget.paid) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        buttonCarouselController.nextPage(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-        rebuildGallery.value++;
-        buttonCarouselController.nextPage(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      });
-    }
-
     return ValueListenableBuilder<int>(
         valueListenable: rebuildGallery,
         builder: (context, value, child) {
@@ -117,7 +102,6 @@ class _MyGalleryState extends State<MyGallery> {
                                               builder: (context) => OpArtPage(
                                                     savedOpArt[index]['type']
                                                         as OpArtType,
-                                                    downloadNow: false,
                                                     opArtSettings:
                                                         savedOpArt[index],
                                                     animationValue: savedOpArt[
@@ -131,12 +115,12 @@ class _MyGalleryState extends State<MyGallery> {
                                         Column(
                                           children: [
                                             Expanded(
-                                              child: Container(
+                                              child: ColoredBox(
                                                 color: Colors.black,
                                                 child: Padding(
                                                   padding: const EdgeInsets.all(
                                                       10.0),
-                                                  child: Container(
+                                                  child: ColoredBox(
                                                     color: Colors.white,
                                                     child: Padding(
                                                       padding:
@@ -154,38 +138,7 @@ class _MyGalleryState extends State<MyGallery> {
                                                 ),
                                               ),
                                             ),
-                                            if (savedOpArt[index]['paid'] ==
-                                                null)
-                                              Container(height: 12)
-                                            else
-                                              savedOpArt[index]['paid'] as bool
-                                                  ? Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        const Text('purchased'),
-                                                        IconButton(
-                                                            icon: const Icon(Icons
-                                                                .file_download),
-                                                            onPressed: () {
-                                                              Navigator.pushReplacement(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                      builder: (context) => OpArtPage(
-                                                                            savedOpArt[index]['type']
-                                                                                as OpArtType,
-                                                                            downloadNow:
-                                                                                true,
-                                                                            opArtSettings:
-                                                                                savedOpArt[index],
-                                                                            animationValue:
-                                                                                0.0,
-                                                                          )));
-                                                            })
-                                                      ],
-                                                    )
-                                                  : Container(height: 12)
+                                            const SizedBox(height: 12),
                                           ],
                                         ),
                                         ValueListenableBuilder<int>(
@@ -208,58 +161,22 @@ class _MyGalleryState extends State<MyGallery> {
                                                           child:
                                                               FloatingActionButton(
                                                             onPressed: () {
-                                                              if (savedOpArt[
-                                                                          index]
-                                                                      ['paid']
-                                                                  as bool) {
-                                                                showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder:
-                                                                        (context) {
-                                                                      return AlertDialog(
-                                                                          title: const Text(
-                                                                              ' Are you sure you want to delete?'),
-                                                                          content:
-                                                                              const Text('You have paid for this image. If you delete it you will not be able to download it again.'),
-                                                                          actions: [
-                                                                            ElevatedButton(
-                                                                              onPressed: () {
-                                                                                final DatabaseHelper helper = DatabaseHelper.instance;
-                                                                                helper.delete(savedOpArt[index]['id'] as int);
-                                                                                savedOpArt.removeAt(index);
-                                                                                showDelete = false;
-                                                                                rebuildGallery.value++;
-                                                                                Navigator.pop(context);
-                                                                              },
-                                                                              child: const Text('Delete'),
-                                                                            ),
-                                                                            ElevatedButton(
-                                                                              onPressed: () {
-                                                                                Navigator.pop(context);
-                                                                              },
-                                                                              child: const Text('Cancel'),
-                                                                            )
-                                                                          ]);
-                                                                    });
-                                                              } else {
-                                                                final DatabaseHelper
-                                                                    helper =
-                                                                    DatabaseHelper
-                                                                        .instance;
-                                                                helper.delete(
-                                                                    savedOpArt[index]
-                                                                            [
-                                                                            'id']
-                                                                        as int);
-                                                                savedOpArt
-                                                                    .removeAt(
-                                                                        index);
-                                                                showDelete =
-                                                                    false;
-                                                                rebuildGallery
-                                                                    .value++;
-                                                              }
+                                                              final DatabaseHelper
+                                                                  helper =
+                                                                  DatabaseHelper
+                                                                      .instance;
+                                                              helper.delete(
+                                                                savedOpArt[index]
+                                                                        ['id']
+                                                                    as int,
+                                                              );
+                                                              savedOpArt
+                                                                  .removeAt(
+                                                                      index);
+                                                              showDelete =
+                                                                  false;
+                                                              rebuildGallery
+                                                                  .value++;
                                                             },
                                                             backgroundColor:
                                                                 Colors.white,
@@ -320,7 +237,6 @@ class _MyGalleryState extends State<MyGallery> {
                                               builder: (context) => OpArtPage(
                                                     savedOpArt[index]['type']
                                                         as OpArtType,
-                                                    downloadNow: false,
                                                     opArtSettings:
                                                         savedOpArt[index],
                                                     animationValue: 0.0,
@@ -334,12 +250,12 @@ class _MyGalleryState extends State<MyGallery> {
                                           ),
                                           child: Padding(
                                             padding: const EdgeInsets.all(10.0),
-                                            child: Container(
+                                            child: ColoredBox(
                                               color: Colors.black,
                                               child: Padding(
                                                 padding:
                                                     const EdgeInsets.all(8.0),
-                                                child: Container(
+                                                child: ColoredBox(
                                                   color: Colors.white,
                                                   child: Padding(
                                                     padding:

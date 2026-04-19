@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../main.dart';
-import '../model_opart.dart';
-import '../model_palette.dart';
-import '../model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
 
 List<String> list = [];
 
@@ -223,7 +223,7 @@ List<SettingsModel> initializeDiagonalAttributes() {
 void paintDiagonal(
     Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
   canvas.drawRect(
-      Offset(0, 0) & Size(size.width, size.height),
+      const Offset(0, 0) & Size(size.width, size.height),
       Paint()
         ..color = Colors.black.withOpacity(1.0)
         ..style = PaintingStyle.fill);
@@ -238,13 +238,13 @@ void paintDiagonal(
   // Initialise the canvas
   double canvasWidth = size.width;
   double canvasHeight = size.height;
-  print('canvasWidth: ' + canvasWidth.toString());
-  print('canvasHeight: ' + canvasHeight.toString());
+  print('canvasWidth: $canvasWidth');
+  print('canvasHeight: $canvasHeight');
 
   //double sideLength = zoomOpArt.value as double;
   // print("sideLength: "+sideLength.toString());
 
-  print('aspectRatio: ' + aspectRatio.value.toString());
+  print('aspectRatio: ${aspectRatio.value}');
 
   switch (aspectRatio.value.toString()) {
     case '1:1':
@@ -253,7 +253,6 @@ void paintDiagonal(
       } else {
         canvasHeight = canvasWidth;
       }
-      break;
 
     case '4:3':
       if (canvasWidth / canvasHeight > 4 / 3) {
@@ -265,28 +264,27 @@ void paintDiagonal(
       } else {
         canvasWidth = canvasHeight * 3 / 4;
       }
-      break;
   }
 
-  double marginX = (size.width - canvasWidth) / 2;
-  double marginY = (size.height - canvasHeight) / 2;
-  print('marginX: ' + marginX.toString());
-  print('marginY: ' + marginY.toString());
+  final double marginX = (size.width - canvasWidth) / 2;
+  final double marginY = (size.height - canvasHeight) / 2;
+  print('marginX: $marginX');
+  print('marginY: $marginY');
 
-  double minHeightWidth =
+  final double minHeightWidth =
       (canvasWidth < canvasHeight) ? canvasWidth : canvasHeight;
-  print('minHeightWidth: ' + minHeightWidth.toString());
+  print('minHeightWidth: $minHeightWidth');
 
   int numberOfGroups = groups.value as int;
-  print("numberOfGroups: " + numberOfGroups.toString());
+  print("numberOfGroups: $numberOfGroups");
 
   double borderWidth = border.value as double;
   if (borderWidth > minHeightWidth / 2) {
     borderWidth = minHeightWidth / 2;
     numberOfGroups = 0;
   }
-  print('borderWidth: ' + borderWidth.toString());
-  print("numberOfGroups: " + numberOfGroups.toString());
+  print('borderWidth: $borderWidth');
+  print("numberOfGroups: $numberOfGroups");
 
   // Work out the X and Y
   int cellsX;
@@ -309,11 +307,11 @@ void paintDiagonal(
     borderX = (canvasWidth - borderWidth * 2 - sideLength * cellsX) / 2;
   }
 
-  print("sideLength: " + sideLength.toString());
-  print("cellsX: " + cellsX.toString());
-  print("cellsY: " + cellsY.toString());
-  print("borderX: " + borderX.toString());
-  print("borderY: " + borderY.toString());
+  print("sideLength: $sideLength");
+  print("cellsX: $cellsX");
+  print("cellsY: $cellsY");
+  print("borderX: $borderX");
+  print("borderY: $borderY");
 
   // Now make some art
   drawDiagonal(
@@ -400,34 +398,30 @@ void drawDiagonal(
           centre1 = p0;
           centre2 = p2;
           startAngle = pi * 0;
-          break;
 
         case 1:
           centre1 = p1;
           centre2 = p3;
           startAngle = pi * 0.5;
           parity = !parity;
-          break;
 
         case 2:
           centre1 = p2;
           centre2 = p0;
           startAngle = pi * 1.0;
-          break;
 
         case 3:
           centre1 = p3;
           centre2 = p1;
           startAngle = pi * 1.5;
           parity = !parity;
-          break;
       }
 
       if (resetColors.value == true) {
         colourOrder = 0;
       }
 
-      for (int k = pipes.toInt(); k > 0; k--) {
+      for (int k = pipes; k > 0; k--) {
         // Choose the next colour
         nextColorOrder = parity ? pipes - colourOrder - 1 : colourOrder;
         colourOrder++;
@@ -451,28 +445,24 @@ void drawDiagonal(
             drawQuarterArc(canvas, centre1, radius1, startAngle, nextColor);
             drawQuarterArc(canvas, centre1, radius2, startAngle,
                 backgroundColor.withOpacity(1.0));
-            break;
 
           case 'triangle':
             drawTriangle(
                 canvas, centre1, radius1, startAngle, nextColor, pointiness);
             drawTriangle(canvas, centre1, radius2, startAngle,
                 backgroundColor.withOpacity(1.0), pointiness);
-            break;
 
           case 'line':
             drawTriangle(
                 canvas, centre1, radius1, startAngle, nextColor, 1 / sqrt(2));
             drawTriangle(canvas, centre1, radius2, startAngle,
                 backgroundColor.withOpacity(1.0), 1 / sqrt(2));
-            break;
 
           case 'square':
             drawSquare(
                 canvas, centre1, radius1, startAngle, nextColor, pointiness);
             drawSquare(canvas, centre1, radius2, startAngle,
                 backgroundColor.withOpacity(1.0), pointiness);
-            break;
         }
 
         // fill in the left border
@@ -521,7 +511,7 @@ void drawDiagonal(
         if (j == 0) {
           if (centre1 == p0) {
             canvas.drawRect(
-                Offset(centre1[0] + radius2 as double, (marginY) as double) &
+                Offset(centre1[0] + radius2 as double, marginY) &
                     Size(width, borderY),
                 Paint()
                   ..color = nextColor
@@ -531,7 +521,7 @@ void drawDiagonal(
           if (centre1 == p1) {
             canvas.drawRect(
                 Offset(centre1[0] - radius2 - width as double,
-                        (marginY) as double) &
+                        marginY) &
                     Size(width, borderY),
                 Paint()
                   ..color = nextColor
@@ -586,7 +576,7 @@ void drawDiagonal(
             offset;
         radius2 = sideLength / pipes * (k - 0.5 - (ratio.value as double) / 2) +
             offset;
-        double width = sideLength / pipes * (ratio.value as double);
+        final double width = sideLength / pipes * (ratio.value as double);
 
         switch (shape) {
           case 'circle':
@@ -594,28 +584,24 @@ void drawDiagonal(
                 canvas, centre2, radius1, startAngle + pi, nextColor);
             drawQuarterArc(canvas, centre2, radius2, startAngle + pi,
                 backgroundColor.withOpacity(1.0));
-            break;
 
           case 'triangle':
             drawTriangle(canvas, centre2, radius1, startAngle + pi, nextColor,
                 pointiness);
             drawTriangle(canvas, centre2, radius2, startAngle + pi,
                 backgroundColor.withOpacity(1.0), pointiness);
-            break;
 
           case 'line':
             drawTriangle(canvas, centre2, radius1, startAngle + pi, nextColor,
                 1 / sqrt(2));
             drawTriangle(canvas, centre2, radius2, startAngle + pi,
                 backgroundColor.withOpacity(1.0), 1 / sqrt(2));
-            break;
 
           case 'square':
             drawSquare(canvas, centre2, radius1, startAngle + pi, nextColor,
                 pointiness);
             drawSquare(canvas, centre2, radius2, startAngle + pi,
                 backgroundColor.withOpacity(1.0), pointiness);
-            break;
         }
 
         // fill in the left border
@@ -664,7 +650,7 @@ void drawDiagonal(
         if (j == 0) {
           if (centre2 == p0) {
             canvas.drawRect(
-                Offset(centre2[0] + radius2 as double, (marginY) as double) &
+                Offset(centre2[0] + radius2 as double, marginY) &
                     Size(width, borderY),
                 Paint()
                   ..color = nextColor
@@ -674,7 +660,7 @@ void drawDiagonal(
           if (centre2 == p1) {
             canvas.drawRect(
                 Offset(centre2[0] - radius2 - width as double,
-                        (marginY) as double) &
+                        marginY) &
                     Size(width, borderY),
                 Paint()
                   ..color = nextColor
@@ -729,7 +715,7 @@ void drawQuarterArc(Canvas canvas, List centre, double radius2,
 
 void drawTriangle(Canvas canvas, List centre, double radius2, double startAngle,
     Color color, double pointiness) {
-  var path = Path();
+  final path = Path();
   path.moveTo(centre[0] as double, centre[1] as double);
   path.lineTo(centre[0] + radius2 * cos(startAngle) as double,
       centre[1] + radius2 * sin(startAngle) as double);
@@ -750,7 +736,7 @@ void drawTriangle(Canvas canvas, List centre, double radius2, double startAngle,
 
 void drawSquare(Canvas canvas, List centre, double radius2, double startAngle,
     Color color, double pointiness) {
-  var path = Path();
+  final path = Path();
   path.moveTo(centre[0] as double, centre[1] as double);
   path.lineTo(centre[0] + radius2 * cos(startAngle) as double,
       centre[1] + radius2 * sin(startAngle) as double);

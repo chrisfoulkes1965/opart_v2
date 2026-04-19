@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../main.dart';
-import '../model_opart.dart';
-import '../model_palette.dart';
-import '../model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
 
 List<String> list = [];
 
@@ -227,7 +227,6 @@ void paintHexagons(
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = lineWidth.value as double);
 
-          break;
 
         case 'three':
 
@@ -246,7 +245,7 @@ void paintHexagons(
             // darken this one
             final hsl = HSLColor.fromColor(nextColor);
             nextColor = hsl
-                .withLightness((hsl.lightness - 0.2).clamp(0.0, 1.0) as double)
+                .withLightness((hsl.lightness - 0.2).clamp(0.0, 1.0))
                 .toColor();
           }
 
@@ -288,7 +287,7 @@ void paintHexagons(
             // lighten this one
             final hsl = HSLColor.fromColor(nextColor);
             nextColor = hsl
-                .withLightness((hsl.lightness + 0.2).clamp(0.0, 1.0) as double)
+                .withLightness((hsl.lightness + 0.2).clamp(0.0, 1.0))
                 .toColor();
           }
 
@@ -368,7 +367,6 @@ void paintHexagons(
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = lineWidth.value as double);
 
-          break;
 
         case 'six':
 
@@ -564,7 +562,6 @@ void paintHexagons(
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = lineWidth.value as double);
 
-          break;
       }
     }
   }

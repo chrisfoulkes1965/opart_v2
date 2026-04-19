@@ -40,9 +40,7 @@ class _SettingsIntSliderState extends State<SettingsIntSlider> {
               ),
               Checkbox(
                 value: widget.locked,
-                onChanged: widget.toggleLock != null
-                    ? (bool? value) => widget.toggleLock!(value ?? false)
-                    : null,
+                onChanged: (bool? value) => widget.toggleLock!(value ?? false),
               ),
             ],
           ),
@@ -59,7 +57,7 @@ class _SettingsIntSliderState extends State<SettingsIntSlider> {
             onChanged:
                 widget.locked ? null : widget.onChanged as Function(double),
             divisions: widget.max - widget.min,
-            label: widget.currentValue.round().toString(),
+            label: widget.currentValue.toString(),
           ),
         ),
       ],

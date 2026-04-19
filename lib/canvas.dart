@@ -5,9 +5,9 @@ import 'package:flutter/scheduler.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:screenshot/screenshot.dart';
 
-import 'main.dart';
-import 'model_opart.dart';
-import 'opart_page.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/opart_page.dart';
 
 class CanvasWidget extends StatefulWidget {
   final bool fullScreen;
@@ -134,13 +134,11 @@ class _CanvasWidgetState extends State<CanvasWidget>
                             Container(),
                           if (showControls)
                             _controlButton(Icons.pause, () {
-                              if (animationController != null) {
-                                setState(() {
-                                  animationController.stop();
-                                  playing = false;
-                                });
-                              }
-                            }, playing)
+                              setState(() {
+                                animationController.stop();
+                                playing = false;
+                              });
+                                                        }, playing)
                           else
                             Container(),
                           if (showControls)

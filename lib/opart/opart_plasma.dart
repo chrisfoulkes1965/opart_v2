@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../main.dart';
-import '../model_opart.dart';
-import '../model_palette.dart';
-import '../model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
 
 List shades = [];
 List cells = [];
@@ -145,7 +145,6 @@ void paintPlasma(
   }
 
   if (reDraw.value == true ||
-      shades == null ||
       colorList != opArt.palette.colorList ||
       shades.length !=
           (opArt.palette.colorList.length) * (colorDepth.value as num)) {

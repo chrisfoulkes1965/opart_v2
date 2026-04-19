@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
-import '../model_opart.dart';
-import '../opart_page.dart';
-import 'palette_widget.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/opart_page.dart';
+import 'package:opart_v2/tabs/palette_widget.dart';
 
 class ColorPickerWidget extends StatefulWidget {
   final OpArt opArt;

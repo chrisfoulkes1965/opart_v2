@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:opart_v2/tabs/tools_widget.dart';
 
-import '../model_opart.dart';
-import '../opart_page.dart' as opart_page;
-import 'choose_pallette_widget.dart';
-import 'palette_widget.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/opart_page.dart' as opart_page;
+import 'package:opart_v2/tabs/choose_pallette_widget.dart';
+import 'package:opart_v2/tabs/palette_widget.dart';
 
 abstract class GeneralTab {
   bool open = false;
@@ -59,6 +59,18 @@ abstract class GeneralTab {
 late ToolsTab toolsTab;
 late PaletteTab paletteTab;
 late ChoosePaletteTab choosePaletteTab;
+
+/// [GeneralTab] methods use these top-level references. [OpArtPage] keeps its own
+/// fields with the same names, so we must sync after creating tab instances.
+void syncOpArtTabSingletons(
+  ToolsTab tools,
+  PaletteTab palette,
+  ChoosePaletteTab choose,
+) {
+  toolsTab = tools;
+  paletteTab = palette;
+  choosePaletteTab = choose;
+}
 
 class ToolsTab implements GeneralTab {
   @override

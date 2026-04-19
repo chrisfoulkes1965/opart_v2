@@ -4,10 +4,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:opart_v2/opart_icons.dart';
 
-import '../main.dart';
-import '../model_opart.dart';
-import '../model_palette.dart';
-import '../model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
 
 List<String> list = [];
 
@@ -503,7 +503,6 @@ void drawPetal(
               ..strokeWidth = currentLineWidth
               ..color = currentLineColor);
       }
-      break;
 
     case 'triangle': //'triangle':
 
@@ -573,7 +572,6 @@ void drawPetal(
               ..strokeWidth = currentLineWidth
               ..color = currentLineColor);
       }
-      break;
 
     case 'square': // 'square':
 
@@ -679,7 +677,6 @@ void drawPetal(
               ..strokeWidth = currentLineWidth
               ..color = currentLineColor);
       }
-      break;
 
     // case 'petal': //'petal':
     //

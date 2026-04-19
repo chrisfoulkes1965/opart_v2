@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../main.dart';
-import '../model_opart.dart';
-import '../model_palette.dart';
-import '../model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
 
 List<String> list = [];
 
@@ -209,84 +209,68 @@ void paintRiley(
         case 'linear':
           // Linear progression
           h0 = i / (cellsX - 1);
-          break;
 
         case 'cycle:0-1':
           // Sin progression
           h0 = sin(pi * i / (cellsX - 1));
-          break;
 
         case 'cycle:0.5-0.5':
           // cos progression
           h0 = 0.5 + 0.5 * cos(pi * 2 * i / (cellsX - 1));
-          break;
 
         case 'fixed':
           h0 = 0.5;
-          break;
       }
 
       switch (gradientTypeX1.value as String) {
         case 'linear':
           // Linear progression
           hN = i / (cellsX - 1);
-          break;
 
         case 'cycle:0-1':
           // Sin progression
           hN = sin(pi * i / (cellsX - 1));
-          break;
 
         case 'cycle:0.5-0.5':
           // cos progression
           hN = 0.5 + 0.5 * cos(pi * 2 * i / (cellsX - 1));
-          break;
 
         case 'fixed':
           hN = 0.5;
-          break;
       }
 
       switch (gradientTypeY0.value as String) {
         case 'linear':
           // Linear progression
           v0 = j / (cellsY - 1);
-          break;
 
         case 'cycle:0-1':
           // Sin progression
           v0 = sin(pi * j / (cellsY - 1));
-          break;
 
         case 'cycle:0.5-0.5':
           // Cos progression
           v0 = 0.5 + 0.5 * cos(pi * 2 * j / (cellsY - 1));
-          break;
 
         case 'fixed':
           v0 = 0.5;
-          break;
       }
 
       switch (gradientTypeY1.value as String) {
         case 'linear':
           // Linear progression
           vN = j / (cellsY - 1);
-          break;
 
         case 'cycle:0-1':
           // Sin progression
           vN = sin(pi * j / (cellsY - 1));
-          break;
 
         case 'cycle:0.5-0.5':
           // Cos progression
           vN = 0.5 + 0.5 * cos(pi * 2 * j / (cellsY - 1));
-          break;
 
         case 'fixed':
           vN = 0.5;
-          break;
       }
 
       // If the line is vertical then it is a special case...

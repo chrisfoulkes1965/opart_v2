@@ -9,28 +9,28 @@ import 'package:opart_v2/opart/opart_life.dart';
 import 'package:opart_v2/opart/opart_triangles.dart';
 import 'package:screenshot/screenshot.dart';
 
-import 'canvas.dart';
-import 'database_helper.dart';
-import 'main.dart';
-import 'model_palette.dart';
-import 'model_settings.dart';
-import 'opart/opart_diagonal.dart';
-import 'opart/opart_eye.dart';
-import 'opart/opart_fibonacci.dart';
-import 'opart/opart_flow.dart';
-import 'opart/opart_hexagons.dart';
-import 'opart/opart_maze.dart';
-import 'opart/opart_neighbour.dart';
-import 'opart/opart_plasma.dart';
-import 'opart/opart_quads.dart';
-import 'opart/opart_rhombus.dart';
-import 'opart/opart_riley.dart';
-import 'opart/opart_shapes.dart';
-import 'opart/opart_squares.dart';
-import 'opart/opart_string.dart';
-import 'opart/opart_tree.dart';
-import 'opart/opart_wallpaper.dart';
-import 'opart/opart_wave.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/canvas.dart';
+import 'package:opart_v2/database_helper.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
+import 'package:opart_v2/opart/opart_diagonal.dart';
+import 'package:opart_v2/opart/opart_eye.dart';
+import 'package:opart_v2/opart/opart_fibonacci.dart';
+import 'package:opart_v2/opart/opart_flow.dart';
+import 'package:opart_v2/opart/opart_hexagons.dart';
+import 'package:opart_v2/opart/opart_maze.dart';
+import 'package:opart_v2/opart/opart_neighbour.dart';
+import 'package:opart_v2/opart/opart_plasma.dart';
+import 'package:opart_v2/opart/opart_quads.dart';
+import 'package:opart_v2/opart/opart_rhombus.dart';
+import 'package:opart_v2/opart/opart_riley.dart';
+import 'package:opart_v2/opart/opart_shapes.dart';
+import 'package:opart_v2/opart/opart_squares.dart';
+import 'package:opart_v2/opart/opart_string.dart';
+import 'package:opart_v2/opart/opart_tree.dart';
+import 'package:opart_v2/opart/opart_wallpaper.dart';
+import 'package:opart_v2/opart/opart_wave.dart';
 
 List<Map<String, dynamic>> savedOpArt = [];
 ScreenshotController screenshotController = ScreenshotController();
@@ -98,142 +98,81 @@ class OpArt {
         attributes = initializeDiagonalAttributes();
         name = 'Diagonal';
         animation = false;
-
-
       case OpArtType.Eye:
         attributes = initializeEyeAttributes();
         name = 'Eye';
         animation = false;
-        break;
-
       case OpArtType.Fibonacci:
         attributes = initializeFibonacciAttributes();
-
-        break;
-
+        name = 'Spirals';
       case OpArtType.Hexagons:
         attributes = initializeHexagonsAttributes();
+        name = 'Hexagons';
         animation = false;
-
-        break;
-
       case OpArtType.Life:
         attributes = initializeLifeAttributes();
         name = 'Life';
         animation = true;
-
-        break;
-
       case OpArtType.Maze:
+        attributes = initializeMazeAttributes();
         name = 'Maze';
         animation = false;
-
-        break;
-
-        attributes = initializeNeighbourAttributes();
-        name = 'Neighbours';
-        animation = false;
-
-        break;
       case OpArtType.Plasma:
         attributes = initializePlasmaAttributes();
         name = 'Plasma';
         animation = true;
-
-
       case OpArtType.Quads:
         attributes = initializeQuadsAttributes();
         name = 'Quads';
         animation = false;
-        break;
-
       case OpArtType.Rhombus:
         attributes = initializeRhombusAttributes();
         name = 'Rhombus';
-
-        break;
-
       case OpArtType.Riley:
         attributes = initializeRileyAttributes();
+        name = 'Riley';
         animation = false;
-
-        break;
-
       case OpArtType.Flow:
         attributes = initializeFlowAttributes();
-        name = 'Flow ';
+        name = 'Flow';
         animation = true;
-
-        break;
-
       case OpArtType.Shapes:
+        attributes = initializeShapesAttributes();
         name = 'Shapes';
         animation = false;
-
-        break;
-
-        attributes = initializeSquaresAttributes();
-        name = 'Squares';
-        animation = false;
-
-        break;
       case OpArtType.String:
         attributes = initializeStringAttributes();
         name = 'String';
         animation = false;
-
-
       case OpArtType.Tree:
         attributes = initializeTreeAttributes();
         name = 'Tree';
         animation = true;
-        break;
-
       case OpArtType.Triangles:
         attributes = initializeTrianglesAttributes();
         name = 'Triangles';
         animation = false;
-
-        break;
-
       case OpArtType.Wallpaper:
         attributes = initializeWallpaperAttributes();
         name = 'Wallpaper';
         animation = false;
-
-        break;
-
       case OpArtType.Wave:
         attributes = initializeWaveAttributes();
         name = 'Wave';
-
-        break;
-
       case OpArtType.Neighbour:
         attributes = initializeNeighbourAttributes();
         name = 'Neighbour';
         animation = false;
-
-        break;
-
       case OpArtType.Squares:
         attributes = initializeSquaresAttributes();
         name = 'Squares';
         animation = false;
-
-        break;
-
-      default:
-        attributes = initializeDiagonalAttributes();
-        name = 'Default';
-        animation = false;
-        break;
     }
 
     setDefault();
   }
 
-  Future<int> saveToLocalDB(bool paid) async {
+  Future<int> saveToLocalDB() async {
     try {
       final Uint8List? imageBytes = await screenshotController
           .capture(
@@ -243,7 +182,7 @@ class OpArt {
     if (imageBytes == null) return 0;
 
     final String base64Image = base64Encode(imageBytes);
-      Map<String, dynamic> map = {};
+      final Map<String, dynamic> map = {};
       for (int i = 0; i < attributes.length; i++) {
         map.addAll({attributes[i].label: attributes[i].value});
       }
@@ -253,11 +192,11 @@ class OpArt {
         'image': base64Image,
         'paletteName': palette.paletteName,
         'type': opArtType,
-        'paid': paid,
+        'paid': false,
         'animationControllerValue': animation && animationController != null ? animationController!.value : 1.0,
       });
 
-      Map<String, dynamic> sqlMap = {};
+      final Map<String, dynamic> sqlMap = {};
 
       for (int i = 0; i < attributes.length; i++) {
         if (attributes[i].settingType == SettingType.color) {
@@ -272,11 +211,11 @@ class OpArt {
         'image': base64Image,
         'paletteName': palette.paletteName,
         'type': opArtType.toString(),
-        'paid': paid,
+        'paid': false,
         'animationControllerValue': animation && animationController != null ? animationController!.value : 1.0
       });
 
-      DatabaseHelper helper = DatabaseHelper.instance;
+      final DatabaseHelper helper = DatabaseHelper.instance;
       await helper.insert(sqlMap).then((id) {
         map.addAll({'id': id});
         savedOpArt.add(map);
@@ -297,7 +236,7 @@ class OpArt {
             .capture(delay: const Duration(milliseconds: 200), pixelRatio: 0.2);
 
       if (imageBytes != null) {
-        Map<String, dynamic> map = {};
+        final Map<String, dynamic> map = {};
         for (int i = 0; i < attributes.length; i++) {
           map.addAll({attributes[i].label: attributes[i].value});
         }
@@ -360,61 +299,42 @@ class OpArt {
     switch (opArtType) {
       case OpArtType.Diagonal:
         paintDiagonal(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Eye:
         paintEye(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Fibonacci:
         paintFibonacci(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Flow:
         paintFlow(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Hexagons:
         paintHexagons(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Life:
         paintLife(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Maze:
         paintMaze(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Neighbour:
         paintNeighbour(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Plasma:
         paintPlasma(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Quads:
         paintQuads(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Rhombus:
         paintRhombus(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Riley:
         paintRiley(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Shapes:
         paintShapes(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Squares:
         paintSquares(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.String:
         paintString(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Tree:
         paintTree(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Triangles:
         paintTriangles(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Wallpaper:
         paintWallpaper(canvas, size, seed, animationVariable, this);
-        break;
       case OpArtType.Wave:
         paintWave(canvas, size, seed, animationVariable, this);
-        break;
     }
   }
 
@@ -440,13 +360,13 @@ class OpArt {
     }
     attributes.firstWhere((element) => element.name == 'numberOfColors').value =
         newPalette[1].toInt();
-    backgroundColor?.value = Color(int.parse(newPalette[2] as String));
+    backgroundColor.value = Color(int.parse(newPalette[2] as String));
   }
 
   // randomise the palette
   void randomizePalette() {
     seed = DateTime.now().millisecond;
-    Random rnd = Random(seed);
+    final Random rnd = Random(seed);
 
     for (int i = 0; i < attributes.length; i++) {
       if (attributes[i].settingCategory == SettingCategory.palette) {
@@ -473,10 +393,10 @@ class OpArt {
       attributes[i].setDefault();
     }
 
-    List newPalette =
+    final List newPalette =
         defaultPalettes.firstWhere((palette) => palette[0] == 'Default');
 
-    backgroundColor?.value = Color(int.parse(newPalette[2] as String));
+    backgroundColor.value = Color(int.parse(newPalette[2] as String));
     palette.colorList = [];
     for (int z = 0; z < (newPalette[3].length as num); z++) {
       palette.colorList.add(Color(int.parse(newPalette[3][z] as String)));

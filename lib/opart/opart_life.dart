@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../main.dart';
-import '../model_opart.dart';
-import '../model_palette.dart';
-import '../model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
 
 // List<String> list = [];
 
@@ -145,125 +145,80 @@ void paintLife(
 
   // if first time through, initialise the squares
   // print(squaresI.length);
-  if (squaresI == null) {
-    // initialise the game
-    squaresI = [];
+  final List oldSquaresI = squaresI;
+  squaresI = [];
 
-    // Now make some art
-    for (int i = 0; i < cellsX; ++i) {
-      final List squaresJ = [];
+  //play the game
+  for (int i = 0; i < cellsX; ++i) {
+    final List squaresJ = [];
 
-      for (int j = 0; j < cellsY; ++j) {
-        // Choose the next colour
-        // colourOrder++;
-        // nextColor = opArt.palette.colorList[colourOrder % numberOfColors.value];
-        // if (randomColors.value) {
-        //   nextColor = opArt.palette.colorList[rnd.nextInt(numberOfColors.value)];
-        // }
-        // nextColor = nextColor.withOpacity(opacity.value);
+    for (int j = 0; j < cellsY; ++j) {
+      final List neighbours = [];
 
-        // if (rnd.nextDouble()>0.5) nextColor = Colors.black;
+      // if (i>0 && j>0) neighbours.add(oldSquaresI[i-1][j-1]);
+      // if (i>0 && j<cellsY-1) neighbours.add(oldSquaresI[i-1][j+1]);
+      // if (i<cellsX-1 && j>0) neighbours.add(oldSquaresI[i+1][j-1]);
+      // if (i<cellsX-1 && j<cellsY-1) neighbours.add(oldSquaresI[i+1][j+1]);
 
-        nextColor = Color.fromRGBO(
-            (rnd.nextBool()) ? rnd.nextInt(256) : 0,
-            (rnd.nextBool()) ? rnd.nextInt(256) : 0,
-            (rnd.nextBool()) ? rnd.nextInt(256) : 0,
-            1);
+      if (i > 0) neighbours.add(oldSquaresI[i - 1][j]);
+      if (j > 0) neighbours.add(oldSquaresI[i][j - 1]);
+      if (i < cellsX - 1) neighbours.add(oldSquaresI[i + 1][j]);
+      if (j < cellsY - 1) neighbours.add(oldSquaresI[i][j + 1]);
 
-        //save the colour
-        squaresJ.add(nextColor);
+      int neighboursRed = 0;
+      int neighboursGreen = 0;
+      int neighboursBlue = 0;
+      int neighboursAlive = 0;
 
-        final x = borderX + i * (zoomOpArt.value as double);
-        final y = borderY + j * (zoomOpArt.value as double);
-
-        // draw the square
-        canvas.drawRect(
-            Offset(x, y) &
-                Size(zoomOpArt.value as double, zoomOpArt.value as double),
-            Paint()
-              ..strokeWidth = 0.0
-              ..color = nextColor
-              ..isAntiAlias = false
-              ..style = PaintingStyle.fill);
-      }
-      squaresI.add(squaresJ);
-    }
-  } else {
-    final List oldSquaresI = squaresI;
-    squaresI = [];
-
-    //play the game
-    for (int i = 0; i < cellsX; ++i) {
-      final List squaresJ = [];
-
-      for (int j = 0; j < cellsY; ++j) {
-        final List neighbours = [];
-
-        // if (i>0 && j>0) neighbours.add(oldSquaresI[i-1][j-1]);
-        // if (i>0 && j<cellsY-1) neighbours.add(oldSquaresI[i-1][j+1]);
-        // if (i<cellsX-1 && j>0) neighbours.add(oldSquaresI[i+1][j-1]);
-        // if (i<cellsX-1 && j<cellsY-1) neighbours.add(oldSquaresI[i+1][j+1]);
-
-        if (i > 0) neighbours.add(oldSquaresI[i - 1][j]);
-        if (j > 0) neighbours.add(oldSquaresI[i][j - 1]);
-        if (i < cellsX - 1) neighbours.add(oldSquaresI[i + 1][j]);
-        if (j < cellsY - 1) neighbours.add(oldSquaresI[i][j + 1]);
-
-        int neighboursRed = 0;
-        int neighboursGreen = 0;
-        int neighboursBlue = 0;
-        int neighboursAlive = 0;
-
-        for (int i = 0; i < neighbours.length; i++) {
-          if (neighbours[i].red as double > 0) neighboursRed++;
-          if (neighbours[i].green as double > 0) neighboursGreen++;
-          if (neighbours[i].blue as double > 0) neighboursBlue++;
-          if (HSLColor.fromColor(neighbours[i] as Color).lightness > 0) {
-            neighboursAlive++;
-          }
+      for (int i = 0; i < neighbours.length; i++) {
+        if (neighbours[i].red as double > 0) neighboursRed++;
+        if (neighbours[i].green as double > 0) neighboursGreen++;
+        if (neighbours[i].blue as double > 0) neighboursBlue++;
+        if (HSLColor.fromColor(neighbours[i] as Color).lightness > 0) {
+          neighboursAlive++;
         }
-
-        // Any live cell with fewer than two live neighbours dies, as if by underpopulation.
-        // Any live cell with two or three live neighbours lives on to the next generation.
-        // Any live cell with more than three live neighbours dies, as if by overpopulation.
-        // Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-
-        final bool wasAliveRed = oldSquaresI[i][j].red as double > 100;
-        final bool nowAliveRed =
-            wasAliveRed && (neighboursRed == 2 || neighboursRed == 3) ||
-                (!wasAliveRed && neighboursRed == 3);
-        final bool wasAliveGreen = oldSquaresI[i][j].green as double > 100;
-        final bool nowAliveGreen =
-            wasAliveGreen && (neighboursGreen == 2 || neighboursGreen == 3) ||
-                (!wasAliveGreen && neighboursGreen == 3);
-        final bool wasAliveBlue = oldSquaresI[i][j].blue as double > 100;
-        final bool nowAliveBlue =
-            wasAliveBlue && (neighboursBlue == 2 || neighboursBlue == 3) ||
-                (!wasAliveBlue && neighboursBlue == 3);
-
-        final Color nextColor = Color.fromRGBO(
-            nowAliveRed ? rnd.nextInt(156) + 100 : 0,
-            nowAliveGreen ? rnd.nextInt(156) + 100 : 0,
-            nowAliveBlue ? rnd.nextInt(156) + 100 : 0,
-            1);
-
-        //save the colour
-        squaresJ.add(nextColor);
-
-        final x = borderX + i * (zoomOpArt.value as double);
-        final y = borderY + j * (zoomOpArt.value as double);
-
-        // draw the square
-        canvas.drawRect(
-            Offset(x, y) &
-                Size(zoomOpArt.value as double, zoomOpArt.value as double),
-            Paint()
-              ..strokeWidth = 0.0
-              ..color = nextColor
-              ..isAntiAlias = false
-              ..style = PaintingStyle.fill);
       }
-      squaresI.add(squaresJ);
+
+      // Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+      // Any live cell with two or three live neighbours lives on to the next generation.
+      // Any live cell with more than three live neighbours dies, as if by overpopulation.
+      // Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+
+      final bool wasAliveRed = oldSquaresI[i][j].red as double > 100;
+      final bool nowAliveRed =
+          wasAliveRed && (neighboursRed == 2 || neighboursRed == 3) ||
+              (!wasAliveRed && neighboursRed == 3);
+      final bool wasAliveGreen = oldSquaresI[i][j].green as double > 100;
+      final bool nowAliveGreen =
+          wasAliveGreen && (neighboursGreen == 2 || neighboursGreen == 3) ||
+              (!wasAliveGreen && neighboursGreen == 3);
+      final bool wasAliveBlue = oldSquaresI[i][j].blue as double > 100;
+      final bool nowAliveBlue =
+          wasAliveBlue && (neighboursBlue == 2 || neighboursBlue == 3) ||
+              (!wasAliveBlue && neighboursBlue == 3);
+
+      final Color nextColor = Color.fromRGBO(
+          nowAliveRed ? rnd.nextInt(156) + 100 : 0,
+          nowAliveGreen ? rnd.nextInt(156) + 100 : 0,
+          nowAliveBlue ? rnd.nextInt(156) + 100 : 0,
+          1);
+
+      //save the colour
+      squaresJ.add(nextColor);
+
+      final x = borderX + i * (zoomOpArt.value as double);
+      final y = borderY + j * (zoomOpArt.value as double);
+
+      // draw the square
+      canvas.drawRect(
+          Offset(x, y) &
+              Size(zoomOpArt.value as double, zoomOpArt.value as double),
+          Paint()
+            ..strokeWidth = 0.0
+            ..color = nextColor
+            ..isAntiAlias = false
+            ..style = PaintingStyle.fill);
     }
+    squaresI.add(squaresJ);
   }
 }

@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../main.dart';
-import '../model_opart.dart';
-import '../model_palette.dart';
-import '../model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
 
 List<String> list = [];
 
@@ -420,7 +420,7 @@ void drawSegment(
           (1 - rnd.nextDouble() * cos(animationVariable * 10000) * 0.50);
 
       // maxBranch is the max branching angle
-      final double maxBranch = pi / 8;
+      const double maxBranch = pi / 8;
 
       double directionA;
       double directionB;

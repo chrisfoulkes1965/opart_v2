@@ -4,10 +4,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:opart_v2/opart_icons.dart';
 
-import '../main.dart';
-import '../model_opart.dart';
-import '../model_palette.dart';
-import '../model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
 
 List<String> list = [];
 
@@ -377,7 +377,6 @@ void drawBulge(Canvas canvas, Color colour, p1, p2, p3, p4, int direction,
           canvas.drawLine(Offset(p2[0] as double, p2[1] as double),
               Offset(p3[0] as double, p3[1] as double), paint);
 
-          break;
 
         case 2: // bulge bottom
           canvas.drawArc(
@@ -394,7 +393,6 @@ void drawBulge(Canvas canvas, Color colour, p1, p2, p3, p4, int direction,
           canvas.drawLine(Offset(p3[0] as double, p3[1] as double),
               Offset(p4[0] as double, p4[1] as double), paint);
 
-          break;
 
         case 3: // bulge left
           canvas.drawArc(
@@ -411,7 +409,6 @@ void drawBulge(Canvas canvas, Color colour, p1, p2, p3, p4, int direction,
           canvas.drawLine(Offset(p4[0] as double, p4[1] as double),
               Offset(p1[0] as double, p1[1] as double), paint);
 
-          break;
 
         case 4: // top
           canvas.drawArc(
@@ -428,10 +425,8 @@ void drawBulge(Canvas canvas, Color colour, p1, p2, p3, p4, int direction,
           canvas.drawLine(Offset(p1[0] as double, p1[1] as double),
               Offset(p2[0] as double, p2[1] as double), paint);
 
-          break;
       }
 
-      break;
 
     case 'triangle':
       const double pointiness = 0.3;
@@ -447,7 +442,6 @@ void drawBulge(Canvas canvas, Color colour, p1, p2, p3, p4, int direction,
           triangle.close();
           canvas.drawPath(triangle, paint);
 
-          break;
 
         case 2: // bulge bottom
 
@@ -458,7 +452,6 @@ void drawBulge(Canvas canvas, Color colour, p1, p2, p3, p4, int direction,
           triangle.close();
           canvas.drawPath(triangle, paint);
 
-          break;
 
         case 3: // bulge left
 
@@ -469,7 +462,6 @@ void drawBulge(Canvas canvas, Color colour, p1, p2, p3, p4, int direction,
           triangle.close();
           canvas.drawPath(triangle, paint);
 
-          break;
 
         case 4: // bulge top
           //canvas.stroke()
@@ -480,10 +472,8 @@ void drawBulge(Canvas canvas, Color colour, p1, p2, p3, p4, int direction,
           triangle.close();
           canvas.drawPath(triangle, paint);
 
-          break;
       }
 
-      break;
 
     // case 'bezier1':
     //

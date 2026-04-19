@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'main.dart';
-import 'model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_settings.dart';
 
 SettingsModel numberOfColors = SettingsModel(
   name: 'numberOfColors',
@@ -629,7 +629,6 @@ class OpArtPalette {
                 Color((rnd.nextDouble() * 0xFFFFFF).toInt()).withOpacity(1));
           }
         }
-        break;
 
       // blended random
       case 'blended random':
@@ -647,7 +646,6 @@ class OpArtPalette {
                 (blendColour.blue * 2 + randomColor.blue) ~/ 3));
           }
         }
-        break;
 
       // linear random
       case 'linear random':
@@ -681,7 +679,6 @@ class OpArtPalette {
                 1));
           }
         }
-        break;
 
       // linear complementary
       case 'linear complementary':
@@ -715,7 +712,6 @@ class OpArtPalette {
                 1));
           }
         }
-        break;
     }
 
     colorList = palette;

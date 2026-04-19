@@ -10,14 +10,14 @@ int currentColor = 0;
 Widget choosePaletteTabWidget() {
   // Animation<double> _animation;
 
-  List<Widget> _circularPalette(int index) {
-    final int _sizeOfPalette = defaultPalettes[index][3].length as int;
+  List<Widget> circularPalette(int index) {
+    final int sizeOfPalette = defaultPalettes[index][3].length as int;
 
-    final List<Widget> _list = [];
-    if (_sizeOfPalette < 11) {
-      for (int i = 0; i < _sizeOfPalette; i++) {
-        _list.add(Transform.rotate(
-            angle: i * 2 * pi / _sizeOfPalette,
+    final List<Widget> list = [];
+    if (sizeOfPalette < 11) {
+      for (int i = 0; i < sizeOfPalette; i++) {
+        list.add(Transform.rotate(
+            angle: i * 2 * pi / sizeOfPalette,
             child: Align(
               alignment: Alignment.centerLeft,
               child: Container(
@@ -33,9 +33,9 @@ Widget choosePaletteTabWidget() {
             )));
       }
     } else {
-      for (int i = 0; i < _sizeOfPalette; i++) {
+      for (int i = 0; i < sizeOfPalette; i++) {
         if (i < 10) {
-          _list.add(Transform.rotate(
+          list.add(Transform.rotate(
               angle: i * 2 * pi / 10,
               child: Align(
                 alignment: Alignment.centerLeft,
@@ -51,8 +51,8 @@ Widget choosePaletteTabWidget() {
                 ),
               )));
         } else {
-          _list.add(Transform.rotate(
-              angle: i * 2 * pi / (_sizeOfPalette - 10),
+          list.add(Transform.rotate(
+              angle: i * 2 * pi / (sizeOfPalette - 10),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
@@ -72,7 +72,7 @@ Widget choosePaletteTabWidget() {
         }
       }
     }
-    return _list;
+    return list;
   }
 
   return ListView.builder(
@@ -105,7 +105,7 @@ Widget choosePaletteTabWidget() {
                     child: Padding(
                       padding: const EdgeInsets.all(0.0),
                       child: Stack(
-                        children: _circularPalette(index),
+                        children: circularPalette(index),
                       ),
                     ),
                   ),

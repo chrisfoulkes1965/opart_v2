@@ -4,10 +4,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:opart_v2/opart_page.dart';
 
-import 'main.dart';
-
-// bool proVersion = true;
-
 enum SettingType { double, int, bool, button, color, list }
 
 enum SettingCategory { palette, tool, other }
@@ -39,24 +35,31 @@ class SettingsModel {
     required this.settingType,
     required this.name,
     required this.label,
-    String? tooltip,
-    Icon? icon,
-    SettingCategory? settingCategory,
-    bool? proFeature,
+    this.tooltip,
+    this.icon,
+    this.settingCategory,
+    this.proFeature,
+    this.onChange,
+    this.silent,
     this.min,
     this.max,
     this.randomMin,
     this.randomMax,
-    double? randomTrue,
-    double? zoom,
+    this.randomTrue,
+    this.zoom,
     this.defaultValue,
     this.options,
-    Function? onChange,
-    bool? silent,
   });
 
+  static int _asInt(dynamic v, {required int fallback}) {
+    if (v == null) return fallback;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    return int.tryParse(v.toString()) ?? fallback;
+  }
+
   void randomize(Random rnd) {
-    if (!locked && (proVersion || !proVersion && !(proFeature ?? false))) {
+    if (!locked) {
       // print('Name: ${name}: ${settingType}');
 
       switch (settingType) {
@@ -73,39 +76,30 @@ class SettingsModel {
               ? rnd.nextDouble() * (max - min) + min
               : defaultValue;
 
-          break;
 
         case SettingType.int:
-          final int min = (randomMin != null)
-              ? randomMin.toInt() as int
-              : this.min.toInt() ?? 5;
-          final int max = (randomMax != null)
-              ? randomMax.toInt() as int
-              : this.max.toInt() ?? 5;
+          final int min = _asInt(randomMin ?? this.min, fallback: 5);
+          final int max = _asInt(randomMax ?? this.max, fallback: 5);
 
           // half the time use the default
           value = (rnd.nextBool() == true)
               ? rnd.nextInt(max - min) + min
               : defaultValue;
 
-          break;
 
         case SettingType.bool:
           value = (randomTrue != null)
               ? rnd.nextDouble() < randomTrue!
               : rnd.nextBool();
 
-          break;
 
         case SettingType.color:
           value = Color((rnd.nextDouble() * 0xFFFFFF).toInt()).withOpacity(1);
 
-          break;
 
         case SettingType.button:
           value = false;
 
-          break;
         case SettingType.list:
           value = (rnd.nextBool() == true)
               ? options[rnd.nextInt(options.length as int)]
@@ -125,11 +119,12 @@ void resetAllDefaults() {
 }
 
 void generatePalette() {
-  final int numberOfColours = currentOpArtPageState?.opArt.attributes
-          .firstWhere((element) => element.name == 'numberOfColors')
-          .value
-          .toInt() ??
-      5;
+  final dynamic numberOfColoursValue = currentOpArtPageState?.opArt.attributes
+      .firstWhere((element) => element.name == 'numberOfColors')
+      .value;
+  final int numberOfColours = (numberOfColoursValue is num)
+      ? numberOfColoursValue.toInt()
+      : int.tryParse(numberOfColoursValue?.toString() ?? '') ?? 5;
   final String paletteType = currentOpArtPageState?.opArt.attributes
           .firstWhere((element) => element.name == 'paletteType')
           .value
@@ -139,11 +134,12 @@ void generatePalette() {
 }
 
 void checkNumberOfColors() {
-  final int numberOfColours = currentOpArtPageState?.opArt.attributes
-          .firstWhere((element) => element.name == 'numberOfColors')
-          .value
-          .toInt() ??
-      5;
+  final dynamic numberOfColoursValue = currentOpArtPageState?.opArt.attributes
+      .firstWhere((element) => element.name == 'numberOfColors')
+      .value;
+  final int numberOfColours = (numberOfColoursValue is num)
+      ? numberOfColoursValue.toInt()
+      : int.tryParse(numberOfColoursValue?.toString() ?? '') ?? 5;
   final int paletteLength =
       currentOpArtPageState?.opArt.palette.colorList.length ?? 0;
   if (numberOfColours > paletteLength) {

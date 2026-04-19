@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:opart_v2/opart_page.dart' as opart_page;
 
-import '../model_opart.dart';
-import '../model_settings.dart';
-import 'general_tab.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_settings.dart';
+import 'package:opart_v2/tabs/general_tab.dart';
 
 int slider = 100;
 Widget toolBoxTab() {
@@ -14,50 +14,71 @@ Widget toolBoxTab() {
       [];
 
   return StatefulBuilder(builder: (context, setState) {
-    Widget sliderWidget(int slider) {
-      if (slider == 100) {
+    Widget sliderWidget(int toolSliderIndex) {
+      if (toolSliderIndex == 100 ||
+          toolSliderIndex < 0 ||
+          toolSliderIndex >= tools.length) {
         return Container(color: Colors.orange);
-      } else {
-        final SettingsModel attribute = tools[slider];
-        return RotatedBox(
-          quarterTurns: 1,
-          child: SizedBox(
-            height: 40,
-            child: attribute.settingType == SettingType.double
-                ? Slider(
-                    activeColor: Colors.cyan,
-                    value: attribute.value as double,
-                    min: attribute.min as double,
-                    max: attribute.max as double,
-                    onChanged: (value) {
-                      setState(() {
-                        attribute.value = value;
-                        rebuildTab.value++;
-                        rebuildCanvas.value++;
-                      });
-                    },
-                    onChangeEnd: (value) {
-                      opart_page.currentOpArtPageState?.opArt.saveToCache();
-                    },
-                  )
-                : Slider(
-                    activeColor: Colors.cyan,
-                    value: attribute.value.toDouble() as double,
-                    min: attribute.min.toDouble() as double,
-                    max: attribute.max.toDouble() as double,
-                    onChanged: (value) {
-                      attribute.value = value.toInt();
-                      rebuildTab.value++;
-                      rebuildCanvas.value++;
-                    },
-                    onChangeEnd: (value) {
-                      opart_page.currentOpArtPageState?.opArt.saveToCache();
-                    },
-                    divisions: attribute.max - attribute.min as int,
-                  ),
-          ),
+      }
+      final SettingsModel attribute = tools[toolSliderIndex];
+      // Global [slider] can point at a stale index after switching op-art types.
+      if (attribute.settingType != SettingType.double &&
+          attribute.settingType != SettingType.int) {
+        return Container(color: Colors.orange);
+      }
+
+      Widget buildDoubleSlider() {
+        final double v = (attribute.value as num).toDouble();
+        final double min = (attribute.min as num).toDouble();
+        final double max = (attribute.max as num).toDouble();
+        return Slider(
+          activeColor: Colors.cyan,
+          value: v.clamp(min, max),
+          min: min,
+          max: max,
+          onChanged: (value) {
+            setState(() {
+              attribute.value = value;
+              rebuildTab.value++;
+              rebuildCanvas.value++;
+            });
+          },
+          onChangeEnd: (value) {
+            opart_page.currentOpArtPageState?.opArt.saveToCache();
+          },
         );
       }
+
+      Widget buildIntSlider() {
+        final double min = (attribute.min as num).toDouble();
+        final double max = (attribute.max as num).toDouble();
+        final int span = (max - min).round();
+        return Slider(
+          activeColor: Colors.cyan,
+          value: (attribute.value as num).toDouble().clamp(min, max),
+          min: min,
+          max: max,
+          divisions: span > 0 ? span : null,
+          onChanged: (value) {
+            attribute.value = value.round();
+            rebuildTab.value++;
+            rebuildCanvas.value++;
+          },
+          onChangeEnd: (value) {
+            opart_page.currentOpArtPageState?.opArt.saveToCache();
+          },
+        );
+      }
+
+      return RotatedBox(
+        quarterTurns: 1,
+        child: SizedBox(
+          height: 40,
+          child: attribute.settingType == SettingType.double
+              ? buildDoubleSlider()
+              : buildIntSlider(),
+        ),
+      );
     }
 
     return Row(
@@ -92,7 +113,7 @@ Widget toolBoxTab() {
                                       width: 4)),
                               child: IconButton(
                                   icon:
-                                      tools[index].icon ?? Icon(Icons.settings),
+                                      tools[index].icon ?? const Icon(Icons.settings),
                                   color: index == slider
                                       ? Colors.black
                                       : Colors.cyan,

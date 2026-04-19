@@ -1,228 +1,127 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import 'model_opart.dart';
+import 'package:opart_v2/model_opart.dart';
 
-Widget customBottomAppBar(
-    {required BuildContext context, required OpArt opArt, required bool enableButton}) {
-  final double width = MediaQuery.of(context).size.width;
+/// Bottom toolbar: three equal-width actions so nothing wraps off-screen.
+/// Uses top-level `enableButton` in `model_opart.dart` so taps stay in sync
+/// with [OpArt.saveToCache] (which sets the flag back when capture finishes).
+Widget customBottomAppBar({
+  required BuildContext context,
+  required OpArt opArt,
+}) {
+  return SafeArea(
+    top: false,
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final double w = constraints.maxWidth;
+        final bool wide = w > 400;
 
-  return SizedBox(
-      //  color: Colors.white.withOpacity(0.8),
-      height: 70,
-      child: ButtonBar(
-        alignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          SizedBox(
-            height: 70,
-            width: (width > 400) ? 111 : 50,
-            child: TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-              onPressed: () {
-                if (enableButton) {
-                  opArt.randomizeSettings();
-                  // opArt.randomizePalette();
-                  opArt.saveToCache();
-                  enableButton = false;
-                  //
-                  //   opArt.randomizeSettings();
-                  //   opArt.saveToCache();
-                  //   enableButton = false;
-                  rebuildCanvas.value++;
-                }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                textDirection: TextDirection.ltr,
-                children: <Widget>[
-                  Icon(
-                    MdiIcons.shape,
-                    color: Colors.cyan,
+        return SizedBox(
+          height: 72,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _BottomToolButton(
+                    onPressed: () {
+                      if (!enableButton) return;
+                      enableButton = false;
+                      opArt.randomizeSettings();
+                      opArt.saveToCache();
+                      rebuildCanvas.value++;
+                    },
+                    icon: Icon(MdiIcons.shape, color: Colors.cyan),
+                    label: wide ? 'Random\nShape' : 'Shape',
                   ),
-                  if (width > 400) const SizedBox(width: 3),
-                  if (width > 400)
-                    const Text(
-                      'Random\nShape',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: _BottomToolButton(
+                    onPressed: () {
+                      if (!enableButton) return;
+                      enableButton = false;
+                      opArt.randomizeSettings();
+                      opArt.randomizePalette();
+                      opArt.saveToCache();
+                      rebuildCanvas.value++;
+                      rebuildTab.value++;
+                    },
+                    icon: Icon(MdiIcons.autoFix, color: Colors.cyan, size: 28),
+                    label: 'Go Wild!',
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: _BottomToolButton(
+                    onPressed: () {
+                      if (!enableButton) return;
+                      enableButton = false;
+                      opArt.randomizePalette();
+                      opArt.saveToCache();
+                      rebuildCanvas.value++;
+                      rebuildTab.value++;
+                    },
+                    icon: const Icon(Icons.palette, color: Colors.cyan),
+                    label: wide ? 'Random\nColors' : 'Colors',
+                  ),
+                ),
+              ],
             ),
           ),
-          // ignore: sized_box_for_whitespace
-          Container(
-            height: 70,
-            child: TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-              onPressed: () async {
-                if (enableButton) {
-                  opArt.randomizeSettings();
-                  opArt.randomizePalette();
-                  opArt.saveToCache();
-                  enableButton = false;
-                  rebuildCanvas.value++;
-                  rebuildTab.value++;
-                }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Icon(
-                    MdiIcons.autoFix,
-                    color: Colors.cyan,
-                    size: 30,
-                  ),
-                  SizedBox(width: 3),
-                  Text(
-                    'Go Wild!',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ],
+        );
+      },
+    ),
+  );
+}
+
+class _BottomToolButton extends StatelessWidget {
+  const _BottomToolButton({
+    required this.onPressed,
+    required this.icon,
+    required this.label,
+  });
+
+  final VoidCallback onPressed;
+  final Widget icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        backgroundColor: Colors.white.withOpacity(0.9),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      onPressed: onPressed,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            icon,
+            const SizedBox(height: 2),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 11,
+                height: 1.1,
               ),
             ),
-          ),
-          SizedBox(
-            height: 70,
-            width: (width > 400) ? 111 : 50,
-            child: TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-              onPressed: () {
-                if (enableButton) {
-                  opArt.randomizePalette();
-
-                  opArt.saveToCache();
-                  enableButton = false;
-                  rebuildCanvas.value++;
-                  rebuildTab.value++;
-                }
-                // BottomSheetPalette(context);
-                // if (animationController != null) {
-                //   animationController.stop();
-                // }
-                // PaletteToolBox(
-                //   context,
-                //   opArt,
-                // );
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                textDirection: TextDirection.ltr,
-                children: <Widget>[
-                  const Icon(
-                    Icons.palette,
-                    color: Colors.cyan,
-                  ),
-                  if (width > 400) const SizedBox(width: 3),
-                  if (width > 400)
-                    const Text(
-                      'Random\nColors',
-                      style: TextStyle(color: Colors.black),
-                    )
-                  else
-                    Container(),
-                ],
-              ),
-            ),
-          ),
-          // RaisedButton.icon(
-          //   splashColor: Colors.red,
-          //   animationDuration: Duration(milliseconds: 10),
-          //   onPressed: () {
-          //     randomize();
-          //   },
-          //   icon: Icon(Icons.refresh),
-          //   label: Text(
-          //     'randomize',
-          //     textAlign: TextAlign.center,
-          //   ),
-          // ),
-
-          // IconButton(
-          //   onPressed: () {
-          //     randomize();
-          //
-          //   },
-          //  // icon: Icon(Icons.refresh),
-          //   // child: Row(
-          //   //   children: <Widget>[
-          //   //     Icon(Icons.refresh),
-          //   //     Padding(
-          //   //       padding: const EdgeInsets.all(8.0),
-          //   //       child: Text(
-          //   //         'Go Wild!',
-          //   //         textAlign: TextAlign.center,
-          //   //       ),
-          //   //     )
-          //   //   ],
-          //   // ),
-          // ),
-          // OutlineButton(
-          //     onPressed: () {
-          //       showBottomSheet();
-          //     },
-          //     child: Row(
-          //       children: <Widget>[
-          //         Icon(Icons.blur_circular),
-          //         Padding(
-          //           padding: const EdgeInsets.all(8.0),
-          //           child: Text(
-          //             'Tools',
-          //             textAlign: TextAlign.center,
-          //           ),
-          //         )
-          //       ],
-          //     )),
-          // GestureDetector(
-          //   onTap: () {
-          //     randomizePalette();
-          //   },
-          //   child: Row(
-          //     children: <Widget>[
-          //       Icon(Icons.palette),
-          //       Padding(
-          //         padding: const EdgeInsets.all(8.0),
-          //         child: Text(
-          //           'new palette',
-          //           textAlign: TextAlign.center,
-          //         ),
-          //       )
-          //     ],
-          //   ),
-          // ),
-          // IconButton(
-          //   onPressed: () {
-          //     randomizePalette();
-          //
-          //   },
-          //   icon: Icon(Icons.palette),
-          // child: Row(
-          //   children: <Widget>[
-          //     Icon(Icons.palette),
-          //     Padding(
-          //       padding: const EdgeInsets.all(8.0),
-          //       child: Text(
-          //         'randomize \nPalette',
-          //         textAlign: TextAlign.center,
-          //       ),
-          //     )
-          //   ],
-          // ),
-          // )
-        ],
-      ));
+          ],
+        ),
+      ),
+    );
+  }
 }

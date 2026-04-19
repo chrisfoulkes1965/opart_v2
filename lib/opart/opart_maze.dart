@@ -4,10 +4,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:opart_v2/opart_icons.dart';
 
-import '../main.dart';
-import '../model_opart.dart';
-import '../model_palette.dart';
-import '../model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
 
 List<String> list = [];
 
@@ -259,19 +259,15 @@ void paintMaze(
           case 'lineDiagonalRight':
             pA = p1;
             pB = p3;
-            break;
           case 'lineDiagonalLeft':
             pA = p2;
             pB = p4;
-            break;
           case 'lineHorizontal':
             pA = p1;
             pB = p2;
-            break;
           case 'lineVertical':
             pA = p2;
             pB = p3;
-            break;
         }
 
         // draw the line

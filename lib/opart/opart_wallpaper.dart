@@ -4,10 +4,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:opart_v2/opart_icons.dart';
 
-import '../main.dart';
-import '../model_opart.dart';
-import '../model_palette.dart';
-import '../model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
 
 List<String> list = [];
 
@@ -568,7 +568,6 @@ void paintWallpaper(
                   ..color = (lineColor.value as Color)
                       .withOpacity(opacity.value as double));
 
-            break;
 
           case 'square':
             final Path square = Path();
@@ -623,7 +622,6 @@ void paintWallpaper(
 
             square.reset();
 
-            break;
 
           case 'squaricle':
             final double curveCentreRadius =
@@ -715,7 +713,6 @@ void paintWallpaper(
 
             squaricle.reset();
 
-            break;
 
           case 'star':
             for (var p = 0; p < (localNumberOfPetals as int); p++) {
@@ -723,11 +720,11 @@ void paintWallpaper(
                 pO[0] +
                     stepRadius *
                         cos(localRotate * pi +
-                            p * pi * 2 / (localNumberOfPetals as int)),
+                            p * pi * 2 / localNumberOfPetals),
                 pO[1] +
                     stepRadius *
                         sin(localRotate * pi +
-                            p * pi * 2 / (localNumberOfPetals as int))
+                            p * pi * 2 / localNumberOfPetals)
               ];
 
               final List petalMidPointA = [
@@ -794,7 +791,6 @@ void paintWallpaper(
                     ..color = nextColor.withOpacity(opacity.value as double));
             }
 
-            break;
 
           case 'polygon':
             final Path polygon = Path();
@@ -840,7 +836,6 @@ void paintWallpaper(
 
             polygon.reset();
 
-            break;
 
           // case 'star':
           //   for (var p = 0; p < localNumberOfPetals; p++) {
@@ -953,7 +948,7 @@ void paintWallpaper(
               }
 
               final petalAngle =
-                  localRotate + petal * 2 * pi / (localNumberOfPetals as int);
+                  localRotate + petal * 2 * pi / localNumberOfPetals;
 
               final petalCentreRadius =
                   stepRadius * (centreRatio + (1 - centreRatio) / 2);
@@ -1011,7 +1006,6 @@ void paintWallpaper(
                     ..color = nextColor.withOpacity(opacity.value as double));
             }
 
-            break;
 
           case 'heart':
 
@@ -1197,7 +1191,6 @@ void paintWallpaper(
 
             heart.reset();
 
-            break;
         }
 
         // Drift & Rotate

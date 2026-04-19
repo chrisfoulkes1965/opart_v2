@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../main.dart';
-import '../model_opart.dart';
-import '../model_palette.dart';
-import '../model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
 
 List<String> list = [];
 
@@ -445,7 +445,7 @@ void paintTree(
         ..style = PaintingStyle.fill);
 
   // Starting point of the tree
-  final double direction = pi / 2;
+  const double direction = pi / 2;
   final List treeBaseA = [
     borderX +
         (imageWidth - (trunkWidth.value as num) * (zoomOpArt.value as num)) /
@@ -598,7 +598,7 @@ void drawSegment(
         (1 - rnd.nextDouble() * cos(animationVariable * 10000) * 0.50);
 
     // maxBranch is the max branching angle
-    final double maxBranch = pi / 8;
+    const double maxBranch = pi / 8;
 
     // direction A is off to the left
     double directionA;
@@ -935,7 +935,6 @@ void drawTheLeaf(
             ..style = PaintingStyle.fill
             ..color = leafColor.withOpacity(opacity));
 
-      break;
 
     case 'circle':
       canvas.drawCircle(
@@ -945,7 +944,6 @@ void drawTheLeaf(
             ..style = PaintingStyle.fill
             ..color = leafColor.withOpacity(opacity));
 
-      break;
 
     case 'triangle':
 
@@ -981,7 +979,6 @@ void drawTheLeaf(
             ..style = PaintingStyle.fill
             ..color = leafColor.withOpacity(opacity));
 
-      break;
 
     case 'square':
 
@@ -1023,7 +1020,6 @@ void drawTheLeaf(
             ..style = PaintingStyle.fill
             ..color = leafColor.withOpacity(opacity));
 
-      break;
     case 'diamond':
       // find the tip of the leaf
       final List pS = [
@@ -1063,7 +1059,6 @@ void drawTheLeaf(
             ..style = PaintingStyle.fill
             ..color = leafColor.withOpacity(opacity));
 
-      break;
 
     case 'quadratic':
 
@@ -1106,7 +1101,6 @@ void drawTheLeaf(
             ..style = PaintingStyle.fill
             ..color = leafColor.withOpacity(opacity));
 
-      break;
   }
 }
 

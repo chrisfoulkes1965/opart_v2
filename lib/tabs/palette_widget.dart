@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:opart_v2/model_settings.dart';
 import 'package:opart_v2/opart_page.dart' as opart_page;
 
-import '../model_opart.dart';
-import '../model_palette.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
 
 int currentColor = 0;
 
@@ -18,7 +18,7 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
     final List<Widget> listViewWidgets = [];
     int lengthOfAdditionalColors = 0;
     // List<Widget> additionalColors = [];
-    void _additionalColors() {
+    void additionalColors() {
       for (int i = 0;
           i < (opart_page.currentOpArtPageState?.opArt.attributes.length ?? 0);
           i++) {
@@ -64,7 +64,7 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
     }
 
     double height = MediaQuery.of(context).size.height;
-    Widget _opacityWidget() {
+    Widget opacityWidget() {
       return RotatedBox(
         quarterTurns: 1,
         child: Container(
@@ -105,12 +105,12 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
     }
 
     final int paletteLength =
-        (opart_page.currentOpArtPageState?.opArt.palette.colorList.length ?? 0);
+        opart_page.currentOpArtPageState?.opArt.palette.colorList.length ?? 0;
 
     return ValueListenableBuilder<int>(
         valueListenable: rebuildTab,
         builder: (context, value, child) {
-          _additionalColors();
+          additionalColors();
           listViewWidgets.add(
             SizedBox(
               height: 30,
@@ -170,12 +170,12 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                               (element) => element.name == 'numberOfColors')
                           .value = numberOfColors.value;
                       if (numberOfColors.value as int > paletteLength) {
-                        final String paletteType = (opart_page
+                        final String paletteType = opart_page
                             .currentOpArtPageState?.opArt.attributes
                             .firstWhere(
                                 (element) => element.name == 'paletteType')
                             .value
-                            .toString()) ?? 'random';
+                            .toString() ?? 'random';
                         opart_page.currentOpArtPageState?.opArt.palette
                             .randomize(
                                 paletteType, numberOfColors.value as int);
@@ -229,7 +229,7 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                   Expanded(
                     child: ListView(children: listViewWidgets),
                   ),
-                  SizedBox(height: 150, child: _opacityWidget())
+                  SizedBox(height: 150, child: opacityWidget())
                 ],
               ));
         });

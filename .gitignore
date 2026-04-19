@@ -1,3 +1,7 @@
+# Secrets & local tooling
+**/pc-api-*.json
+node_modules/
+
 # Miscellaneous
 *.class
 *.log

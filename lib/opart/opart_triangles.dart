@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../main.dart';
-import '../model_opart.dart';
-import '../model_palette.dart';
-import '../model_settings.dart';
+import 'package:opart_v2/app_state.dart';
+import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
 
 List<String> list = [];
 
@@ -312,7 +312,6 @@ void drawTriangle(
             lineColor,
             lineWidth);
 
-        break;
 
       case 1:
         final List pN = [
@@ -352,7 +351,6 @@ void drawTriangle(
             lineColor,
             lineWidth);
 
-        break;
 
       case 2:
         final List pN = [
@@ -392,7 +390,6 @@ void drawTriangle(
             lineColor,
             lineWidth);
 
-        break;
     }
   } else {
     // Choose the next colour
