@@ -1,6 +1,7 @@
 # Secrets & local tooling
 **/pc-api-*.json
 node_modules/
+.vscode/dart_defines.json
 
 # Miscellaneous
 *.class

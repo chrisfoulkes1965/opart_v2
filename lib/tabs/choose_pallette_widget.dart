@@ -89,17 +89,30 @@ Widget choosePaletteTabWidget() {
     itemBuilder: (context, index) {
       return GestureDetector(
         onTap: () {
+          final opArt = opart_page.currentOpArtPageState?.opArt;
+          if (opArt == null) {
+            return;
+          }
+
+          final paletteName = defaultPalettes[index][0]!.toString();
           final List<String> newPalette = List<String>.from(
             (defaultPalettes[index][3]! as List<Object?>).map(
               (e) => e.toString(),
             ),
           );
-          opart_page.currentOpArtPageState?.opArt.palette.colorList = [];
+          opArt.palette.paletteName = paletteName;
+          opArt.palette.colorList = [];
           opacity.value = 1.0;
           for (int i = 0; i < newPalette.length; i++) {
-            opart_page.currentOpArtPageState?.opArt.palette.colorList.add(
+            opArt.palette.colorList.add(
               Color(int.parse(newPalette[i])),
             );
+          }
+          for (final attribute in opArt.attributes) {
+            if (attribute.name == 'paletteList') {
+              attribute.value = paletteName;
+              break;
+            }
           }
           numberOfColors.value = newPalette.length;
           rebuildTab.value++;

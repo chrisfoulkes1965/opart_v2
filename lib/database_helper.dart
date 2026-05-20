@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/print/models/opart_recipe.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -68,20 +69,9 @@ class DatabaseHelper {
             (e) => e.toString() == raw['type'] as String,
           );
         } else if (key == 'colors') {
-          final List<String> stringList = value.toString().split(',');
-          final List<Color> colorList = [];
-          for (final part in stringList) {
-            if (!part.contains('(0x')) continue;
-            final String valueString = part.split('(0x')[1].split(')')[0];
-            final int intValue = int.parse(valueString, radix: 16);
-            colorList.add(Color(intValue));
-          }
-          fixedData['colors'] = colorList;
-        } else if (value.toString().contains('Color(')) {
-          final String valueString =
-              value.toString().split('(0x')[1].split(')')[0];
-          final int intValue = int.parse(valueString, radix: 16);
-          fixedData[key] = Color(intValue);
+          fixedData['colors'] = OpArtRecipe.parseColorList(value) ?? <Color>[];
+        } else if (OpArtRecipe.isColorSettingKey(key)) {
+          fixedData[key] = OpArtRecipe.parseColor(value) ?? value;
         } else {
           fixedData[key] = value;
         }

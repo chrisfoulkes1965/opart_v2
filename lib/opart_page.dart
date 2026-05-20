@@ -11,6 +11,8 @@ import 'package:opart_v2/home_page.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_settings.dart';
 import 'package:opart_v2/mygallery.dart';
+import 'package:opart_v2/print/models/opart_recipe.dart';
+import 'package:opart_v2/print/pages/print_flow_page.dart';
 import 'package:opart_v2/settings_overlay_layout.dart';
 import 'package:opart_v2/tabs/color_picker_widget.dart';
 import 'package:opart_v2/tabs/general_tab.dart';
@@ -69,22 +71,13 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
       vsync: this,
     );
 
-    opArt = OpArt(opArtType: widget.opArtType);
+    final settings = Map<String, dynamic>.from(widget.opArtSettings);
+    if (!settings.containsKey('type')) {
+      settings['type'] = widget.opArtType;
+    }
+    opArt = OpArtRecipe.toOpArt(settings);
     opArt.animationController = animationController;
-    seed = (widget.opArtSettings['seed'] as int?) ?? 0;
-    for (int i = 0; i < opArt.attributes.length; i++) {
-      final attributeKey = opArt.attributes[i].label;
-      if (widget.opArtSettings.containsKey(attributeKey)) {
-        opArt.attributes[i].value = widget.opArtSettings[attributeKey];
-      }
-    }
-    if (widget.opArtSettings['paletteName'] != null) {
-      opArt.palette.paletteName = widget.opArtSettings['paletteName'] as String;
-    }
-    final savedColors = widget.opArtSettings['colors'];
-    if (savedColors is List<Color> && savedColors.isNotEmpty) {
-      opArt.palette.colorList = List<Color>.from(savedColors);
-    }
+    seed = OpArtRecipe.seedFrom(settings);
     checkNumberOfColors();
     rebuildCanvas.value++;
 
@@ -279,6 +272,17 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
     }
   }
 
+  /// Opens the print-on-demand shop for the current design.
+  void _openPrintShop() {
+    final recipe = OpArtRecipe.fromOpArt(
+      opArt,
+      seed: seed,
+      animationValue:
+          (widget.opArtSettings['animationControllerValue'] as double?) ?? 1.0,
+    );
+    unawaited(PrintFlowPage.open(context, recipe: recipe));
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
@@ -419,6 +423,12 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                                 _exportHighResPng(shareButtonContext),
                           );
                         },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.local_print_shop,
+                            color: Colors.black),
+                        tooltip: 'Print this design',
+                        onPressed: _openPrintShop,
                       ),
                     ],
                   )

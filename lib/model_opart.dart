@@ -31,6 +31,7 @@ import 'package:opart_v2/opart/opart_triangles.dart';
 import 'package:opart_v2/opart/opart_wallpaper.dart';
 import 'package:opart_v2/opart/opart_wave.dart';
 import 'package:opart_v2/palette_contrast.dart';
+import 'package:opart_v2/print/models/opart_recipe.dart';
 import 'package:screenshot/screenshot.dart';
 
 List<Map<String, dynamic>> savedOpArt = [];
@@ -209,14 +210,16 @@ class OpArt {
 
       for (int i = 0; i < attributes.length; i++) {
         if (attributes[i].settingType == SettingType.color) {
-          sqlMap.addAll({attributes[i].label: attributes[i].value.toString()});
+          sqlMap.addAll({
+            attributes[i].label: (attributes[i].value as Color).toARGB32(),
+          });
         } else {
           sqlMap.addAll({attributes[i].label: attributes[i].value});
         }
       }
       sqlMap.addAll({
         'seed': seed,
-        'colors': palette.colorList.toString(),
+        'colors': OpArtRecipe.colorListToJson(palette.colorList),
         'image': base64Image,
         'paletteName': palette.paletteName,
         'type': opArtType.toString(),
@@ -329,10 +332,42 @@ class OpArt {
     rebuildCache.value++;
   }
 
-  void paint(Canvas canvas, Size size, int seed, double animationVariable) {
-    if (palette.colorList.isEmpty) {
-      checkNumberOfColors();
+  void syncPaletteForRender() {
+    final paletteListAttr = _attributeByName('paletteList');
+
+    if (palette.colorList.isNotEmpty) {
+      if (paletteListAttr != null) {
+        final selectedName = paletteListAttr.stringValue;
+        if (selectedName.isNotEmpty) {
+          palette.paletteName = selectedName;
+        }
+      }
+    } else if (paletteListAttr != null && palette.paletteName.isNotEmpty) {
+      try {
+        selectPalette(palette.paletteName);
+        paletteListAttr.value = palette.paletteName;
+      } catch (_) {
+        // Unknown palette name — fall back to in-memory defaults.
+      }
     }
+
+    final numberOfColorsAttr = _attributeByName('numberOfColors');
+    if (numberOfColorsAttr == null || palette.colorList.isEmpty) {
+      return;
+    }
+
+    final int numberOfColours = numberOfColorsAttr.intValue;
+    final int paletteLength = palette.colorList.length;
+
+    if (numberOfColours > paletteLength) {
+      numberOfColorsAttr.value = paletteLength;
+    } else if (numberOfColours < paletteLength) {
+      palette.colorList = palette.colorList.sublist(0, numberOfColours);
+    }
+  }
+
+  void paint(Canvas canvas, Size size, int seed, double animationVariable) {
+    syncPaletteForRender();
     switch (opArtType) {
       case OpArtType.Diagonal:
         paintDiagonal(canvas, size, seed, animationVariable, this);
@@ -393,6 +428,7 @@ class OpArt {
     final List<Object?> newPalette = defaultPalettes.firstWhere(
       (List<Object?> palette) => palette[0] == paletteName,
     );
+    this.palette.paletteName = paletteName;
     palette.colorList = [];
     final List<String> colorStrings = List<String>.from(
       (newPalette[3]! as List<Object?>).map((e) => e.toString()),
@@ -401,7 +437,7 @@ class OpArt {
       palette.colorList.add(Color(int.parse(colorStrings[z])));
     }
     attributes.firstWhere((element) => element.name == 'numberOfColors').value =
-        (newPalette[1]! as num).toInt();
+        min((newPalette[1]! as num).toInt(), palette.colorList.length);
     backgroundColor.value = Color(int.parse(newPalette[2]! as String));
   }
 
