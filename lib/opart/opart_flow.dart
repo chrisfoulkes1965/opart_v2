@@ -294,8 +294,7 @@ void paintFlow(
   // print(animationVariable);
 
   do {
-    final double deltaX =
-        baseX + amplitudeX * cos(4000 * animationVariable + x / frequencyX);
+    final double deltaX = baseX + amplitudeX * cos(x / frequencyX);
 
     // reset the colours
     Color nextColor;
@@ -306,9 +305,7 @@ void paintFlow(
     double y = 0.0;
 
     do {
-      final double deltaY = baseY +
-          amplitudeY * cos(4000 * animationVariable + (x + y) / frequencyY);
-// print('animationVariable: $animationVariable deltaX: $deltaX deltaY: $deltaY');
+      final double deltaY = baseY + amplitudeY * cos((x + y) / frequencyY);
 
       double stepRatio = ratio.doubleValue;
       int k = 0; // count the steps

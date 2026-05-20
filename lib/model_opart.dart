@@ -134,7 +134,7 @@ class OpArt {
       case OpArtType.Flow:
         attributes = initializeFlowAttributes();
         name = 'Flow';
-        animation = true;
+        animation = false;
       case OpArtType.Shapes:
         attributes = initializeShapesAttributes();
         name = 'Shapes';
