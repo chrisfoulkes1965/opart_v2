@@ -77,7 +77,7 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
             ),
             gradient: LinearGradient(
               colors: [
-                const Color(0xFFffffff).withOpacity(0.2),
+                const Color(0xFFffffff).withValues(alpha: 0.2),
                 const Color(0xFF303030),
               ],
               begin: const FractionalOffset(0.0, 0.0),

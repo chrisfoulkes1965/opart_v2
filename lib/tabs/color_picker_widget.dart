@@ -32,7 +32,7 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
       padding: const EdgeInsets.only(left: 80.0, bottom: 70, right: 10),
       child: Container(
           decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(10)),
           child: ValueListenableBuilder<int>(
               valueListenable: rebuildColorPicker,

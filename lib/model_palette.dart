@@ -626,14 +626,14 @@ class OpArtPalette {
         {
           for (int colorIndex = 0; colorIndex < numberOfColours; colorIndex++) {
             palette.add(
-                Color((rnd.nextDouble() * 0xFFFFFF).toInt()).withOpacity(1));
+                Color((rnd.nextDouble() * 0xFFFFFF).toInt()).withValues(alpha: 1));
           }
         }
 
       // blended random
       case 'blended random':
         {
-          final Color blendColour = Color(rnd.nextInt(0xFFFFFF)).withOpacity(1);
+          final Color blendColour = Color(rnd.nextInt(0xFFFFFF)).withValues(alpha: 1);
           palette.add(blendColour);
           for (int colourIndex = 1;
               colourIndex < numberOfColours;

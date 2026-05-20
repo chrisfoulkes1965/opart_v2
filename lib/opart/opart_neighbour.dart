@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
 import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_palette.dart';
@@ -177,7 +176,7 @@ void paintNeighbour(
   canvas.drawRect(
       const Offset(0, 0) & Size(canvasWidth, canvasHeight),
       Paint()
-        ..color = (backgroundColor.value as Color).withOpacity(1.0)
+        ..color = (backgroundColor.value as Color).withValues(alpha: 1.0)
         ..style = PaintingStyle.fill);
 
   // Now make some art
@@ -231,7 +230,7 @@ Future<void> drawNeighbours(
         nextColor =
             colorList[rnd.nextInt(numberOfColors.value as int)] as Color;
       }
-      nextColor = nextColor.withOpacity(opacity.value as double);
+      nextColor = nextColor.withValues(alpha: opacity.value as double);
 
       canvas.drawLine(
           Offset(point[0] as double, point[1] as double),

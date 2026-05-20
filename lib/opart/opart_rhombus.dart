@@ -180,9 +180,9 @@ void paintRhombus(
       colourOrder++;
       nextColor = (randomColors.value == false)
           ? opArt.palette.colorList[colourOrder % (numberOfColors.value as int)]
-              .withOpacity(opacity.value as double)
+              .withValues(alpha: opacity.value as double)
           : opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)]
-              .withOpacity(opacity.value as double);
+              .withValues(alpha: opacity.value as double);
 
       final x = borderX + i * cellWidth;
       final y = borderY + j * cellHeight;

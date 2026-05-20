@@ -184,7 +184,7 @@ void paintSquares(
         nextColor =
             opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)];
       }
-      nextColor = nextColor.withOpacity(opacity.value as double);
+      nextColor = nextColor.withValues(alpha: opacity.value as double);
       //save the colour
       squaresJ.add(nextColor);
 

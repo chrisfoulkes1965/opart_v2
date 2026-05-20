@@ -434,7 +434,7 @@ int drawSquare(
           Paint()
             ..style = PaintingStyle.fill
             ..isAntiAlias = false
-            ..color = nextColor.withOpacity(opacity.value as double));
+            ..color = nextColor.withValues(alpha: opacity.value as double));
     }
 
     // now  draw the shape
@@ -447,7 +447,7 @@ int drawSquare(
       final Paint paint = Paint()
         ..style = PaintingStyle.fill
         ..isAntiAlias = false
-        ..color = nextColor.withOpacity(opacity.value as double);
+        ..color = nextColor.withValues(alpha: opacity.value as double);
 
       final Path shape = Path();
 

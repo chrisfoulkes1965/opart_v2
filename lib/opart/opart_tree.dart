@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
 import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_palette.dart';
@@ -821,14 +820,14 @@ void drawTheTrunk(
       trunk,
       Paint()
         ..style = PaintingStyle.fill
-        ..color = trunkFillColor.withOpacity(opacity));
+        ..color = trunkFillColor.withValues(alpha: opacity));
 
   canvas.drawPath(
       trunk,
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = trunkStrokeWidth
-        ..color = trunkOutlineColor.withOpacity(opacity));
+        ..color = trunkOutlineColor.withValues(alpha: opacity));
 }
 
 void drawTheTriangle(
@@ -852,14 +851,14 @@ void drawTheTriangle(
       trunk,
       Paint()
         ..style = PaintingStyle.fill
-        ..color = trunkFillColor.withOpacity(opacity));
+        ..color = trunkFillColor.withValues(alpha: opacity));
 
   canvas.drawPath(
       trunk,
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = trunkStrokeWidth
-        ..color = trunkOutlineColor.withOpacity(opacity));
+        ..color = trunkOutlineColor.withValues(alpha: opacity));
 }
 
 void drawTheLeaf(
@@ -881,7 +880,7 @@ void drawTheLeaf(
 ) {
   // pick a random color
   final Color leafColor =
-      palette[rnd.nextInt(numberOfColors)].withOpacity(opacity) as Color;
+      palette[rnd.nextInt(numberOfColors)].withValues(alpha: opacity) as Color;
 
   leafRadius = leafRadius + rnd.nextDouble() * randomLeafLength;
 
@@ -916,7 +915,7 @@ void drawTheLeaf(
           Paint()
             ..strokeWidth = 0.0
             ..style = PaintingStyle.fill
-            ..color = leafColor.withOpacity(opacity));
+            ..color = leafColor.withValues(alpha: opacity));
 
       canvas.drawArc(
           Rect.fromCenter(
@@ -933,7 +932,7 @@ void drawTheLeaf(
           Paint()
             ..strokeWidth = 0.0
             ..style = PaintingStyle.fill
-            ..color = leafColor.withOpacity(opacity));
+            ..color = leafColor.withValues(alpha: opacity));
 
     case 'circle':
       canvas.drawCircle(
@@ -941,7 +940,7 @@ void drawTheLeaf(
           leafRadius,
           Paint()
             ..style = PaintingStyle.fill
-            ..color = leafColor.withOpacity(opacity));
+            ..color = leafColor.withValues(alpha: opacity));
 
     case 'triangle':
 
@@ -975,7 +974,7 @@ void drawTheLeaf(
           leaf,
           Paint()
             ..style = PaintingStyle.fill
-            ..color = leafColor.withOpacity(opacity));
+            ..color = leafColor.withValues(alpha: opacity));
 
     case 'square':
 
@@ -1015,7 +1014,7 @@ void drawTheLeaf(
           leaf,
           Paint()
             ..style = PaintingStyle.fill
-            ..color = leafColor.withOpacity(opacity));
+            ..color = leafColor.withValues(alpha: opacity));
 
     case 'diamond':
       // find the tip of the leaf
@@ -1054,7 +1053,7 @@ void drawTheLeaf(
           leaf,
           Paint()
             ..style = PaintingStyle.fill
-            ..color = leafColor.withOpacity(opacity));
+            ..color = leafColor.withValues(alpha: opacity));
 
     case 'quadratic':
 
@@ -1095,7 +1094,7 @@ void drawTheLeaf(
           leaf,
           Paint()
             ..style = PaintingStyle.fill
-            ..color = leafColor.withOpacity(opacity));
+            ..color = leafColor.withValues(alpha: opacity));
   }
 }
 

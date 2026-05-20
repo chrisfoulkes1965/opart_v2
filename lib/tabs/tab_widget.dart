@@ -51,7 +51,7 @@ class _TabWidgetState extends State<TabWidget> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(30),
       child: Container(
-          color: Colors.white.withOpacity(0.8),
+          color: Colors.white.withValues(alpha: 0.8),
           width: tab.width,
           child: tab.content()),
     );
@@ -69,7 +69,7 @@ class _TabWidgetState extends State<TabWidget> {
           child: ClipPath(
             clipper: CustomMenuClipper(),
             child: Container(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
                 height: 100,
                 width: 45,
                 child: Icon(tab.icon, color: Colors.cyan, size: 35)),

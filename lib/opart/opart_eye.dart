@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
 import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_palette.dart';
@@ -355,7 +354,7 @@ void paintEye(
       Paint()
         ..style = PaintingStyle.fill
         ..color = (trunkFillColor.value as Color)
-            .withOpacity(opacity.value as double));
+            .withValues(alpha: opacity.value as double));
 }
 
 void drawSegment(
@@ -537,7 +536,7 @@ void drawTheTrunk(Canvas canvas, Random rnd, double borderX, double borderY,
       Offset(p2[0] as double, p2[1] as double),
       Paint()
         ..style = PaintingStyle.stroke
-        ..color = trunkFillColor.withOpacity(opacity)
+        ..color = trunkFillColor.withValues(alpha: opacity)
         ..strokeWidth = width
         ..strokeCap = StrokeCap.round);
 }

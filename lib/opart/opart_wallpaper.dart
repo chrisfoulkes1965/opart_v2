@@ -516,7 +516,7 @@ void paintWallpaper(
             path,
             Paint()
               ..style = PaintingStyle.fill
-              ..color = nextColor.withOpacity(opacity.value as double));
+              ..color = nextColor.withValues(alpha: opacity.value as double));
 
         // if (lineWidth > 0) {
         //   canvas.drawPath(path, Paint() ..style = PaintingStyle.stroke ..strokeWidth = lineWidth ..color = lineColor);
@@ -556,7 +556,8 @@ void paintWallpaper(
                 stepRadius,
                 Paint()
                   ..style = PaintingStyle.fill
-                  ..color = nextColor.withOpacity(opacity.value as double));
+                  ..color =
+                      nextColor.withValues(alpha: opacity.value as double));
             canvas.drawCircle(
                 Offset(pO[0] as double, pO[1] as double),
                 stepRadius,
@@ -564,7 +565,7 @@ void paintWallpaper(
                   ..style = PaintingStyle.stroke
                   ..strokeWidth = lineWidth.value as double
                   ..color = (lineColor.value as Color)
-                      .withOpacity(opacity.value as double));
+                      .withValues(alpha: opacity.value as double));
 
           case 'square':
             final Path square = Path();
@@ -608,14 +609,15 @@ void paintWallpaper(
                 square,
                 Paint()
                   ..style = PaintingStyle.fill
-                  ..color = nextColor.withOpacity(opacity.value as double));
+                  ..color =
+                      nextColor.withValues(alpha: opacity.value as double));
             canvas.drawPath(
                 square,
                 Paint()
                   ..style = PaintingStyle.stroke
                   ..strokeWidth = lineWidth.value as double
                   ..color = (lineColor.value as Color)
-                      .withOpacity(opacity.value as double));
+                      .withValues(alpha: opacity.value as double));
 
             square.reset();
 
@@ -700,12 +702,13 @@ void paintWallpaper(
                   ..style = PaintingStyle.stroke
                   ..strokeWidth = lineWidth.value as double
                   ..color = (lineColor.value as Color)
-                      .withOpacity(opacity.value as double));
+                      .withValues(alpha: opacity.value as double));
             canvas.drawPath(
                 squaricle,
                 Paint()
                   ..style = PaintingStyle.fill
-                  ..color = nextColor.withOpacity(opacity.value as double));
+                  ..color =
+                      nextColor.withValues(alpha: opacity.value as double));
 
             squaricle.reset();
 
@@ -777,12 +780,13 @@ void paintWallpaper(
                     ..style = PaintingStyle.stroke
                     ..strokeWidth = lineWidth.value as double
                     ..color = (lineColor.value as Color)
-                        .withOpacity(opacity.value as double));
+                        .withValues(alpha: opacity.value as double));
               canvas.drawPath(
                   star,
                   Paint()
                     ..style = PaintingStyle.fill
-                    ..color = nextColor.withOpacity(opacity.value as double));
+                    ..color =
+                        nextColor.withValues(alpha: opacity.value as double));
             }
 
           case 'polygon':
@@ -820,12 +824,13 @@ void paintWallpaper(
                   ..style = PaintingStyle.stroke
                   ..strokeWidth = lineWidth.value as double
                   ..color = (lineColor.value as Color)
-                      .withOpacity(opacity.value as double));
+                      .withValues(alpha: opacity.value as double));
             canvas.drawPath(
                 polygon,
                 Paint()
                   ..style = PaintingStyle.fill
-                  ..color = nextColor.withOpacity(opacity.value as double));
+                  ..color =
+                      nextColor.withValues(alpha: opacity.value as double));
 
             polygon.reset();
 
@@ -919,7 +924,8 @@ void paintWallpaper(
                 centreRadius,
                 Paint()
                   ..style = PaintingStyle.fill
-                  ..color = nextColor.withOpacity(opacity.value as double));
+                  ..color =
+                      nextColor.withValues(alpha: opacity.value as double));
             canvas.drawCircle(
                 Offset(pO[0] as double, pO[1] as double),
                 centreRadius,
@@ -927,7 +933,7 @@ void paintWallpaper(
                   ..style = PaintingStyle.stroke
                   ..strokeWidth = lineWidth.value as double
                   ..color = (lineColor.value as Color)
-                      .withOpacity(opacity.value as double));
+                      .withValues(alpha: opacity.value as double));
 
             for (var petal = 0; petal < (localNumberOfPetals as int); petal++) {
               // Choose the next colour
@@ -990,12 +996,13 @@ void paintWallpaper(
                     ..style = PaintingStyle.stroke
                     ..strokeWidth = lineWidth.value as double
                     ..color = (lineColor.value as Color)
-                        .withOpacity(opacity.value as double));
+                        .withValues(alpha: opacity.value as double));
               canvas.drawPath(
                   path,
                   Paint()
                     ..style = PaintingStyle.fill
-                    ..color = nextColor.withOpacity(opacity.value as double));
+                    ..color =
+                        nextColor.withValues(alpha: opacity.value as double));
             }
 
           case 'heart':
@@ -1173,12 +1180,13 @@ void paintWallpaper(
                   ..style = PaintingStyle.stroke
                   ..strokeWidth = lineWidth.value as double
                   ..color = (lineColor.value as Color)
-                      .withOpacity(opacity.value as double));
+                      .withValues(alpha: opacity.value as double));
             canvas.drawPath(
                 heart,
                 Paint()
                   ..style = PaintingStyle.fill
-                  ..color = nextColor.withOpacity(opacity.value as double));
+                  ..color =
+                      nextColor.withValues(alpha: opacity.value as double));
 
             heart.reset();
         }

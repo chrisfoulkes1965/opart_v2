@@ -91,7 +91,7 @@ class SettingsModel {
               : rnd.nextBool();
 
         case SettingType.color:
-          value = Color((rnd.nextDouble() * 0xFFFFFF).toInt()).withOpacity(1);
+          value = Color((rnd.nextDouble() * 0xFFFFFF).toInt()).withValues(alpha: 1);
 
         case SettingType.button:
           value = false;

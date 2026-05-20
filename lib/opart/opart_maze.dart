@@ -212,7 +212,7 @@ void paintMaze(
   canvas.drawRect(
       const Offset(0, 0) & Size(canvasWidth, canvasHeight),
       Paint()
-        ..color = (backgroundColor.value as Color).withOpacity(1.0)
+        ..color = (backgroundColor.value as Color).withValues(alpha: 1.0)
         ..style = PaintingStyle.fill);
 
   final List shapesArray = [];
@@ -249,7 +249,7 @@ void paintMaze(
           nextColor =
               opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)];
         }
-        nextColor = nextColor.withOpacity(opacity.value as double);
+          nextColor = nextColor.withValues(alpha: opacity.value as double);
 
         List pA = [];
         List pB = [];

@@ -401,7 +401,7 @@ void generateFlower(
     if (currentRandomColors) {
       nextColor = currentPalette[rnd.nextInt(currentNumberOfColors)] as Color;
     }
-    final Color petalColor = nextColor.withOpacity(currentOpacity);
+    final Color petalColor = nextColor.withValues(alpha: currentOpacity);
 
     drawPetal(
       canvas,

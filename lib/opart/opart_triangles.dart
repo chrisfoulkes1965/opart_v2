@@ -396,7 +396,7 @@ void drawTriangle(
     if (randomColors.value as bool) {
       nextColor = colorList[rnd.nextInt(numberOfColors.value as int)] as Color;
     }
-    nextColor = nextColor.withOpacity(opacity.value as double);
+    nextColor = nextColor.withValues(alpha: opacity.value as double? ?? 1.0);
     Color localLineColor = lineColor;
     if (lineWidth == 0) {
       localLineColor = nextColor;

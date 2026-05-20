@@ -326,33 +326,33 @@ void paintRiley(
       colourOrder++;
       nextColor = (randomColors.value as bool)
           ? opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)]
-              .withOpacity(opacity.value as double)
+              .withValues(alpha: opacity.value as double)
           : opArt.palette.colorList[colourOrder % (numberOfColors.value as int)]
-              .withOpacity(opacity.value as double);
+              .withValues(alpha: opacity.value as double);
       fillQuad(canvas, pA, pB, pO, pH, nextColor);
 
       colourOrder++;
       nextColor = (randomColors.value as bool)
           ? opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)]
-              .withOpacity(opacity.value as double)
+              .withValues(alpha: opacity.value as double)
           : opArt.palette.colorList[colourOrder % (numberOfColors.value as int)]
-              .withOpacity(opacity.value as double);
+              .withValues(alpha: opacity.value as double);
       fillQuad(canvas, pB, pC, pD, pO, nextColor);
 
       colourOrder++;
       nextColor = (randomColors.value as bool)
           ? opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)]
-              .withOpacity(opacity.value as double)
+              .withValues(alpha: opacity.value as double)
           : opArt.palette.colorList[colourOrder % (numberOfColors.value as int)]
-              .withOpacity(opacity.value as double);
+              .withValues(alpha: opacity.value as double);
       fillQuad(canvas, pO, pD, pE, pF, nextColor);
 
       colourOrder++;
       nextColor = (randomColors.value as bool)
           ? opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)]
-              .withOpacity(opacity.value as double)
+              .withValues(alpha: opacity.value as double)
           : opArt.palette.colorList[colourOrder % (numberOfColors.value as int)]
-              .withOpacity(opacity.value as double);
+              .withValues(alpha: opacity.value as double);
       fillQuad(canvas, pH, pO, pF, pG, nextColor);
     }
   }

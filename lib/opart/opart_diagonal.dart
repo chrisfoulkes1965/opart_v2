@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
 import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_palette.dart';
@@ -225,7 +224,7 @@ void paintDiagonal(
   canvas.drawRect(
       const Offset(0, 0) & Size(size.width, size.height),
       Paint()
-        ..color = Colors.black.withOpacity(1.0)
+        ..color = Colors.black.withValues(alpha: 1.0)
         ..style = PaintingStyle.fill);
 
   rnd = Random(seed);
@@ -367,7 +366,7 @@ void drawDiagonal(
   canvas.drawRect(
       Offset(marginX, marginY) & Size(canvasWidth, canvasHeight),
       Paint()
-        ..color = backgroundColor.withOpacity(1.0)
+        ..color = backgroundColor.withValues(alpha: 1.0)
         ..style = PaintingStyle.fill);
 
   for (int i = 0; i < cellsX; ++i) {
@@ -428,10 +427,10 @@ void drawDiagonal(
 
         if (randomColors.value as bool) {
           nextColor = colorList[rnd.nextInt(numberOfColors.value as int)]
-              .withOpacity(opacity.value) as Color;
+              .withValues(alpha: opacity.value) as Color;
         } else {
           nextColor = colorList[nextColorOrder % (numberOfColors.value as int)]
-              .withOpacity(opacity.value) as Color;
+              .withValues(alpha: opacity.value) as Color;
         }
 
         radius1 = sideLength / pipes * (k - 0.5 + (ratio.value as double) / 2) -
@@ -444,25 +443,25 @@ void drawDiagonal(
           case 'circle':
             drawQuarterArc(canvas, centre1, radius1, startAngle, nextColor);
             drawQuarterArc(canvas, centre1, radius2, startAngle,
-                backgroundColor.withOpacity(1.0));
+                backgroundColor.withValues(alpha: 1.0));
 
           case 'triangle':
             drawTriangle(
                 canvas, centre1, radius1, startAngle, nextColor, pointiness);
             drawTriangle(canvas, centre1, radius2, startAngle,
-                backgroundColor.withOpacity(1.0), pointiness);
+                backgroundColor.withValues(alpha: 1.0), pointiness);
 
           case 'line':
             drawTriangle(
                 canvas, centre1, radius1, startAngle, nextColor, 1 / sqrt(2));
             drawTriangle(canvas, centre1, radius2, startAngle,
-                backgroundColor.withOpacity(1.0), 1 / sqrt(2));
+                backgroundColor.withValues(alpha: 1.0), 1 / sqrt(2));
 
           case 'square':
             drawSquare(
                 canvas, centre1, radius1, startAngle, nextColor, pointiness);
             drawSquare(canvas, centre1, radius2, startAngle,
-                backgroundColor.withOpacity(1.0), pointiness);
+                backgroundColor.withValues(alpha: 1.0), pointiness);
         }
 
         // fill in the left border
@@ -582,25 +581,25 @@ void drawDiagonal(
             drawQuarterArc(
                 canvas, centre2, radius1, startAngle + pi, nextColor);
             drawQuarterArc(canvas, centre2, radius2, startAngle + pi,
-                backgroundColor.withOpacity(1.0));
+                backgroundColor.withValues(alpha: 1.0));
 
           case 'triangle':
             drawTriangle(canvas, centre2, radius1, startAngle + pi, nextColor,
                 pointiness);
             drawTriangle(canvas, centre2, radius2, startAngle + pi,
-                backgroundColor.withOpacity(1.0), pointiness);
+                backgroundColor.withValues(alpha: 1.0), pointiness);
 
           case 'line':
             drawTriangle(canvas, centre2, radius1, startAngle + pi, nextColor,
                 1 / sqrt(2));
             drawTriangle(canvas, centre2, radius2, startAngle + pi,
-                backgroundColor.withOpacity(1.0), 1 / sqrt(2));
+                backgroundColor.withValues(alpha: 1.0), 1 / sqrt(2));
 
           case 'square':
             drawSquare(canvas, centre2, radius1, startAngle + pi, nextColor,
                 pointiness);
             drawSquare(canvas, centre2, radius2, startAngle + pi,
-                backgroundColor.withOpacity(1.0), pointiness);
+                backgroundColor.withValues(alpha: 1.0), pointiness);
         }
 
         // fill in the left border

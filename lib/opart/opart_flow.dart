@@ -332,7 +332,7 @@ void paintFlow(
             Rect.fromLTRB(x, y, x + deltaX, y + deltaY),
             Paint()
               ..style = PaintingStyle.fill
-              ..color = nextColor.withOpacity(opacity.value as double));
+              ..color = nextColor.withValues(alpha: opacity.value as double));
       }
 
       do {
@@ -357,7 +357,7 @@ void paintFlow(
                 ),
                 Paint()
                   ..style = PaintingStyle.fill
-                  ..color = nextColor.withOpacity(opacity.value as double));
+                  ..color = nextColor.withValues(alpha: opacity.value as double));
             canvas.drawOval(
                 Rect.fromLTRB(
                   pO[0] - deltaX / 2 * stepRatio as double,
@@ -369,7 +369,7 @@ void paintFlow(
                   ..style = PaintingStyle.stroke
                   ..strokeWidth = lineWidth.value as double
                   ..color = (lineColor.value as Color)
-                      .withOpacity(opacity.value as double));
+                      .withValues(alpha: opacity.value as double));
 
           case 'square':
 
@@ -390,7 +390,7 @@ void paintFlow(
                     pO[1] + deltaY / 2 * stepRatio as double),
                 Paint()
                   ..style = PaintingStyle.fill
-                  ..color = nextColor.withOpacity(opacity.value as double));
+                  ..color = nextColor.withValues(alpha: opacity.value as double));
             canvas.drawRect(
               Rect.fromLTRB(
                   pO[0] - deltaX / 2 * stepRatio as double,
@@ -401,7 +401,7 @@ void paintFlow(
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = lineWidth.value as double
                 ..color = (lineColor.value as Color)
-                    .withOpacity(opacity.value as double),
+                    .withValues(alpha: opacity.value as double),
             );
 
           case 'squaricle':
@@ -476,14 +476,14 @@ void paintFlow(
                 squaricle,
                 Paint()
                   ..style = PaintingStyle.fill
-                  ..color = nextColor.withOpacity(opacity.value as double));
+                  ..color = nextColor.withValues(alpha: opacity.value as double));
             canvas.drawPath(
                 squaricle,
                 Paint()
                   ..style = PaintingStyle.stroke
                   ..strokeWidth = lineWidth.value as double
                   ..color = (lineColor.value as Color)
-                      .withOpacity(opacity.value as double));
+                        .withValues(alpha: opacity.value as double));
 
             squaricle.reset();
         }

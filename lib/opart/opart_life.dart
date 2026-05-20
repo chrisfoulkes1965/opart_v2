@@ -138,8 +138,7 @@ void paintLife(
   borderY = (canvasHeight - (zoomOpArt.value as double) * cellsY) / 2;
   borderY = (canvasHeight - (zoomOpArt.value as double) * cellsY) / 2;
 
-  //int colourOrder = 0;
-  Color nextColor;
+ 
 
   // Now make some art
 

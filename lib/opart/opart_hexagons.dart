@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
 import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_palette.dart';
@@ -201,7 +200,7 @@ void paintHexagons(
             nextColor = opArt
                 .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
           }
-          nextColor = nextColor.withOpacity(opacity.value as double);
+          nextColor = nextColor.withValues(alpha: opacity.value as double);
           Color localLineColor = lineColor.value as Color;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
@@ -238,7 +237,7 @@ void paintHexagons(
             nextColor = opArt
                 .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
           }
-          nextColor = nextColor.withOpacity(opacity.value as double);
+          nextColor = nextColor.withValues(alpha: opacity.value as double);
 
           if (threeD.value == true) {
             // darken this one
@@ -280,7 +279,7 @@ void paintHexagons(
             nextColor = opArt
                 .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
           }
-          nextColor = nextColor.withOpacity(opacity.value as double);
+          nextColor = nextColor.withValues(alpha: opacity.value as double);
 
           if (threeD.value == true) {
             // lighten this one
@@ -332,7 +331,7 @@ void paintHexagons(
             nextColor = opArt
                 .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
           }
-          nextColor = nextColor.withOpacity(opacity.value as double);
+          nextColor = nextColor.withValues(alpha: opacity.value as double);
           localLineColor = lineColor.value as Color;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
@@ -377,7 +376,7 @@ void paintHexagons(
             nextColor = opArt
                 .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
           }
-          nextColor = nextColor.withOpacity(opacity.value as double);
+          nextColor = nextColor.withValues(alpha: opacity.value as double);
           Color localLineColor = lineColor.value as Color;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
@@ -409,7 +408,7 @@ void paintHexagons(
             nextColor = opArt
                 .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
           }
-          nextColor = nextColor.withOpacity(opacity.value as double);
+          nextColor = nextColor.withValues(alpha: opacity.value as double);
           localLineColor = lineColor.value as Color;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
@@ -441,7 +440,7 @@ void paintHexagons(
             nextColor = opArt
                 .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
           }
-          nextColor = nextColor.withOpacity(opacity.value as double);
+          nextColor = nextColor.withValues(alpha: opacity.value as double);
           localLineColor = lineColor.value as Color;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
@@ -473,7 +472,7 @@ void paintHexagons(
             nextColor = opArt
                 .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
           }
-          nextColor = nextColor.withOpacity(opacity.value as double);
+          nextColor = nextColor.withValues(alpha: opacity.value as double);
           localLineColor = lineColor.value as Color;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
@@ -505,7 +504,7 @@ void paintHexagons(
             nextColor = opArt
                 .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
           }
-          nextColor = nextColor.withOpacity(opacity.value as double);
+          nextColor = nextColor.withValues(alpha: opacity.value as double);
           localLineColor = lineColor.value as Color;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
@@ -537,7 +536,7 @@ void paintHexagons(
             nextColor = opArt
                 .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
           }
-          nextColor = nextColor.withOpacity(opacity.value as double);
+          nextColor = nextColor.withValues(alpha: opacity.value as double);
           localLineColor = lineColor.value as Color;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;

@@ -155,7 +155,7 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
               extendBodyBehindAppBar: true,
               appBar: showSettings
                   ? AppBar(
-                      backgroundColor: Colors.cyan.withOpacity(0.8),
+                      backgroundColor: Colors.cyan.withValues(alpha: 0.8),
                       title: Text(
                         opArt.name,
                         style: const TextStyle(
@@ -319,7 +319,7 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                           ),
                           if (showProgressIndicator)
                             ColoredBox(
-                                color: Colors.white.withOpacity(0.4),
+                                color: Colors.white.withValues(alpha: 0.4),
                                 child: const Center(
                                     child: CircularProgressIndicator()))
                         ],
@@ -329,7 +329,7 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                     child: showSettings
                         ? SafeArea(
                             child: Container(
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.8),
                                 width: MediaQuery.of(context).size.width,
                                 height: 60,
                                 child: ValueListenableBuilder<int>(
