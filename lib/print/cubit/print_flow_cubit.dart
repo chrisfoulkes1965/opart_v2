@@ -119,6 +119,24 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
     }
   }
 
+  Future<void> changeRecipe(Map<String, dynamic> recipe) async {
+    _activeProductId = null;
+    _designsByArtworkKey.clear();
+    _designFuturesByArtworkKey.clear();
+    _rasterService.clearCache();
+
+    emit(
+      PrintFlowState(
+        recipe: recipe,
+        status: PrintFlowStatus.loading,
+        progressMessage: 'Updating design…',
+        products: state.products,
+      ),
+    );
+
+    await initialize();
+  }
+
   Future<Map<int, Uint8List>> _previewForProduct(PrintProduct product) async {
     final previews = Map<int, Uint8List>.from(state.productPreviewByProductId);
     if (previews.containsKey(product.id)) {

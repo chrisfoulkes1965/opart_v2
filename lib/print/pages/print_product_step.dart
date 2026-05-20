@@ -10,9 +10,16 @@ import 'package:opart_v2/print/models/print_models.dart';
 import 'package:opart_v2/print/models/print_product_definition.dart';
 
 class PrintProductStep extends StatelessWidget {
-  const PrintProductStep({super.key, required this.products});
+  const PrintProductStep({
+    super.key,
+    required this.products,
+    this.onProductSelected,
+    this.onPhoneCaseGroupSelected,
+  });
 
   final List<PrintProduct> products;
+  final void Function(PrintProduct product)? onProductSelected;
+  final VoidCallback? onPhoneCaseGroupSelected;
 
   static const double _productCardWidth = 112;
   static const double _productImageSize = 96;
@@ -58,6 +65,23 @@ class PrintProductStep extends StatelessWidget {
           }
         }
 
+        final cubit = context.read<PrintFlowCubit>();
+        void handleProductSelected(PrintProduct product) {
+          if (onProductSelected != null) {
+            onProductSelected!(product);
+          } else {
+            cubit.selectProduct(product);
+          }
+        }
+
+        void handlePhoneCaseGroupSelected() {
+          if (onPhoneCaseGroupSelected != null) {
+            onPhoneCaseGroupSelected!();
+          } else {
+            cubit.selectPhoneCaseGroup();
+          }
+        }
+
         return ListView(
           padding: const EdgeInsets.only(bottom: 24),
           children: [
@@ -70,10 +94,8 @@ class PrintProductStep extends StatelessWidget {
                 category: entry.key,
                 items: entry.value,
                 isBusy: state.isBusy,
-                onProductSelected: (product) =>
-                    context.read<PrintFlowCubit>().selectProduct(product),
-                onPhoneCaseGroupSelected: () =>
-                    context.read<PrintFlowCubit>().selectPhoneCaseGroup(),
+                onProductSelected: handleProductSelected,
+                onPhoneCaseGroupSelected: handlePhoneCaseGroupSelected,
               ),
             ],
           ],

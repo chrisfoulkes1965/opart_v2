@@ -85,6 +85,18 @@ class OpArtRecipe {
     return key.endsWith(' Color') && key != 'Number of Colors';
   }
 
+  static Map<String, dynamic> defaultForType(
+    OpArtType type, {
+    int? seed,
+    double animationValue = 1.0,
+  }) {
+    return fromOpArt(
+      OpArt(opArtType: type),
+      seed: seed ?? DateTime.now().millisecond,
+      animationValue: animationValue,
+    );
+  }
+
   static Map<String, dynamic> fromOpArt(
     OpArt opArt, {
     required int seed,

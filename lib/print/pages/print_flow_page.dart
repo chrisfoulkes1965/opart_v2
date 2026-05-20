@@ -1,13 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opart_v2/print/cubit/print_flow_cubit.dart';
 import 'package:opart_v2/print/cubit/print_flow_state.dart';
+import 'package:opart_v2/print/models/print_catalog.dart';
+import 'package:opart_v2/print/models/print_models.dart';
+import 'package:opart_v2/print/pages/print_apparel_step.dart';
 import 'package:opart_v2/print/pages/print_checkout_step.dart';
 import 'package:opart_v2/print/pages/print_confirmation_step.dart';
 import 'package:opart_v2/print/pages/print_crop_step.dart';
-import 'package:opart_v2/print/pages/print_apparel_step.dart';
 import 'package:opart_v2/print/pages/print_phone_case_step.dart';
-import 'package:opart_v2/print/models/print_catalog.dart';
 import 'package:opart_v2/print/pages/print_preview_step.dart';
 import 'package:opart_v2/print/pages/print_product_step.dart';
 import 'package:opart_v2/print/pages/print_variant_step.dart';
@@ -18,21 +21,25 @@ class PrintFlowPage extends StatefulWidget {
     super.key,
     required this.recipe,
     this.completedOrderId,
+    this.initialProduct,
   });
 
   final Map<String, dynamic> recipe;
   final String? completedOrderId;
+  final PrintProduct? initialProduct;
 
   static Future<void> open(
     BuildContext context, {
     required Map<String, dynamic> recipe,
     String? completedOrderId,
+    PrintProduct? initialProduct,
   }) {
     return Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) => PrintFlowPage(
           recipe: recipe,
           completedOrderId: completedOrderId,
+          initialProduct: initialProduct,
         ),
       ),
     );
@@ -51,9 +58,19 @@ class _PrintFlowPageState extends State<PrintFlowPage> {
     _cubit = PrintFlowCubit(recipe: widget.recipe);
     if (widget.completedOrderId != null) {
       _cubit.completeOrder(widget.completedOrderId!);
+    } else if (widget.initialProduct != null) {
+      unawaited(_bootstrapWithProduct(widget.initialProduct!));
     } else {
       _cubit.initialize();
     }
+  }
+
+  Future<void> _bootstrapWithProduct(PrintProduct product) async {
+    await _cubit.initialize();
+    if (!mounted) {
+      return;
+    }
+    await _cubit.selectProduct(product);
   }
 
   @override

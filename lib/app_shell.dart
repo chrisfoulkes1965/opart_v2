@@ -47,7 +47,7 @@ class _AppShellState extends State<AppShell> {
               _galleryIndex,
               showHomeButton: false,
             ),
-            const ShopPage(),
+            ShopPage(),
           ],
         ),
         bottomNavigationBar: NavigationBar(

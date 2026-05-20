@@ -86,6 +86,17 @@ void main() {
       expect(restored.palette.colorList, source.palette.colorList);
     });
 
+    test('defaultForType produces a valid recipe for each catalog type', () {
+      final recipe = OpArtRecipe.defaultForType(
+        OpArtType.Squares,
+        seed: 42,
+      );
+
+      expect(recipe['type'], OpArtType.Squares);
+      expect(recipe['seed'], 42);
+      expect(OpArtRecipe.toOpArt(recipe).opArtType, OpArtType.Squares);
+    });
+
     test('toOpArtForPrint forces full-screen aspect for crop rendering', () {
       final source = OpArt(opArtType: OpArtType.Diagonal);
       final recipe = OpArtRecipe.fromOpArt(

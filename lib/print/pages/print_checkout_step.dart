@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opart_v2/print/cubit/print_flow_cubit.dart';
 import 'package:opart_v2/print/cubit/print_flow_state.dart';
@@ -54,99 +55,115 @@ class _PrintCheckoutStepState extends State<PrintCheckoutStep> {
       builder: (context, state) {
         return Form(
           key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              if (state.selectedVariant != null)
-                Text(
-                  state.selectedVariant!.name,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+          child: AutofillGroup(
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                if (state.selectedVariant != null)
+                  Text(
+                    state.selectedVariant!.name,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              const SizedBox(height: 16),
-              _field(
-                controller: _nameController,
-                label: 'Full name',
-                validator: _required,
-              ),
-              _field(
-                controller: _emailController,
-                label: 'Email',
-                keyboardType: TextInputType.emailAddress,
-                validator: _required,
-              ),
-              _field(
-                controller: _address1Controller,
-                label: 'Address line 1',
-                validator: _required,
-              ),
-              _field(
-                controller: _address2Controller,
-                label: 'Address line 2 (optional)',
-              ),
-              _field(
-                controller: _cityController,
-                label: 'City',
-                validator: _required,
-              ),
-              _field(
-                controller: _stateController,
-                label: 'State / Province',
-                validator: _required,
-              ),
-              DropdownButtonFormField<String>(
-                initialValue: _countryCode,
-                decoration: const InputDecoration(
-                  labelText: 'Country',
-                  border: OutlineInputBorder(),
-                ),
-                items: const [
-                  DropdownMenuItem(value: 'US', child: Text('United States')),
-                  DropdownMenuItem(value: 'GB', child: Text('United Kingdom')),
-                  DropdownMenuItem(value: 'CA', child: Text('Canada')),
-                  DropdownMenuItem(value: 'AU', child: Text('Australia')),
-                  DropdownMenuItem(value: 'DE', child: Text('Germany')),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => _countryCode = value);
-                  }
-                },
-              ),
-              const SizedBox(height: 12),
-              _field(
-                controller: _zipController,
-                label: 'ZIP / Postal code',
-                validator: _required,
-              ),
-              const SizedBox(height: 16),
-              OutlinedButton(
-                onPressed: state.isBusy ? null : _updateAndEstimate,
-                child: const Text('Calculate total'),
-              ),
-              if (state.estimate != null) ...[
                 const SizedBox(height: 16),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      'Total: ${state.estimate!.formattedRetailTotal}',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                _field(
+                  controller: _nameController,
+                  label: 'Full name',
+                  autofillHints: const [AutofillHints.name],
+                  textCapitalization: TextCapitalization.words,
+                  validator: _required,
+                ),
+                _field(
+                  controller: _emailController,
+                  label: 'Email',
+                  keyboardType: TextInputType.emailAddress,
+                  autofillHints: const [AutofillHints.email],
+                  autocorrect: false,
+                  validator: _required,
+                ),
+                _field(
+                  controller: _address1Controller,
+                  label: 'Address line 1',
+                  autofillHints: const [AutofillHints.streetAddressLine1],
+                  validator: _required,
+                ),
+                _field(
+                  controller: _address2Controller,
+                  label: 'Address line 2 (optional)',
+                  autofillHints: const [AutofillHints.streetAddressLine2],
+                ),
+                _field(
+                  controller: _cityController,
+                  label: 'City',
+                  autofillHints: const [AutofillHints.addressCity],
+                  textCapitalization: TextCapitalization.words,
+                  validator: _required,
+                ),
+                _field(
+                  controller: _stateController,
+                  label: 'State / Province',
+                  autofillHints: const [AutofillHints.addressState],
+                  textCapitalization: TextCapitalization.characters,
+                  validator: _required,
+                ),
+                DropdownButtonFormField<String>(
+                  initialValue: _countryCode,
+                  decoration: const InputDecoration(
+                    labelText: 'Country',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 'US', child: Text('United States')),
+                    DropdownMenuItem(
+                        value: 'GB', child: Text('United Kingdom')),
+                    DropdownMenuItem(value: 'CA', child: Text('Canada')),
+                    DropdownMenuItem(value: 'AU', child: Text('Australia')),
+                    DropdownMenuItem(value: 'DE', child: Text('Germany')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _countryCode = value);
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
+                _field(
+                  controller: _zipController,
+                  label: 'ZIP / Postal code',
+                  autofillHints: const [AutofillHints.postalCode],
+                  keyboardType: TextInputType.visiblePassword,
+                  autocorrect: false,
+                  validator: _required,
+                ),
+                const SizedBox(height: 16),
+                OutlinedButton(
+                  onPressed: state.isBusy ? null : _updateAndEstimate,
+                  child: const Text('Calculate total'),
+                ),
+                if (state.estimate != null) ...[
+                  const SizedBox(height: 16),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        'Total: ${state.estimate!.formattedRetailTotal}',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
+                ],
+                const SizedBox(height: 24),
+                FilledButton(
+                  onPressed: state.isBusy ? null : _pay,
+                  child: const Text('Pay with Stripe'),
                 ),
               ],
-              const SizedBox(height: 24),
-              FilledButton(
-                onPressed: state.isBusy ? null : _pay,
-                child: const Text('Pay with Stripe'),
-              ),
-            ],
+            ),
           ),
         );
       },
@@ -158,6 +175,9 @@ class _PrintCheckoutStepState extends State<PrintCheckoutStep> {
     required String label,
     String? Function(String?)? validator,
     TextInputType? keyboardType,
+    Iterable<String>? autofillHints,
+    TextCapitalization textCapitalization = TextCapitalization.none,
+    bool autocorrect = true,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -168,6 +188,9 @@ class _PrintCheckoutStepState extends State<PrintCheckoutStep> {
           border: const OutlineInputBorder(),
         ),
         keyboardType: keyboardType,
+        autofillHints: autofillHints,
+        textCapitalization: textCapitalization,
+        autocorrect: autocorrect,
         validator: validator,
       ),
     );
@@ -206,6 +229,7 @@ class _PrintCheckoutStepState extends State<PrintCheckoutStep> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
+    TextInput.finishAutofillContext();
     final cubit = context.read<PrintFlowCubit>();
     cubit.updateShippingAddress(_buildAddress());
     cubit.startCheckout();
