@@ -2,12 +2,11 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:opart_v2/opart_icons.dart';
-
 import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_palette.dart';
 import 'package:opart_v2/model_settings.dart';
+import 'package:opart_v2/opart_icons.dart';
 
 List<String> list = [];
 
@@ -522,7 +521,6 @@ void paintWallpaper(
         // if (lineWidth > 0) {
         //   canvas.drawPath(path, Paint() ..style = PaintingStyle.stroke ..strokeWidth = lineWidth ..color = lineColor);
         // }
-
       }
 
       do {
@@ -567,7 +565,6 @@ void paintWallpaper(
                   ..strokeWidth = lineWidth.value as double
                   ..color = (lineColor.value as Color)
                       .withOpacity(opacity.value as double));
-
 
           case 'square':
             final Path square = Path();
@@ -621,7 +618,6 @@ void paintWallpaper(
                       .withOpacity(opacity.value as double));
 
             square.reset();
-
 
           case 'squaricle':
             final double curveCentreRadius =
@@ -713,7 +709,6 @@ void paintWallpaper(
 
             squaricle.reset();
 
-
           case 'star':
             for (var p = 0; p < (localNumberOfPetals as int); p++) {
               final List petalPoint = [
@@ -723,8 +718,7 @@ void paintWallpaper(
                             p * pi * 2 / localNumberOfPetals),
                 pO[1] +
                     stepRadius *
-                        sin(localRotate * pi +
-                            p * pi * 2 / localNumberOfPetals)
+                        sin(localRotate * pi + p * pi * 2 / localNumberOfPetals)
               ];
 
               final List petalMidPointA = [
@@ -791,7 +785,6 @@ void paintWallpaper(
                     ..color = nextColor.withOpacity(opacity.value as double));
             }
 
-
           case 'polygon':
             final Path polygon = Path();
 
@@ -835,7 +828,6 @@ void paintWallpaper(
                   ..color = nextColor.withOpacity(opacity.value as double));
 
             polygon.reset();
-
 
           // case 'star':
           //   for (var p = 0; p < localNumberOfPetals; p++) {
@@ -1005,7 +997,6 @@ void paintWallpaper(
                     ..style = PaintingStyle.fill
                     ..color = nextColor.withOpacity(opacity.value as double));
             }
-
 
           case 'heart':
 
@@ -1190,7 +1181,6 @@ void paintWallpaper(
                   ..color = nextColor.withOpacity(opacity.value as double));
 
             heart.reset();
-
         }
 
         // Drift & Rotate

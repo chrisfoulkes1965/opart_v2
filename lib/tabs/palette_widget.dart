@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:opart_v2/model_settings.dart';
-import 'package:opart_v2/opart_page.dart' as opart_page;
-
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_palette.dart';
+import 'package:opart_v2/model_settings.dart';
+import 'package:opart_v2/opart_page.dart' as opart_page;
 
 int currentColor = 0;
 
@@ -46,7 +45,9 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                   decoration: BoxDecoration(
                       border: Border.all(
                           width: i == currentColor &&
-                                  (opart_page.currentOpArtPageState?.showCustomColorPicker ?? false)
+                                  (opart_page.currentOpArtPageState
+                                          ?.showCustomColorPicker ??
+                                      false)
                               ? 2
                               : 0),
                       color: opart_page.currentOpArtPageState?.opArt
@@ -171,11 +172,12 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                           .value = numberOfColors.value;
                       if (numberOfColors.value as int > paletteLength) {
                         final String paletteType = opart_page
-                            .currentOpArtPageState?.opArt.attributes
-                            .firstWhere(
-                                (element) => element.name == 'paletteType')
-                            .value
-                            .toString() ?? 'random';
+                                .currentOpArtPageState?.opArt.attributes
+                                .firstWhere(
+                                    (element) => element.name == 'paletteType')
+                                .value
+                                .toString() ??
+                            'random';
                         opart_page.currentOpArtPageState?.opArt.palette
                             .randomize(
                                 paletteType, numberOfColors.value as int);
@@ -209,7 +211,9 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                   decoration: BoxDecoration(
                       border: Border.all(
                           width: i == currentColor &&
-                                  (opart_page.currentOpArtPageState?.showCustomColorPicker ?? false)
+                                  (opart_page.currentOpArtPageState
+                                          ?.showCustomColorPicker ??
+                                      false)
                               ? 2
                               : 0),
                       color: opart_page

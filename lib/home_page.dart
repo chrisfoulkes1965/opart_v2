@@ -160,8 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute<void>(
-                      builder: (context) =>
-                          MyGallery(savedOpArt.length - 1),
+                      builder: (context) => MyGallery(savedOpArt.length - 1),
                     ),
                   );
                 },
@@ -195,8 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute<void>(
-                                  builder: (context) =>
-                                      MyGallery(index + 1),
+                                  builder: (context) => MyGallery(index + 1),
                                 ),
                               );
                             },
@@ -215,8 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       height: 100,
                                       child: Image.memory(
                                         base64Decode(
-                                          savedOpArt[index]['image']
-                                              as String,
+                                          savedOpArt[index]['image'] as String,
                                         ),
                                         fit: BoxFit.fitWidth,
                                       ),
@@ -250,8 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     showDelete = false;
                                                     rebuildMain.value++;
                                                   },
-                                                  backgroundColor:
-                                                      Colors.white,
+                                                  backgroundColor: Colors.white,
                                                   child: const Icon(
                                                     Icons.delete,
                                                     color: Colors.grey,

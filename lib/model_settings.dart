@@ -76,7 +76,6 @@ class SettingsModel {
               ? rnd.nextDouble() * (max - min) + min
               : defaultValue;
 
-
         case SettingType.int:
           final int min = _asInt(randomMin ?? this.min, fallback: 5);
           final int max = _asInt(randomMax ?? this.max, fallback: 5);
@@ -86,16 +85,13 @@ class SettingsModel {
               ? rnd.nextInt(max - min) + min
               : defaultValue;
 
-
         case SettingType.bool:
           value = (randomTrue != null)
               ? rnd.nextDouble() < randomTrue!
               : rnd.nextBool();
 
-
         case SettingType.color:
           value = Color((rnd.nextDouble() * 0xFFFFFF).toInt()).withOpacity(1);
-
 
         case SettingType.button:
           value = false;

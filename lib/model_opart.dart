@@ -1,16 +1,10 @@
 import 'dart:convert';
 import 'dart:core';
-import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:opart_v2/opart/opart_life.dart';
-import 'package:opart_v2/opart/opart_triangles.dart';
-import 'package:screenshot/screenshot.dart';
-
 import 'package:opart_v2/app_state.dart';
-import 'package:opart_v2/canvas.dart';
 import 'package:opart_v2/database_helper.dart';
 import 'package:opart_v2/model_palette.dart';
 import 'package:opart_v2/model_settings.dart';
@@ -19,6 +13,7 @@ import 'package:opart_v2/opart/opart_eye.dart';
 import 'package:opart_v2/opart/opart_fibonacci.dart';
 import 'package:opart_v2/opart/opart_flow.dart';
 import 'package:opart_v2/opart/opart_hexagons.dart';
+import 'package:opart_v2/opart/opart_life.dart';
 import 'package:opart_v2/opart/opart_maze.dart';
 import 'package:opart_v2/opart/opart_neighbour.dart';
 import 'package:opart_v2/opart/opart_plasma.dart';
@@ -29,8 +24,10 @@ import 'package:opart_v2/opart/opart_shapes.dart';
 import 'package:opart_v2/opart/opart_squares.dart';
 import 'package:opart_v2/opart/opart_string.dart';
 import 'package:opart_v2/opart/opart_tree.dart';
+import 'package:opart_v2/opart/opart_triangles.dart';
 import 'package:opart_v2/opart/opart_wallpaper.dart';
 import 'package:opart_v2/opart/opart_wave.dart';
+import 'package:screenshot/screenshot.dart';
 
 List<Map<String, dynamic>> savedOpArt = [];
 ScreenshotController screenshotController = ScreenshotController();
@@ -174,14 +171,13 @@ class OpArt {
 
   Future<int> saveToLocalDB() async {
     try {
-      final Uint8List? imageBytes = await screenshotController
-          .capture(
+      final Uint8List? imageBytes = await screenshotController.capture(
         delay: const Duration(milliseconds: 200),
       );
 
-    if (imageBytes == null) return 0;
+      if (imageBytes == null) return 0;
 
-    final String base64Image = base64Encode(imageBytes);
+      final String base64Image = base64Encode(imageBytes);
       final Map<String, dynamic> map = {};
       for (int i = 0; i < attributes.length; i++) {
         map.addAll({attributes[i].label: attributes[i].value});
@@ -193,7 +189,9 @@ class OpArt {
         'paletteName': palette.paletteName,
         'type': opArtType,
         'paid': false,
-        'animationControllerValue': animation && animationController != null ? animationController!.value : 1.0,
+        'animationControllerValue': animation && animationController != null
+            ? animationController!.value
+            : 1.0,
       });
 
       final Map<String, dynamic> sqlMap = {};
@@ -212,7 +210,9 @@ class OpArt {
         'paletteName': palette.paletteName,
         'type': opArtType.toString(),
         'paid': false,
-        'animationControllerValue': animation && animationController != null ? animationController!.value : 1.0
+        'animationControllerValue': animation && animationController != null
+            ? animationController!.value
+            : 1.0
       });
 
       final DatabaseHelper helper = DatabaseHelper.instance;
@@ -222,7 +222,7 @@ class OpArt {
         rebuildMain.value++;
         rebuildGallery.value++;
       });
-    return savedOpArt.length;
+      return savedOpArt.length;
     } catch (e) {
       print('Error saving to local DB: $e');
       return 0;
@@ -232,49 +232,50 @@ class OpArt {
   void saveToCache() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
-        final Uint8List? imageBytes = await screenshotController
-            .capture(delay: const Duration(milliseconds: 200), pixelRatio: 0.2);
+        final Uint8List? imageBytes = await screenshotController.capture(
+            delay: const Duration(milliseconds: 200), pixelRatio: 0.2);
 
-      if (imageBytes != null) {
-        final Map<String, dynamic> map = {};
-        for (int i = 0; i < attributes.length; i++) {
-          map.addAll({attributes[i].label: attributes[i].value});
+        if (imageBytes != null) {
+          final Map<String, dynamic> map = {};
+          for (int i = 0; i < attributes.length; i++) {
+            map.addAll({attributes[i].label: attributes[i].value});
+          }
+          map.addAll({
+            'seed': seed,
+            'image': imageBytes,
+            'paletteName': palette.paletteName,
+            'colors': palette.colorList,
+            'numberOfColors': numberOfColors.value,
+            'animationControllerValue': animation && animationController != null
+                ? animationController!.value
+                : 1.0
+          });
+
+          cache.add(map);
+
+          rebuildCache.value++;
+          if (scrollController.hasClients) {
+            await scrollController.animateTo(
+                scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.fastOutSlowIn);
+          }
+          enableButton = true;
+        } else {
+          enableButton = true;
         }
-        map.addAll({
-          'seed': seed,
-          'image': imageBytes,
-          'paletteName': palette.paletteName,
-          'colors': palette.colorList,
-          'numberOfColors': numberOfColors.value,
-          'animationControllerValue':
-              animation && animationController != null ? animationController!.value : 1.0
-        });
-
-        cache.add(map);
-
-        rebuildCache.value++;
-        if (scrollController.hasClients) {
-          await scrollController.animateTo(
-              scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.fastOutSlowIn);
-        }
-        enableButton = true;
-      } else {
+      } catch (e) {
+        print('Error saving to cache: $e');
         enableButton = true;
       }
-    } catch (e) {
-      print('Error saving to cache: $e');
-      enableButton = true;
-    }
     });
   }
 
   void revertToCache(int index) {
     seed = cache[index]['seed'] as int;
     if (animation && animationController != null) {
-      animationController!.forward(
-          from: cache[index]['animationControllerValue'] as double);
+      animationController!
+          .forward(from: cache[index]['animationControllerValue'] as double);
     }
     for (int i = 0; i < attributes.length; i++) {
       attributes[i].value = cache[index][attributes[i].label];
@@ -289,10 +290,7 @@ class OpArt {
 
   void clearCache() {
     cache.clear();
-  }
-
-  int cacheListLength() {
-    return cache.length;
+    rebuildCache.value++;
   }
 
   void paint(Canvas canvas, Size size, int seed, double animationVariable) {

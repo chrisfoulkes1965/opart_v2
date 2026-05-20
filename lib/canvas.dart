@@ -3,11 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:screenshot/screenshot.dart';
-
 import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/model_opart.dart';
-import 'package:opart_v2/opart_page.dart';
+import 'package:screenshot/screenshot.dart';
 
 class CanvasWidget extends StatefulWidget {
   final bool fullScreen;
@@ -54,7 +52,7 @@ class _CanvasWidgetState extends State<CanvasWidget>
           }
         });
 
-      animationController.forward(from: widget.animationValue ?? 0.0);
+      animationController.forward(from: widget.animationValue);
     }
 
     super.initState();
@@ -83,8 +81,13 @@ class _CanvasWidgetState extends State<CanvasWidget>
                         width: constraints.widthConstraints().maxWidth,
                         height: constraints.heightConstraints().maxHeight,
                         child: CustomPaint(
-                          painter: OpArtPainter(seed, rnd,
-                              widget.opArt.animation ? currentAnimation.value : 1, widget.opArt),
+                          painter: OpArtPainter(
+                              seed,
+                              rnd,
+                              widget.opArt.animation
+                                  ? currentAnimation.value
+                                  : 1,
+                              widget.opArt),
                         ),
                       ),
                     ),
@@ -138,7 +141,7 @@ class _CanvasWidgetState extends State<CanvasWidget>
                                 animationController.stop();
                                 playing = false;
                               });
-                                                        }, playing)
+                            }, playing)
                           else
                             Container(),
                           if (showControls)

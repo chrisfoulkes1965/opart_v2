@@ -312,7 +312,6 @@ void drawTriangle(
             lineColor,
             lineWidth);
 
-
       case 1:
         final List pN = [
           p0[0] * localRatio + p2[0] * (1 - localRatio),
@@ -351,7 +350,6 @@ void drawTriangle(
             lineColor,
             lineWidth);
 
-
       case 2:
         final List pN = [
           p0[0] * localRatio + p1[0] * (1 - localRatio),
@@ -389,7 +387,6 @@ void drawTriangle(
             colourOrder + 2,
             lineColor,
             lineWidth);
-
     }
   } else {
     // Choose the next colour

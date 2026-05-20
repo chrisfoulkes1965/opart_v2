@@ -71,8 +71,7 @@ class DatabaseHelper {
           fixedData['type'] = OpArtType.values
               .firstWhere((e) => e.toString() == raw['type'] as String);
         } else if (key == 'colors') {
-          final List<String> stringList =
-              value.toString().split(',');
+          final List<String> stringList = value.toString().split(',');
           final List<Color> colorList = [];
           for (final part in stringList) {
             if (!part.contains('(0x')) continue;

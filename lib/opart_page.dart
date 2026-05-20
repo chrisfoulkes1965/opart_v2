@@ -268,9 +268,9 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                                   });
                             }),
                         IconButton(
-                            icon: const Icon(Icons.share, color: Colors.black),
-                            onPressed: _exportHighResPng,
-                          ),
+                          icon: const Icon(Icons.share, color: Colors.black),
+                          onPressed: _exportHighResPng,
+                        ),
                       ],
                     )
                   : null,
@@ -335,14 +335,21 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                                 child: ValueListenableBuilder<int>(
                                     valueListenable: rebuildCache,
                                     builder: (context, value, child) {
-                                      return opArt.cacheListLength() == 0
+                                      final cacheLength = opArt.cache.length;
+                                      return cacheLength == 0
                                           ? Container()
                                           : ListView.builder(
                                               scrollDirection: Axis.horizontal,
                                               controller: scrollController,
-                                              itemCount:
-                                                  opArt.cacheListLength(),
+                                              itemCount: cacheLength,
                                               itemBuilder: (context, index) {
+                                                if (index >=
+                                                    opArt.cache.length) {
+                                                  return const SizedBox
+                                                      .shrink();
+                                                }
+                                                final entry =
+                                                    opArt.cache[index];
                                                 return Padding(
                                                   padding: const EdgeInsets
                                                       .symmetric(
@@ -356,8 +363,7 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                                                             index);
                                                       },
                                                       child: Image.memory(
-                                                          opArt.cache[index]
-                                                                  ['image']
+                                                          entry['image']
                                                               as Uint8List,
                                                           fit: BoxFit.fitWidth),
                                                     ),

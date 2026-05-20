@@ -520,8 +520,7 @@ void drawDiagonal(
           }
           if (centre1 == p1) {
             canvas.drawRect(
-                Offset(centre1[0] - radius2 - width as double,
-                        marginY) &
+                Offset(centre1[0] - radius2 - width as double, marginY) &
                     Size(width, borderY),
                 Paint()
                   ..color = nextColor
@@ -659,8 +658,7 @@ void drawDiagonal(
           }
           if (centre2 == p1) {
             canvas.drawRect(
-                Offset(centre2[0] - radius2 - width as double,
-                        marginY) &
+                Offset(centre2[0] - radius2 - width as double, marginY) &
                     Size(width, borderY),
                 Paint()
                   ..color = nextColor

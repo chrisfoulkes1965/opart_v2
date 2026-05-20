@@ -309,7 +309,7 @@ void paintEye(
 
   // colour in the canvas
   canvas.drawRect(
-      const Offset(0, 0) & Size(size.width, size.height),
+      Offset.zero & Size(size.width, size.height),
       Paint()
         ..color = backgroundColor.value as Color
         ..style = PaintingStyle.fill);

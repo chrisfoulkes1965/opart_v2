@@ -2,12 +2,11 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:opart_v2/opart_icons.dart';
-
 import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_palette.dart';
 import 'package:opart_v2/model_settings.dart';
+import 'package:opart_v2/opart_icons.dart';
 
 List<String> list = [];
 
@@ -481,11 +480,9 @@ int drawSquare(
 
           canvas.drawPath(shape, paint);
 
-
         case 'shapeCircle': // circle
 
           canvas.drawCircle(Offset(pO[0], pO[1]), ratio * side / 2, paint);
-
 
         case 'shapeQuarterCircle': // quarter circle
 
@@ -606,7 +603,6 @@ int drawSquare(
 
           canvas.drawPath(shape, paint);
 
-
         case 'shapeQuarterSquare': // quarter square
 
           switch (rnd.nextInt(4)) {
@@ -635,7 +631,6 @@ int drawSquare(
               shape.lineTo((pC[0] + pD[0]) / 2, (pC[1] + pD[1]) / 2);
           }
           canvas.drawPath(shape, paint);
-
 
         case 'shapeMiniCircle': // mini circle
           switch (rnd.nextInt(4)) {
@@ -667,7 +662,6 @@ int drawSquare(
                   (pC[1] + pD[1]) / 2);
               shape.lineTo(pD[0], pD[1]);
 
-
             case 1:
               shape.moveTo(pB[0], pB[1]);
               shape.lineTo((pB[0] + pC[0]) / 2, (pB[1] + pC[1]) / 2);
@@ -679,7 +673,6 @@ int drawSquare(
                   (pD[0] + pA[0]) / 2,
                   (pD[1] + pA[1]) / 2);
               shape.lineTo(pA[0], pA[1]);
-
 
             case 2:
               shape.moveTo(pC[0], pC[1]);
@@ -693,7 +686,6 @@ int drawSquare(
                   (pA[1] + pB[1]) / 2);
               shape.lineTo(pB[0], pB[1]);
 
-
             case 3:
               shape.moveTo(pD[0], pD[1]);
               shape.lineTo((pD[0] + pA[0]) / 2, (pD[1] + pA[1]) / 2);
@@ -705,11 +697,9 @@ int drawSquare(
                   (pB[0] + pC[0]) / 2,
                   (pB[1] + pC[1]) / 2);
               shape.lineTo(pC[0], pC[1]);
-
           }
 
           canvas.drawPath(shape, paint);
-
 
         case 'shapeSquaredCircle':
           switch (rnd.nextInt(4)) {
@@ -759,7 +749,6 @@ int drawSquare(
                   Offset(pA[0], pA[1] + side / 2) & Size(side, side / 2),
                   paint);
           }
-
       }
     }
   }

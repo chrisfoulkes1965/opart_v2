@@ -935,7 +935,6 @@ void drawTheLeaf(
             ..style = PaintingStyle.fill
             ..color = leafColor.withOpacity(opacity));
 
-
     case 'circle':
       canvas.drawCircle(
           Offset(pC[0] as double, pC[1] as double),
@@ -943,7 +942,6 @@ void drawTheLeaf(
           Paint()
             ..style = PaintingStyle.fill
             ..color = leafColor.withOpacity(opacity));
-
 
     case 'triangle':
 
@@ -978,7 +976,6 @@ void drawTheLeaf(
           Paint()
             ..style = PaintingStyle.fill
             ..color = leafColor.withOpacity(opacity));
-
 
     case 'square':
 
@@ -1059,7 +1056,6 @@ void drawTheLeaf(
             ..style = PaintingStyle.fill
             ..color = leafColor.withOpacity(opacity));
 
-
     case 'quadratic':
 
       // find the tip of the leaf
@@ -1100,7 +1096,6 @@ void drawTheLeaf(
           Paint()
             ..style = PaintingStyle.fill
             ..color = leafColor.withOpacity(opacity));
-
   }
 }
 

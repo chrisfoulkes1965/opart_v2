@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:opart_v2/tabs/general_tab.dart';
-
 import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/tabs/general_tab.dart';
 
 class TabWidget extends StatefulWidget {
   final GeneralTab tab;

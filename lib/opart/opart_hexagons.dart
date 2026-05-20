@@ -227,7 +227,6 @@ void paintHexagons(
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = lineWidth.value as double);
 
-
         case 'three':
 
           // R1
@@ -366,7 +365,6 @@ void paintHexagons(
                 ..color = localLineColor
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = lineWidth.value as double);
-
 
         case 'six':
 
@@ -561,7 +559,6 @@ void paintHexagons(
                 ..color = localLineColor
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = lineWidth.value as double);
-
       }
     }
   }

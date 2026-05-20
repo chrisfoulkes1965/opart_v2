@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:opart_v2/opart_page.dart' as opart_page;
-
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_settings.dart';
+import 'package:opart_v2/opart_page.dart' as opart_page;
 import 'package:opart_v2/tabs/general_tab.dart';
 
 int slider = 100;
@@ -112,8 +111,8 @@ Widget toolBoxTab() {
                                           : Colors.cyan,
                                       width: 4)),
                               child: IconButton(
-                                  icon:
-                                      tools[index].icon ?? const Icon(Icons.settings),
+                                  icon: tools[index].icon ??
+                                      const Icon(Icons.settings),
                                   color: index == slider
                                       ? Colors.black
                                       : Colors.cyan,

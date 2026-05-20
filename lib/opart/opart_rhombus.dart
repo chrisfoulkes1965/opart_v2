@@ -2,12 +2,11 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:opart_v2/opart_icons.dart';
-
 import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_palette.dart';
 import 'package:opart_v2/model_settings.dart';
+import 'package:opart_v2/opart_icons.dart';
 
 List<String> list = [];
 

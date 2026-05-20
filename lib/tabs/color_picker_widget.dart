@@ -58,11 +58,11 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
                                   oldColor = color;
 
                                   if (currentColor > 100) {
-                                    widget.opArt.attributes[currentColor - 100].value =
-                                        color;
+                                    widget.opArt.attributes[currentColor - 100]
+                                        .value = color;
                                   } else {
-                                    widget.opArt.palette.colorList[currentColor] =
-                                        color;
+                                    widget.opArt.palette
+                                        .colorList[currentColor] = color;
                                   }
                                   rebuildTab.value++;
                                   rebuildCanvas.value++;
@@ -78,7 +78,8 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
                         child: IconButton(
                           icon: const Icon(Icons.close),
                           onPressed: () {
-                            currentOpArtPageState?.showCustomColorPicker = false;
+                            currentOpArtPageState?.showCustomColorPicker =
+                                false;
                             widget.opArt.saveToCache();
                             rebuildOpArtPage.value++;
                           },
