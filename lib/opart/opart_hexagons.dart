@@ -128,7 +128,7 @@ void paintHexagons(
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
-    opArt.selectPalette(paletteList.value as String);
+    opArt.selectPalette(paletteList.stringValue);
   }
 
   // Initialise the canvas
@@ -141,17 +141,17 @@ void paintHexagons(
 
   // Work out the X and Y
   final int cellsX =
-      (canvasWidth / (zoomOpArt.value as double) + 1.9999999).toInt();
-  borderX = (canvasWidth - (zoomOpArt.value as num) * cellsX) / 2;
+      (canvasWidth / (zoomOpArt.doubleValue) + 1.9999999).toInt();
+  borderX = (canvasWidth - (zoomOpArt.numValue) * cellsX) / 2;
 
   final int cellsY =
-      (canvasHeight * 2.3 / (zoomOpArt.value as num) + 1.9999999).toInt();
-  borderY = (canvasHeight - (zoomOpArt.value as num) * cellsY) / 2;
-  borderY = (canvasHeight - (zoomOpArt.value as num) * cellsY) / 2;
+      (canvasHeight * 2.3 / (zoomOpArt.numValue) + 1.9999999).toInt();
+  borderY = (canvasHeight - (zoomOpArt.numValue) * cellsY) / 2;
+  borderY = (canvasHeight - (zoomOpArt.numValue) * cellsY) / 2;
 
   // work out the radius from the width and the cells
   // double radius = zoomOpArt.value / 2;
-  final double sideLength = (zoomOpArt.value as double) * 0.6;
+  final double sideLength = (zoomOpArt.doubleValue) * 0.6;
 
   // Calculate the various constants
   const double hexagonAngle = 0.523598776; // 30 degrees in radians
@@ -167,19 +167,22 @@ void paintHexagons(
   for (int i = -1; i < cellsX + 1; ++i) {
     for (int j = -1; j < cellsY + 1; ++j) {
       final double x = borderX +
-          (lineWidth.value as num) / 2 +
+          (lineWidth.numValue) / 2 +
           i * hexRectangleWidth +
           ((j % 2) * hexRadius);
       final double y = borderY + j * (sideLength + hexHeight);
 
-      final List p1 = [x + hexRadius, y];
-      final List p2 = [x + hexRectangleWidth, y + hexHeight];
-      final List p3 = [x + hexRectangleWidth, y + hexHeight + sideLength];
-      final List p4 = [x + hexRadius, y + hexRectangleHeight];
-      final List p5 = [x, y + sideLength + hexHeight];
-      final List p6 = [x, y + hexHeight];
+      final List<double> p1 = [x + hexRadius, y];
+      final List<double> p2 = [x + hexRectangleWidth, y + hexHeight];
+      final List<double> p3 = [
+        x + hexRectangleWidth,
+        y + hexHeight + sideLength
+      ];
+      final List<double> p4 = [x + hexRadius, y + hexRectangleHeight];
+      final List<double> p5 = [x, y + sideLength + hexHeight];
+      final List<double> p6 = [x, y + hexHeight];
 
-      final List p0 = [(p1[0] + p4[0]) / 2, (p1[1] + p4[1]) / 2];
+      final List<double> p0 = [(p1[0] + p4[0]) / 2, (p1[1] + p4[1]) / 2];
 
       if (splat.value == 'random') {
         p0[0] = p0[0] + (rnd.nextDouble() * hexRadius * 0.6).floor();
@@ -189,30 +192,30 @@ void paintHexagons(
         p0[1] = p0[1] + ((j - cellsY / 2) / cellsY) * hexRectangleHeight * 0.6;
       }
 
-      switch (split.value as String) {
+      switch (split.stringValue) {
         case 'none':
 
           // Choose the next colour
           colourOrder++;
-          nextColor = opArt
-              .palette.colorList[colourOrder % (numberOfColors.value as int)];
-          if (randomColors.value as bool) {
-            nextColor = opArt
-                .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+          nextColor =
+              opArt.palette.colorList[colourOrder % (numberOfColors.intValue)];
+          if (randomColors.boolValue) {
+            nextColor =
+                opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
           }
-          nextColor = nextColor.withValues(alpha: opacity.value as double);
-          Color localLineColor = lineColor.value as Color;
+          nextColor = nextColor.withValues(alpha: opacity.doubleValue);
+          Color localLineColor = lineColor.colorValue;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
           }
 
           final Path hexagon = Path();
-          hexagon.moveTo(p1[0] as double, p1[1] as double);
-          hexagon.lineTo(p2[0] as double, p2[1] as double);
-          hexagon.lineTo(p3[0] as double, p3[1] as double);
-          hexagon.lineTo(p4[0] as double, p4[1] as double);
-          hexagon.lineTo(p5[0] as double, p5[1] as double);
-          hexagon.lineTo(p6[0] as double, p6[1] as double);
+          hexagon.moveTo(p1[0], p1[1]);
+          hexagon.lineTo(p2[0], p2[1]);
+          hexagon.lineTo(p3[0], p3[1]);
+          hexagon.lineTo(p4[0], p4[1]);
+          hexagon.lineTo(p5[0], p5[1]);
+          hexagon.lineTo(p6[0], p6[1]);
           hexagon.close();
           canvas.drawPath(
               hexagon,
@@ -224,22 +227,22 @@ void paintHexagons(
               Paint()
                 ..color = localLineColor
                 ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.value as double);
+                ..strokeWidth = lineWidth.doubleValue);
 
         case 'three':
 
           // R1
           // Choose the next colour
           colourOrder++;
-          nextColor = opArt
-              .palette.colorList[colourOrder % (numberOfColors.value as int)];
-          if (randomColors.value as bool) {
-            nextColor = opArt
-                .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+          nextColor =
+              opArt.palette.colorList[colourOrder % (numberOfColors.intValue)];
+          if (randomColors.boolValue) {
+            nextColor =
+                opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
           }
-          nextColor = nextColor.withValues(alpha: opacity.value as double);
+          nextColor = nextColor.withValues(alpha: opacity.doubleValue);
 
-          if (threeD.value == true) {
+          if (threeD.boolValue) {
             // darken this one
             final hsl = HSLColor.fromColor(nextColor);
             nextColor = hsl
@@ -247,16 +250,16 @@ void paintHexagons(
                 .toColor();
           }
 
-          Color localLineColor = lineColor.value as Color;
+          Color localLineColor = lineColor.colorValue;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
           }
 
           Path rhombus = Path();
-          rhombus.moveTo(p1[0] as double, p1[1] as double);
-          rhombus.lineTo(p2[0] as double, p2[1] as double);
-          rhombus.lineTo(p3[0] as double, p3[1] as double);
-          rhombus.lineTo(p0[0] as double, p0[1] as double);
+          rhombus.moveTo(p1[0], p1[1]);
+          rhombus.lineTo(p2[0], p2[1]);
+          rhombus.lineTo(p3[0], p3[1]);
+          rhombus.lineTo(p0[0], p0[1]);
           rhombus.close();
           canvas.drawPath(
               rhombus,
@@ -268,20 +271,20 @@ void paintHexagons(
               Paint()
                 ..color = localLineColor
                 ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.value as double);
+                ..strokeWidth = lineWidth.doubleValue);
 
           // R2
           // Choose the next colour
           colourOrder++;
-          nextColor = opArt
-              .palette.colorList[colourOrder % (numberOfColors.value as int)];
-          if (randomColors.value as bool) {
-            nextColor = opArt
-                .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+          nextColor =
+              opArt.palette.colorList[colourOrder % (numberOfColors.intValue)];
+          if (randomColors.boolValue) {
+            nextColor =
+                opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
           }
-          nextColor = nextColor.withValues(alpha: opacity.value as double);
+          nextColor = nextColor.withValues(alpha: opacity.doubleValue);
 
-          if (threeD.value == true) {
+          if (threeD.boolValue) {
             // lighten this one
             final hsl = HSLColor.fromColor(nextColor);
             nextColor = hsl
@@ -289,7 +292,7 @@ void paintHexagons(
                 .toColor();
           }
 
-          localLineColor = lineColor.value as Color;
+          localLineColor = lineColor.colorValue;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
           }
@@ -305,10 +308,10 @@ void paintHexagons(
           // }
 
           rhombus = Path();
-          rhombus.moveTo(p3[0] as double, p3[1] as double);
-          rhombus.lineTo(p4[0] as double, p4[1] as double);
-          rhombus.lineTo(p5[0] as double, p5[1] as double);
-          rhombus.lineTo(p0[0] as double, p0[1] as double);
+          rhombus.moveTo(p3[0], p3[1]);
+          rhombus.lineTo(p4[0], p4[1]);
+          rhombus.lineTo(p5[0], p5[1]);
+          rhombus.lineTo(p0[0], p0[1]);
           rhombus.close();
           canvas.drawPath(
               rhombus,
@@ -320,19 +323,19 @@ void paintHexagons(
               Paint()
                 ..color = localLineColor
                 ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.value as double);
+                ..strokeWidth = lineWidth.doubleValue);
 
           // R3
           // Choose the next colour
           colourOrder++;
-          nextColor = opArt
-              .palette.colorList[colourOrder % (numberOfColors.value as int)];
-          if (randomColors.value as bool) {
-            nextColor = opArt
-                .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+          nextColor =
+              opArt.palette.colorList[colourOrder % (numberOfColors.intValue)];
+          if (randomColors.boolValue) {
+            nextColor =
+                opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
           }
-          nextColor = nextColor.withValues(alpha: opacity.value as double);
-          localLineColor = lineColor.value as Color;
+          nextColor = nextColor.withValues(alpha: opacity.doubleValue);
+          localLineColor = lineColor.colorValue;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
           }
@@ -348,10 +351,10 @@ void paintHexagons(
           // }
 
           rhombus = Path();
-          rhombus.moveTo(p5[0] as double, p5[1] as double);
-          rhombus.lineTo(p6[0] as double, p6[1] as double);
-          rhombus.lineTo(p1[0] as double, p1[1] as double);
-          rhombus.lineTo(p0[0] as double, p0[1] as double);
+          rhombus.moveTo(p5[0], p5[1]);
+          rhombus.lineTo(p6[0], p6[1]);
+          rhombus.lineTo(p1[0], p1[1]);
+          rhombus.lineTo(p0[0], p0[1]);
           rhombus.close();
           canvas.drawPath(
               rhombus,
@@ -363,29 +366,29 @@ void paintHexagons(
               Paint()
                 ..color = localLineColor
                 ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.value as double);
+                ..strokeWidth = lineWidth.doubleValue);
 
         case 'six':
 
           // T1
           // Choose the next colour
           colourOrder++;
-          nextColor = opArt
-              .palette.colorList[colourOrder % (numberOfColors.value as int)];
-          if (randomColors.value as bool) {
-            nextColor = opArt
-                .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+          nextColor =
+              opArt.palette.colorList[colourOrder % (numberOfColors.intValue)];
+          if (randomColors.boolValue) {
+            nextColor =
+                opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
           }
-          nextColor = nextColor.withValues(alpha: opacity.value as double);
-          Color localLineColor = lineColor.value as Color;
+          nextColor = nextColor.withValues(alpha: opacity.doubleValue);
+          Color localLineColor = lineColor.colorValue;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
           }
 
           Path triangle = Path();
-          triangle.moveTo(p1[0] as double, p1[1] as double);
-          triangle.lineTo(p2[0] as double, p2[1] as double);
-          triangle.lineTo(p0[0] as double, p0[1] as double);
+          triangle.moveTo(p1[0], p1[1]);
+          triangle.lineTo(p2[0], p2[1]);
+          triangle.lineTo(p0[0], p0[1]);
           triangle.close();
           canvas.drawPath(
               triangle,
@@ -397,27 +400,27 @@ void paintHexagons(
               Paint()
                 ..color = localLineColor
                 ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.value as double);
+                ..strokeWidth = lineWidth.doubleValue);
 
           // T2
           // Choose the next colour
           colourOrder++;
-          nextColor = opArt
-              .palette.colorList[colourOrder % (numberOfColors.value as int)];
-          if (randomColors.value as bool) {
-            nextColor = opArt
-                .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+          nextColor =
+              opArt.palette.colorList[colourOrder % (numberOfColors.intValue)];
+          if (randomColors.boolValue) {
+            nextColor =
+                opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
           }
-          nextColor = nextColor.withValues(alpha: opacity.value as double);
-          localLineColor = lineColor.value as Color;
+          nextColor = nextColor.withValues(alpha: opacity.doubleValue);
+          localLineColor = lineColor.colorValue;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
           }
 
           triangle = Path();
-          triangle.moveTo(p2[0] as double, p2[1] as double);
-          triangle.lineTo(p3[0] as double, p3[1] as double);
-          triangle.lineTo(p0[0] as double, p0[1] as double);
+          triangle.moveTo(p2[0], p2[1]);
+          triangle.lineTo(p3[0], p3[1]);
+          triangle.lineTo(p0[0], p0[1]);
           triangle.close();
           canvas.drawPath(
               triangle,
@@ -429,27 +432,27 @@ void paintHexagons(
               Paint()
                 ..color = localLineColor
                 ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.value as double);
+                ..strokeWidth = lineWidth.doubleValue);
 
           // T3
           // Choose the next colour
           colourOrder++;
-          nextColor = opArt
-              .palette.colorList[colourOrder % (numberOfColors.value as int)];
-          if (randomColors.value as bool) {
-            nextColor = opArt
-                .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+          nextColor =
+              opArt.palette.colorList[colourOrder % (numberOfColors.intValue)];
+          if (randomColors.boolValue) {
+            nextColor =
+                opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
           }
-          nextColor = nextColor.withValues(alpha: opacity.value as double);
-          localLineColor = lineColor.value as Color;
+          nextColor = nextColor.withValues(alpha: opacity.doubleValue);
+          localLineColor = lineColor.colorValue;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
           }
 
           triangle = Path();
-          triangle.moveTo(p3[0] as double, p3[1] as double);
-          triangle.lineTo(p4[0] as double, p4[1] as double);
-          triangle.lineTo(p0[0] as double, p0[1] as double);
+          triangle.moveTo(p3[0], p3[1]);
+          triangle.lineTo(p4[0], p4[1]);
+          triangle.lineTo(p0[0], p0[1]);
           triangle.close();
           canvas.drawPath(
               triangle,
@@ -461,27 +464,27 @@ void paintHexagons(
               Paint()
                 ..color = localLineColor
                 ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.value as double);
+                ..strokeWidth = lineWidth.doubleValue);
 
           // T4
           // Choose the next colour
           colourOrder++;
-          nextColor = opArt
-              .palette.colorList[colourOrder % (numberOfColors.value as int)];
-          if (randomColors.value as bool) {
-            nextColor = opArt
-                .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+          nextColor =
+              opArt.palette.colorList[colourOrder % (numberOfColors.intValue)];
+          if (randomColors.boolValue) {
+            nextColor =
+                opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
           }
-          nextColor = nextColor.withValues(alpha: opacity.value as double);
-          localLineColor = lineColor.value as Color;
+          nextColor = nextColor.withValues(alpha: opacity.doubleValue);
+          localLineColor = lineColor.colorValue;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
           }
 
           triangle = Path();
-          triangle.moveTo(p4[0] as double, p4[1] as double);
-          triangle.lineTo(p5[0] as double, p5[1] as double);
-          triangle.lineTo(p0[0] as double, p0[1] as double);
+          triangle.moveTo(p4[0], p4[1]);
+          triangle.lineTo(p5[0], p5[1]);
+          triangle.lineTo(p0[0], p0[1]);
           triangle.close();
           canvas.drawPath(
               triangle,
@@ -493,27 +496,27 @@ void paintHexagons(
               Paint()
                 ..color = localLineColor
                 ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.value as double);
+                ..strokeWidth = lineWidth.doubleValue);
 
           // T5
           // Choose the next colour
           colourOrder++;
-          nextColor = opArt
-              .palette.colorList[colourOrder % (numberOfColors.value as int)];
-          if (randomColors.value as bool) {
-            nextColor = opArt
-                .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+          nextColor =
+              opArt.palette.colorList[colourOrder % (numberOfColors.intValue)];
+          if (randomColors.boolValue) {
+            nextColor =
+                opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
           }
-          nextColor = nextColor.withValues(alpha: opacity.value as double);
-          localLineColor = lineColor.value as Color;
+          nextColor = nextColor.withValues(alpha: opacity.doubleValue);
+          localLineColor = lineColor.colorValue;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
           }
 
           triangle = Path();
-          triangle.moveTo(p5[0] as double, p5[1] as double);
-          triangle.lineTo(p6[0] as double, p6[1] as double);
-          triangle.lineTo(p0[0] as double, p0[1] as double);
+          triangle.moveTo(p5[0], p5[1]);
+          triangle.lineTo(p6[0], p6[1]);
+          triangle.lineTo(p0[0], p0[1]);
           triangle.close();
           canvas.drawPath(
               triangle,
@@ -525,27 +528,27 @@ void paintHexagons(
               Paint()
                 ..color = localLineColor
                 ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.value as double);
+                ..strokeWidth = lineWidth.doubleValue);
 
           // T6
           // Choose the next colour
           colourOrder++;
-          nextColor = opArt
-              .palette.colorList[colourOrder % (numberOfColors.value as int)];
-          if (randomColors.value as bool) {
-            nextColor = opArt
-                .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+          nextColor =
+              opArt.palette.colorList[colourOrder % (numberOfColors.intValue)];
+          if (randomColors.boolValue) {
+            nextColor =
+                opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
           }
-          nextColor = nextColor.withValues(alpha: opacity.value as double);
-          localLineColor = lineColor.value as Color;
+          nextColor = nextColor.withValues(alpha: opacity.doubleValue);
+          localLineColor = lineColor.colorValue;
           if (lineWidth.value == 0) {
             localLineColor = nextColor;
           }
 
           triangle = Path();
-          triangle.moveTo(p6[0] as double, p6[1] as double);
-          triangle.lineTo(p1[0] as double, p1[1] as double);
-          triangle.lineTo(p0[0] as double, p0[1] as double);
+          triangle.moveTo(p6[0], p6[1]);
+          triangle.lineTo(p1[0], p1[1]);
+          triangle.lineTo(p0[0], p0[1]);
           triangle.close();
           canvas.drawPath(
               triangle,
@@ -557,7 +560,7 @@ void paintHexagons(
               Paint()
                 ..color = localLineColor
                 ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.value as double);
+                ..strokeWidth = lineWidth.doubleValue);
       }
     }
   }

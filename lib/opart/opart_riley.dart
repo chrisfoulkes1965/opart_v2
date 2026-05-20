@@ -167,7 +167,7 @@ void paintRiley(
   rnd = Random(seed);
 
   // if (paletteList.value != opArt.palette.paletteName){
-  //   opArt.selectPalette(paletteList.value as String);
+  //   opArt.selectPalette(paletteList.stringValue);
   // }
 
   // Initialise the canvas
@@ -177,16 +177,14 @@ void paintRiley(
   double borderY = 0;
 
   // Work out the X and Y
-  final double sideLength = zoomOpArt.value as double;
+  final double sideLength = zoomOpArt.doubleValue;
 
-  final int cellsX =
-      (canvasWidth / (zoomOpArt.value as num) + 1.9999999).toInt();
-  borderX = (canvasWidth - (zoomOpArt.value as num) * cellsX) / 2;
+  final int cellsX = (canvasWidth / (zoomOpArt.numValue) + 1.9999999).toInt();
+  borderX = (canvasWidth - (zoomOpArt.numValue) * cellsX) / 2;
 
-  final int cellsY =
-      (canvasHeight / (zoomOpArt.value as num) + 1.9999999).toInt();
-  borderY = (canvasHeight - (zoomOpArt.value as num) * cellsY) / 2;
-  borderY = (canvasHeight - (zoomOpArt.value as num) * cellsY) / 2;
+  final int cellsY = (canvasHeight / (zoomOpArt.numValue) + 1.9999999).toInt();
+  borderY = (canvasHeight - (zoomOpArt.numValue) * cellsY) / 2;
+  borderY = (canvasHeight - (zoomOpArt.numValue) * cellsY) / 2;
 
   int colourOrder = 0;
   Color nextColor;
@@ -205,7 +203,7 @@ void paintRiley(
       double v0 = 0;
       double vN = 0;
 
-      switch (gradientTypeX0.value as String) {
+      switch (gradientTypeX0.stringValue) {
         case 'linear':
           // Linear progression
           h0 = i / (cellsX - 1);
@@ -222,7 +220,7 @@ void paintRiley(
           h0 = 0.5;
       }
 
-      switch (gradientTypeX1.value as String) {
+      switch (gradientTypeX1.stringValue) {
         case 'linear':
           // Linear progression
           hN = i / (cellsX - 1);
@@ -239,7 +237,7 @@ void paintRiley(
           hN = 0.5;
       }
 
-      switch (gradientTypeY0.value as String) {
+      switch (gradientTypeY0.stringValue) {
         case 'linear':
           // Linear progression
           v0 = j / (cellsY - 1);
@@ -256,7 +254,7 @@ void paintRiley(
           v0 = 0.5;
       }
 
-      switch (gradientTypeY1.value as String) {
+      switch (gradientTypeY1.stringValue) {
         case 'linear':
           // Linear progression
           vN = j / (cellsY - 1);
@@ -283,40 +281,49 @@ void paintRiley(
       }
 
       //9 points
-      final List pA = [borderX + cellSizeX * i, borderY + cellSizeY * j];
+      final List<double> pA = [
+        borderX + cellSizeX * i,
+        borderY + cellSizeY * j
+      ];
 
-      final List pB = [
+      final List<double> pB = [
         borderX + cellSizeX * (i + h0 + (j / cellsY) * (hN - h0)),
         borderY + cellSizeY * j
       ];
 
-      final List pC = [borderX + cellSizeX * (i + 1), borderY + cellSizeY * j];
+      final List<double> pC = [
+        borderX + cellSizeX * (i + 1),
+        borderY + cellSizeY * j
+      ];
 
-      final List pD = [
+      final List<double> pD = [
         borderX + cellSizeX * (i + 1),
         borderY + cellSizeY * (j + v0 + ((i + 1) / cellsX) * (vN - v0))
       ];
 
-      final List pE = [
+      final List<double> pE = [
         borderX + cellSizeX * (i + 1),
         borderY + cellSizeY * (j + 1)
       ];
 
-      final List pF = [
+      final List<double> pF = [
         borderX + cellSizeX * (i + h0 + ((j + 1) / cellsY) * (hN - h0)),
         borderY + cellSizeY * (j + 1)
       ];
 
-      final List pG = [borderX + cellSizeX * i, borderY + cellSizeY * (j + 1)];
+      final List<double> pG = [
+        borderX + cellSizeX * i,
+        borderY + cellSizeY * (j + 1)
+      ];
 
-      final List pH = [
+      final List<double> pH = [
         borderX + cellSizeX * i,
         borderY + cellSizeY * (j + v0 + (i / cellsX) * (vN - v0))
       ];
 
       final double X =
           (j + v0 + (i + h0) * gradientV) / (gradientV - gradientH);
-      final List pO = [
+      final List<double> pO = [
         borderX + cellSizeX * X,
         borderY + cellSizeY * (j + v0 + gradientH * X)
       ];
@@ -324,47 +331,47 @@ void paintRiley(
       // four quads...
 
       colourOrder++;
-      nextColor = (randomColors.value as bool)
-          ? opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)]
-              .withValues(alpha: opacity.value as double)
-          : opArt.palette.colorList[colourOrder % (numberOfColors.value as int)]
-              .withValues(alpha: opacity.value as double);
+      nextColor = (randomColors.boolValue)
+          ? opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)]
+              .withValues(alpha: opacity.doubleValue)
+          : opArt.palette.colorList[colourOrder % (numberOfColors.intValue)]
+              .withValues(alpha: opacity.doubleValue);
       fillQuad(canvas, pA, pB, pO, pH, nextColor);
 
       colourOrder++;
-      nextColor = (randomColors.value as bool)
-          ? opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)]
-              .withValues(alpha: opacity.value as double)
-          : opArt.palette.colorList[colourOrder % (numberOfColors.value as int)]
-              .withValues(alpha: opacity.value as double);
+      nextColor = (randomColors.boolValue)
+          ? opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)]
+              .withValues(alpha: opacity.doubleValue)
+          : opArt.palette.colorList[colourOrder % (numberOfColors.intValue)]
+              .withValues(alpha: opacity.doubleValue);
       fillQuad(canvas, pB, pC, pD, pO, nextColor);
 
       colourOrder++;
-      nextColor = (randomColors.value as bool)
-          ? opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)]
-              .withValues(alpha: opacity.value as double)
-          : opArt.palette.colorList[colourOrder % (numberOfColors.value as int)]
-              .withValues(alpha: opacity.value as double);
+      nextColor = (randomColors.boolValue)
+          ? opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)]
+              .withValues(alpha: opacity.doubleValue)
+          : opArt.palette.colorList[colourOrder % (numberOfColors.intValue)]
+              .withValues(alpha: opacity.doubleValue);
       fillQuad(canvas, pO, pD, pE, pF, nextColor);
 
       colourOrder++;
-      nextColor = (randomColors.value as bool)
-          ? opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)]
-              .withValues(alpha: opacity.value as double)
-          : opArt.palette.colorList[colourOrder % (numberOfColors.value as int)]
-              .withValues(alpha: opacity.value as double);
+      nextColor = (randomColors.boolValue)
+          ? opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)]
+              .withValues(alpha: opacity.doubleValue)
+          : opArt.palette.colorList[colourOrder % (numberOfColors.intValue)]
+              .withValues(alpha: opacity.doubleValue);
       fillQuad(canvas, pH, pO, pF, pG, nextColor);
     }
   }
 }
 
-void fillQuad(
-    Canvas canvas, List p1, List p2, List p3, List p4, Color nextColor) {
+void fillQuad(Canvas canvas, List<double> p1, List<double> p2, List<double> p3,
+    List<double> p4, Color nextColor) {
   final Path quad = Path();
-  quad.moveTo(p1[0] as double, p1[1] as double);
-  quad.lineTo(p2[0] as double, p2[1] as double);
-  quad.lineTo(p3[0] as double, p3[1] as double);
-  quad.lineTo(p4[0] as double, p4[1] as double);
+  quad.moveTo(p1[0], p1[1]);
+  quad.lineTo(p2[0], p2[1]);
+  quad.lineTo(p3[0], p3[1]);
+  quad.lineTo(p4[0], p4[1]);
   quad.close();
 
   canvas.drawPath(

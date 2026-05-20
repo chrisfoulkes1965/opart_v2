@@ -184,7 +184,7 @@ void paintMaze(
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
-    opArt.selectPalette(paletteList.value as String);
+    opArt.selectPalette(paletteList.stringValue);
   }
 
   // Initialise the canvas
@@ -194,14 +194,12 @@ void paintMaze(
   double borderY = 0;
 
   // Work out the X and Y
-  final int cellsX =
-      (canvasWidth / (zoomOpArt.value as num) + 1.9999999).toInt();
-  borderX = (canvasWidth - (zoomOpArt.value as num) * cellsX) / 2;
+  final int cellsX = (canvasWidth / (zoomOpArt.numValue) + 1.9999999).toInt();
+  borderX = (canvasWidth - (zoomOpArt.numValue) * cellsX) / 2;
 
-  final int cellsY =
-      (canvasHeight / (zoomOpArt.value as num) + 1.9999999).toInt();
-  borderY = (canvasHeight - (zoomOpArt.value as num) * cellsY) / 2;
-  borderY = (canvasHeight - (zoomOpArt.value as num) * cellsY) / 2;
+  final int cellsY = (canvasHeight / (zoomOpArt.numValue) + 1.9999999).toInt();
+  borderY = (canvasHeight - (zoomOpArt.numValue) * cellsY) / 2;
+  borderY = (canvasHeight - (zoomOpArt.numValue) * cellsY) / 2;
 
   int colourOrder = 0;
   Color nextColor;
@@ -210,22 +208,22 @@ void paintMaze(
 
   // draw the square
   canvas.drawRect(
-      const Offset(0, 0) & Size(canvasWidth, canvasHeight),
+      Offset.zero & Size(canvasWidth, canvasHeight),
       Paint()
-        ..color = (backgroundColor.value as Color).withValues(alpha: 1.0)
+        ..color = (backgroundColor.colorValue).withValues(alpha: 1.0)
         ..style = PaintingStyle.fill);
 
-  final List shapesArray = [];
-  if (lineHorizontal.value == true) {
+  final List<String> shapesArray = [];
+  if (lineHorizontal.boolValue) {
     shapesArray.add('lineHorizontal');
   }
-  if (lineVertical.value == true) {
+  if (lineVertical.boolValue) {
     shapesArray.add('lineVertical');
   }
-  if (lineDiagonalRight.value == true) {
+  if (lineDiagonalRight.boolValue) {
     shapesArray.add('lineDiagonalRight');
   }
-  if (lineDiagonalLeft.value == true) {
+  if (lineDiagonalLeft.boolValue) {
     shapesArray.add('lineDiagonalLeft');
   }
 
@@ -233,28 +231,31 @@ void paintMaze(
   for (int i = 0; i < cellsX; ++i) {
     for (int j = 0; j < cellsY; ++j) {
       if (shapesArray.isNotEmpty) {
-        final x = borderX + i * (zoomOpArt.value as num);
-        final y = borderY + j * (zoomOpArt.value as num);
+        final x = borderX + i * (zoomOpArt.numValue);
+        final y = borderY + j * (zoomOpArt.numValue);
 
-        final p1 = [x, y];
-        final p2 = [x + (zoomOpArt.value as num), y];
-        final p3 = [x + (zoomOpArt.value as num), y + (zoomOpArt.value as num)];
-        final p4 = [x, y + (zoomOpArt.value as num)];
+        final List<double> p1 = [x, y];
+        final List<double> p2 = [x + (zoomOpArt.numValue), y];
+        final List<double> p3 = [
+          x + (zoomOpArt.numValue),
+          y + (zoomOpArt.numValue)
+        ];
+        final List<double> p4 = [x, y + (zoomOpArt.numValue)];
 
         // Choose the next colour
         colourOrder++;
-        nextColor = opArt
-            .palette.colorList[colourOrder % (numberOfColors.value as int)];
-        if (randomColors.value as bool) {
+        nextColor =
+            opArt.palette.colorList[colourOrder % (numberOfColors.intValue)];
+        if (randomColors.boolValue) {
           nextColor =
-              opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+              opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
         }
-          nextColor = nextColor.withValues(alpha: opacity.value as double);
+        nextColor = nextColor.withValues(alpha: opacity.doubleValue);
 
-        List pA = [];
-        List pB = [];
+        List<double> pA = [];
+        List<double> pB = [];
 
-        switch (shapesArray[rnd.nextInt(shapesArray.length)] as String) {
+        switch (shapesArray[rnd.nextInt(shapesArray.length)]) {
           case 'lineDiagonalRight':
             pA = p1;
             pB = p3;
@@ -271,13 +272,13 @@ void paintMaze(
 
         // draw the line
         canvas.drawLine(
-            Offset(pA[0] as double, pA[1] as double),
-            Offset(pB[0] as double, pB[1] as double),
+            Offset(pA[0], pA[1]),
+            Offset(pB[0], pB[1]),
             Paint()
               ..color = nextColor
               ..style = PaintingStyle.stroke
               ..strokeWidth =
-                  (lineWidth.value as double) * (zoomOpArt.value as num) / 10
+                  (lineWidth.doubleValue) * (zoomOpArt.numValue) / 10
               ..strokeCap = StrokeCap.round);
       }
     }

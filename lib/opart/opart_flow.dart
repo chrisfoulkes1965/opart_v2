@@ -233,7 +233,7 @@ void paintFlow(
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
-    opArt.selectPalette(paletteList.value as String);
+    opArt.selectPalette(paletteList.stringValue);
   }
 
   // Initialise the canvas
@@ -242,9 +242,9 @@ void paintFlow(
 
   // colour in the canvas
   canvas.drawRect(
-      const Offset(0, 0) & Size(canvasWidth, canvasHeight),
+      Offset.zero & Size(canvasWidth, canvasHeight),
       Paint()
-        ..color = backgroundColor.value as Color
+        ..color = backgroundColor.colorValue
         ..style = PaintingStyle.fill);
 
   // Work out the X and Y
@@ -274,19 +274,19 @@ void paintFlow(
   // double localSquareness = sin(2500 * animationVariable);
   // double localSquareness = squareness.value;
 
-  final double baseX = zoomOpArt.value as double;
+  final double baseX = zoomOpArt.doubleValue;
   final double amplitudeX =
-      ((amplitude.value as double) < (zoomOpArt.value as double) * 0.9)
-          ? (amplitude.value as double)
-          : (zoomOpArt.value as double) * 0.9;
-  final double frequencyX = frequency.value as double;
+      ((amplitude.doubleValue) < (zoomOpArt.doubleValue) * 0.9)
+          ? (amplitude.doubleValue)
+          : (zoomOpArt.doubleValue) * 0.9;
+  final double frequencyX = frequency.doubleValue;
 
   final double baseY = baseX * 1.0;
   final double amplitudeY =
-      ((amplitude.value as double) < (zoomOpArt.value as double) * 0.9)
-          ? (amplitude.value as double)
-          : (zoomOpArt.value as double) * 0.9;
-  final double frequencyY = frequency.value as double;
+      ((amplitude.doubleValue) < (zoomOpArt.doubleValue) * 0.9)
+          ? (amplitude.doubleValue)
+          : (zoomOpArt.doubleValue) * 0.9;
+  final double frequencyY = frequency.doubleValue;
 
   double x = 0.0;
   int i = 0;
@@ -299,32 +299,31 @@ void paintFlow(
 
     // reset the colours
     Color nextColor;
-    if (resetColors.value as bool) {
+    if (resetColors.boolValue) {
       colourOrder = i;
     }
 
     double y = 0.0;
-    int j = 0;
 
     do {
       final double deltaY = baseY +
           amplitudeY * cos(4000 * animationVariable + (x + y) / frequencyY);
 // print('animationVariable: $animationVariable deltaX: $deltaX deltaY: $deltaY');
 
-      double stepRatio = ratio.value as double;
+      double stepRatio = ratio.doubleValue;
       int k = 0; // count the steps
 
       // Centre of the square
-      final List pO = [x + deltaX / 2, y + deltaY / 2];
+      final List<double> pO = [x + deltaX / 2, y + deltaY / 2];
 
-      if (box.value as bool) {
+      if (box.boolValue) {
         // Choose the next colour
         colourOrder++;
-        nextColor = opArt
-            .palette.colorList[colourOrder % (numberOfColors.value as int)];
-        if (randomColors.value as bool) {
+        nextColor =
+            opArt.palette.colorList[colourOrder % (numberOfColors.intValue)];
+        if (randomColors.boolValue) {
           nextColor =
-              opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+              opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
         }
 
         // fill the square
@@ -332,92 +331,92 @@ void paintFlow(
             Rect.fromLTRB(x, y, x + deltaX, y + deltaY),
             Paint()
               ..style = PaintingStyle.fill
-              ..color = nextColor.withValues(alpha: opacity.value as double));
+              ..color = nextColor.withValues(alpha: opacity.doubleValue));
       }
 
       do {
-        switch (shape.value as String) {
+        switch (shape.stringValue) {
           case 'circle':
 
             // Choose the next colour
             colourOrder++;
             nextColor = opArt
-                .palette.colorList[colourOrder % (numberOfColors.value as int)];
-            if (randomColors.value as bool) {
-              nextColor = opArt
-                  .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+                .palette.colorList[colourOrder % (numberOfColors.intValue)];
+            if (randomColors.boolValue) {
+              nextColor =
+                  opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
             }
 
             canvas.drawOval(
                 Rect.fromLTRB(
-                  pO[0] - deltaX / 2 * stepRatio as double,
-                  pO[1] - deltaY / 2 * stepRatio as double,
-                  pO[0] + deltaX / 2 * stepRatio as double,
-                  pO[1] + deltaY / 2 * stepRatio as double,
+                  pO[0] - deltaX / 2 * stepRatio,
+                  pO[1] - deltaY / 2 * stepRatio,
+                  pO[0] + deltaX / 2 * stepRatio,
+                  pO[1] + deltaY / 2 * stepRatio,
                 ),
                 Paint()
                   ..style = PaintingStyle.fill
-                  ..color = nextColor.withValues(alpha: opacity.value as double));
+                  ..color = nextColor.withValues(alpha: opacity.doubleValue));
             canvas.drawOval(
                 Rect.fromLTRB(
-                  pO[0] - deltaX / 2 * stepRatio as double,
-                  pO[1] - deltaY / 2 * stepRatio as double,
-                  pO[0] + deltaX / 2 * stepRatio as double,
-                  pO[1] + deltaY / 2 * stepRatio as double,
+                  pO[0] - deltaX / 2 * stepRatio,
+                  pO[1] - deltaY / 2 * stepRatio,
+                  pO[0] + deltaX / 2 * stepRatio,
+                  pO[1] + deltaY / 2 * stepRatio,
                 ),
                 Paint()
                   ..style = PaintingStyle.stroke
-                  ..strokeWidth = lineWidth.value as double
-                  ..color = (lineColor.value as Color)
-                      .withValues(alpha: opacity.value as double));
+                  ..strokeWidth = lineWidth.doubleValue
+                  ..color = (lineColor.colorValue)
+                      .withValues(alpha: opacity.doubleValue));
 
           case 'square':
 
             // Choose the next colour
             colourOrder++;
             nextColor = opArt
-                .palette.colorList[colourOrder % (numberOfColors.value as int)];
-            if (randomColors.value as bool) {
-              nextColor = opArt
-                  .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+                .palette.colorList[colourOrder % (numberOfColors.intValue)];
+            if (randomColors.boolValue) {
+              nextColor =
+                  opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
             }
 
             canvas.drawRect(
                 Rect.fromLTRB(
-                    pO[0] - deltaX / 2 * stepRatio as double,
-                    pO[1] - deltaY / 2 * stepRatio as double,
-                    pO[0] + deltaX / 2 * stepRatio as double,
-                    pO[1] + deltaY / 2 * stepRatio as double),
+                    pO[0] - deltaX / 2 * stepRatio,
+                    pO[1] - deltaY / 2 * stepRatio,
+                    pO[0] + deltaX / 2 * stepRatio,
+                    pO[1] + deltaY / 2 * stepRatio),
                 Paint()
                   ..style = PaintingStyle.fill
-                  ..color = nextColor.withValues(alpha: opacity.value as double));
+                  ..color = nextColor.withValues(alpha: opacity.doubleValue));
             canvas.drawRect(
               Rect.fromLTRB(
-                  pO[0] - deltaX / 2 * stepRatio as double,
-                  pO[1] - deltaY / 2 * stepRatio as double,
-                  pO[0] + deltaX / 2 * stepRatio as double,
-                  pO[1] + deltaY / 2 * stepRatio as double),
+                  pO[0] - deltaX / 2 * stepRatio,
+                  pO[1] - deltaY / 2 * stepRatio,
+                  pO[0] + deltaX / 2 * stepRatio,
+                  pO[1] + deltaY / 2 * stepRatio),
               Paint()
                 ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.value as double
-                ..color = (lineColor.value as Color)
-                    .withValues(alpha: opacity.value as double),
+                ..strokeWidth = lineWidth.doubleValue
+                ..color = (lineColor.colorValue)
+                    .withValues(alpha: opacity.doubleValue),
             );
 
           case 'squaricle':
             final double radius = (deltaX < deltaY)
-                ? stepRatio * deltaX / 2 * (1 - (squareness.value as double)) -
-                    (lineWidth.value as double) / 2
-                : stepRatio * deltaY / 2 * (1 - (squareness.value as double)) -
-                    (lineWidth.value as double) / 2;
+                ? stepRatio * deltaX / 2 * (1 - (squareness.doubleValue)) -
+                    (lineWidth.doubleValue) / 2
+                : stepRatio * deltaY / 2 * (1 - (squareness.doubleValue)) -
+                    (lineWidth.doubleValue) / 2;
 
             final Path squaricle = Path();
 
             squaricle.arcTo(
                 Rect.fromCenter(
                     center: Offset(
-                      pO[0] - deltaX / 2 * stepRatio + radius as double,
-                      pO[1] - deltaY / 2 * stepRatio + radius as double,
+                      pO[0] - deltaX / 2 * stepRatio + radius,
+                      pO[1] - deltaY / 2 * stepRatio + radius,
                     ),
                     height: radius,
                     width: radius),
@@ -428,8 +427,8 @@ void paintFlow(
             squaricle.arcTo(
                 Rect.fromCenter(
                     center: Offset(
-                      pO[0] + deltaX / 2 * stepRatio - radius as double,
-                      pO[1] - deltaY / 2 * stepRatio + radius as double,
+                      pO[0] + deltaX / 2 * stepRatio - radius,
+                      pO[1] - deltaY / 2 * stepRatio + radius,
                     ),
                     height: radius,
                     width: radius),
@@ -440,8 +439,8 @@ void paintFlow(
             squaricle.arcTo(
                 Rect.fromCenter(
                     center: Offset(
-                      pO[0] + deltaX / 2 * stepRatio - radius as double,
-                      pO[1] + deltaY / 2 * stepRatio - radius as double,
+                      pO[0] + deltaX / 2 * stepRatio - radius,
+                      pO[1] + deltaY / 2 * stepRatio - radius,
                     ),
                     height: radius,
                     width: radius),
@@ -452,8 +451,8 @@ void paintFlow(
             squaricle.arcTo(
                 Rect.fromCenter(
                     center: Offset(
-                      pO[0] - deltaX / 2 * stepRatio + radius as double,
-                      pO[1] + deltaY / 2 * stepRatio - radius as double,
+                      pO[0] - deltaX / 2 * stepRatio + radius,
+                      pO[1] + deltaY / 2 * stepRatio - radius,
                     ),
                     height: radius,
                     width: radius),
@@ -466,34 +465,33 @@ void paintFlow(
             // Choose the next colour
             colourOrder++;
             nextColor = opArt
-                .palette.colorList[colourOrder % (numberOfColors.value as int)];
-            if (randomColors.value as bool) {
-              nextColor = opArt
-                  .palette.colorList[rnd.nextInt(numberOfColors.value as int)];
+                .palette.colorList[colourOrder % (numberOfColors.intValue)];
+            if (randomColors.boolValue) {
+              nextColor =
+                  opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)];
             }
 
             canvas.drawPath(
                 squaricle,
                 Paint()
                   ..style = PaintingStyle.fill
-                  ..color = nextColor.withValues(alpha: opacity.value as double));
+                  ..color = nextColor.withValues(alpha: opacity.doubleValue));
             canvas.drawPath(
                 squaricle,
                 Paint()
                   ..style = PaintingStyle.stroke
-                  ..strokeWidth = lineWidth.value as double
-                  ..color = (lineColor.value as Color)
-                        .withValues(alpha: opacity.value as double));
+                  ..strokeWidth = lineWidth.doubleValue
+                  ..color = (lineColor.colorValue)
+                      .withValues(alpha: opacity.doubleValue));
 
             squaricle.reset();
         }
 
-        stepRatio = stepRatio * (step.value as num);
+        stepRatio = stepRatio * (step.numValue);
 
         k++;
       } while (k < 10 && stepRatio > 0.1);
 
-      j++;
       y = y + deltaY;
     } while (y < canvasHeight); // while y
 

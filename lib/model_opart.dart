@@ -1,8 +1,10 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:convert';
 import 'dart:core';
 import 'dart:math';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/database_helper.dart';
@@ -224,7 +226,7 @@ class OpArt {
       });
       return savedOpArt.length;
     } catch (e) {
-      print('Error saving to local DB: $e');
+      debugPrint('Error saving to local DB: $e');
       return 0;
     }
   }
@@ -265,7 +267,7 @@ class OpArt {
           enableButton = true;
         }
       } catch (e) {
-        print('Error saving to cache: $e');
+        debugPrint('Error saving to cache: $e');
         enableButton = true;
       }
     });
@@ -350,15 +352,17 @@ class OpArt {
 
   // select a palette from the list
   void selectPalette(String paletteName) {
-    final List newPalette =
-        defaultPalettes.firstWhere((palette) => palette[0] == paletteName);
+    final List<Object?> newPalette = defaultPalettes
+        .firstWhere((List<Object?> palette) => palette[0] == paletteName);
     palette.colorList = [];
-    for (int z = 0; z < (newPalette[3].length as num); z++) {
-      palette.colorList.add(Color(int.parse(newPalette[3][z] as String)));
+    final List<String> colorStrings = List<String>.from(
+        (newPalette[3]! as List<Object?>).map((e) => e.toString()));
+    for (var z = 0; z < colorStrings.length; z++) {
+      palette.colorList.add(Color(int.parse(colorStrings[z])));
     }
     attributes.firstWhere((element) => element.name == 'numberOfColors').value =
-        newPalette[1].toInt();
-    backgroundColor.value = Color(int.parse(newPalette[2] as String));
+        (newPalette[1]! as num).toInt();
+    backgroundColor.value = Color(int.parse(newPalette[2]! as String));
   }
 
   // randomise the palette
@@ -373,12 +377,12 @@ class OpArt {
     }
 
     palette.randomize(
-      attributes.firstWhere((element) => element.name == 'paletteType').value
+      attributes.firstWhere((element) => element.name == 'paletteType').value!
           as String,
-      attributes
-          .firstWhere((element) => element.name == 'numberOfColors')
-          .value
-          .toInt() as int,
+      (attributes
+              .firstWhere((element) => element.name == 'numberOfColors')
+              .value! as num)
+          .toInt(),
     );
 
     attributes.firstWhere((element) => element.name == 'paletteList').value =
@@ -391,13 +395,15 @@ class OpArt {
       attributes[i].setDefault();
     }
 
-    final List newPalette =
-        defaultPalettes.firstWhere((palette) => palette[0] == 'Default');
+    final List<Object?> newPalette = defaultPalettes
+        .firstWhere((List<Object?> palette) => palette[0] == 'Default');
 
-    backgroundColor.value = Color(int.parse(newPalette[2] as String));
+    backgroundColor.value = Color(int.parse(newPalette[2]! as String));
     palette.colorList = [];
-    for (int z = 0; z < (newPalette[3].length as num); z++) {
-      palette.colorList.add(Color(int.parse(newPalette[3][z] as String)));
+    final List<String> colorStrings = List<String>.from(
+        (newPalette[3]! as List<Object?>).map((e) => e.toString()));
+    for (var z = 0; z < colorStrings.length; z++) {
+      palette.colorList.add(Color(int.parse(colorStrings[z])));
     }
   }
 

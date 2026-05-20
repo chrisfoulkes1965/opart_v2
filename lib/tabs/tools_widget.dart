@@ -27,9 +27,9 @@ Widget toolBoxTab() {
       }
 
       Widget buildDoubleSlider() {
-        final double v = (attribute.value as num).toDouble();
-        final double min = (attribute.min as num).toDouble();
-        final double max = (attribute.max as num).toDouble();
+        final double v = attribute.doubleValue;
+        final double min = attribute.minDouble;
+        final double max = attribute.maxDouble;
         return Slider(
           activeColor: Colors.cyan,
           value: v.clamp(min, max),
@@ -49,12 +49,12 @@ Widget toolBoxTab() {
       }
 
       Widget buildIntSlider() {
-        final double min = (attribute.min as num).toDouble();
-        final double max = (attribute.max as num).toDouble();
+        final double min = attribute.minDouble;
+        final double max = attribute.maxDouble;
         final int span = (max - min).round();
         return Slider(
           activeColor: Colors.cyan,
-          value: (attribute.value as num).toDouble().clamp(min, max),
+          value: attribute.doubleValue.clamp(min, max),
           min: min,
           max: max,
           divisions: span > 0 ? span : null,
@@ -132,7 +132,7 @@ Widget toolBoxTab() {
                                         if (tools[index].settingType ==
                                             SettingType.bool) {
                                           tools[index].value =
-                                              !(tools[index].value as bool);
+                                              !(tools[index].value! as bool);
                                         }
 
                                         tools[index].onChange?.call();
@@ -150,41 +150,44 @@ Widget toolBoxTab() {
                                       } else {
                                         if (tools[index].settingType ==
                                             SettingType.list) {
-                                          final int currentValue = tools[index]
-                                              .options
-                                              .indexWhere((value) =>
-                                                  value ==
-                                                  tools[index].value) as int;
+                                          final opts = tools[index].options;
+                                          if (opts != null && opts.isNotEmpty) {
+                                            final int currentValue =
+                                                opts.indexWhere((value) =>
+                                                    value ==
+                                                    tools[index].value);
 
-                                          tools[index].value = tools[index]
-                                              .options[(currentValue ==
-                                                  tools[index].options.length -
-                                                      1)
-                                              ? 0
-                                              : currentValue + 1];
-                                          rebuildCanvas.value++;
-                                          ScaffoldMessenger.of(context)
-                                              .hideCurrentSnackBar();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                  backgroundColor: Colors.white
-                                                      .withValues(alpha: 0.8),
-                                                  duration: const Duration(
-                                                      seconds: 2),
-                                                  content: SizedBox(
-                                                    height: 70,
-                                                    child: Text(
-                                                      tools[index].value
-                                                          as String,
-                                                      style: const TextStyle(
-                                                          color: Colors.black),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    ),
-                                                  )));
-                                          opart_page
-                                              .currentOpArtPageState?.opArt
-                                              .saveToCache();
+                                            tools[index].value = opts[
+                                                (currentValue ==
+                                                        opts.length - 1)
+                                                    ? 0
+                                                    : currentValue + 1];
+                                            rebuildCanvas.value++;
+                                            ScaffoldMessenger.of(context)
+                                                .hideCurrentSnackBar();
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                                    backgroundColor: Colors
+                                                        .white
+                                                        .withValues(alpha: 0.8),
+                                                    duration: const Duration(
+                                                        seconds: 2),
+                                                    content: SizedBox(
+                                                      height: 70,
+                                                      child: Text(
+                                                        tools[index].value!
+                                                            as String,
+                                                        style: const TextStyle(
+                                                            color:
+                                                                Colors.black),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                    )));
+                                            opart_page
+                                                .currentOpArtPageState?.opArt
+                                                .saveToCache();
+                                          }
                                         }
                                       }
                                     });

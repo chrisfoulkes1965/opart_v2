@@ -15,7 +15,6 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> listViewWidgets = [];
-    int lengthOfAdditionalColors = 0;
     // List<Widget> additionalColors = [];
     void additionalColors() {
       for (int i = 0;
@@ -51,14 +50,13 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                               ? 2
                               : 0),
                       color: opart_page.currentOpArtPageState?.opArt
-                          .attributes[i].value as Color,
+                          .attributes[i].colorValue,
                       shape: BoxShape.circle),
                   height: 30,
                   width: 30,
                 ),
               ),
             ));
-            lengthOfAdditionalColors++;
           }
         }
       }
@@ -80,17 +78,17 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                 const Color(0xFFffffff).withValues(alpha: 0.2),
                 const Color(0xFF303030),
               ],
-              begin: const FractionalOffset(0.0, 0.0),
-              end: const FractionalOffset(1.0, 1.00),
+              begin: FractionalOffset.topLeft,
+              end: FractionalOffset.bottomRight,
               stops: const [0.0, 1.0],
             ),
           ),
           child: Slider(
             value: (opacity.value == null)
                 ? 1
-                : (opacity.value as double < 0 || opacity.value as double > 1)
+                : (opacity.doubleValue < 0 || opacity.doubleValue > 1)
                     ? 1
-                    : opacity.value as double,
+                    : opacity.doubleValue,
             min: 0.2,
             onChanged: (value) {
               opacity.value = value;
@@ -121,19 +119,17 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                     if (enableButton) {
                       enableButton = false;
 
-                      if (numberOfColors.value as int > 1) {
-                        numberOfColors.value--;
+                      if ((numberOfColors.intValue) > 1) {
+                        numberOfColors.value = (numberOfColors.intValue) - 1;
                         opart_page
                             .currentOpArtPageState?.opArt.palette.colorList
                             .removeLast();
-                        if (numberOfColors.value as int > paletteLength) {
+                        if (numberOfColors.intValue > paletteLength) {
                           opart_page.currentOpArtPageState?.opArt.palette
                               .randomize(paletteType.value.toString(),
-                                  numberOfColors.value as int);
+                                  numberOfColors.intValue);
                         }
-                        height =
-                            ((numberOfColors.value.toDouble() as double) + 2) *
-                                30;
+                        height = ((numberOfColors.doubleValue) + 2) * 30;
                         if (height > MediaQuery.of(context).size.height * 0.7) {
                           height = MediaQuery.of(context).size.height * 0.7;
                         }
@@ -165,12 +161,12 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                     if (enableButton) {
                       enableButton = false;
 
-                      numberOfColors.value++;
+                      numberOfColors.value = (numberOfColors.intValue) + 1;
                       opart_page.currentOpArtPageState?.opArt.attributes
                           .firstWhere(
                               (element) => element.name == 'numberOfColors')
                           .value = numberOfColors.value;
-                      if (numberOfColors.value as int > paletteLength) {
+                      if (numberOfColors.intValue > paletteLength) {
                         final String paletteType = opart_page
                                 .currentOpArtPageState?.opArt.attributes
                                 .firstWhere(
@@ -179,12 +175,9 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                                 .toString() ??
                             'random';
                         opart_page.currentOpArtPageState?.opArt.palette
-                            .randomize(
-                                paletteType, numberOfColors.value as int);
+                            .randomize(paletteType, numberOfColors.intValue);
                       }
-                      height =
-                          ((numberOfColors.value.toDouble() as double) + 2) *
-                              30;
+                      height = ((numberOfColors.doubleValue) + 2) * 30;
                       if (height > MediaQuery.of(context).size.height * 0.7) {
                         height = MediaQuery.of(context).size.height * 0.7;
                       }
@@ -196,7 +189,7 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
             ),
           );
 
-          for (int i = 0; i < (numberOfColors.value as int); i++) {
+          for (int i = 0; i < (numberOfColors.intValue); i++) {
             listViewWidgets.add(Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: GestureDetector(

@@ -122,7 +122,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     color: Colors.white,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey.withValues(alpha: 0.9),
+                                        color:
+                                            Colors.grey.withValues(alpha: 0.9),
                                         blurRadius: 5,
                                         offset: const Offset(5, 5),
                                       ),
@@ -132,7 +133,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     borderRadius: BorderRadius.circular(20),
                                     child: GridTile(
                                       footer: Container(
-                                        color: Colors.white.withValues(alpha: 0.7),
+                                        color:
+                                            Colors.white.withValues(alpha: 0.7),
                                         width: double.infinity,
                                         child: Text(
                                           opArtType.name,

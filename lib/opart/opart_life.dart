@@ -10,7 +10,7 @@ import 'package:opart_v2/model_settings.dart';
 
 // List<String> list = [];
 
-List squaresI = [];
+List<List<Color>> squaresI = [];
 
 SettingsModel reDraw = SettingsModel(
   name: 'reDraw',
@@ -119,7 +119,7 @@ void paintLife(
   rnd = Random(DateTime.now().millisecond);
 
   if (paletteList.value != opArt.palette.paletteName) {
-    opArt.selectPalette(paletteList.value as String);
+    opArt.selectPalette(paletteList.stringValue);
   }
 
   // Initialise the canvas
@@ -130,29 +130,27 @@ void paintLife(
 
   // Work out the X and Y
   final int cellsX =
-      (canvasWidth / (zoomOpArt.value as double) + 1.9999999).toInt();
-  borderX = (canvasWidth - (zoomOpArt.value as double) * cellsX) / 2;
+      (canvasWidth / (zoomOpArt.doubleValue) + 1.9999999).toInt();
+  borderX = (canvasWidth - (zoomOpArt.doubleValue) * cellsX) / 2;
 
   final int cellsY =
-      (canvasHeight / (zoomOpArt.value as double) + 1.9999999).toInt();
-  borderY = (canvasHeight - (zoomOpArt.value as double) * cellsY) / 2;
-  borderY = (canvasHeight - (zoomOpArt.value as double) * cellsY) / 2;
-
- 
+      (canvasHeight / (zoomOpArt.doubleValue) + 1.9999999).toInt();
+  borderY = (canvasHeight - (zoomOpArt.doubleValue) * cellsY) / 2;
+  borderY = (canvasHeight - (zoomOpArt.doubleValue) * cellsY) / 2;
 
   // Now make some art
 
   // if first time through, initialise the squares
   // print(squaresI.length);
-  final List oldSquaresI = squaresI;
+  final List<List<Color>> oldSquaresI = squaresI;
   squaresI = [];
 
   //play the game
   for (int i = 0; i < cellsX; ++i) {
-    final List squaresJ = [];
+    final List<Color> squaresJ = [];
 
     for (int j = 0; j < cellsY; ++j) {
-      final List neighbours = [];
+      final List<Color> neighbours = [];
 
       // if (i>0 && j>0) neighbours.add(oldSquaresI[i-1][j-1]);
       // if (i>0 && j<cellsY-1) neighbours.add(oldSquaresI[i-1][j+1]);
@@ -167,15 +165,11 @@ void paintLife(
       int neighboursRed = 0;
       int neighboursGreen = 0;
       int neighboursBlue = 0;
-      int neighboursAlive = 0;
 
-      for (int i = 0; i < neighbours.length; i++) {
-        if (neighbours[i].red as double > 0) neighboursRed++;
-        if (neighbours[i].green as double > 0) neighboursGreen++;
-        if (neighbours[i].blue as double > 0) neighboursBlue++;
-        if (HSLColor.fromColor(neighbours[i] as Color).lightness > 0) {
-          neighboursAlive++;
-        }
+      for (int n = 0; n < neighbours.length; n++) {
+        if (neighbours[n].r > 0) neighboursRed++;
+        if (neighbours[n].g > 0) neighboursGreen++;
+        if (neighbours[n].b > 0) neighboursBlue++;
       }
 
       // Any live cell with fewer than two live neighbours dies, as if by underpopulation.
@@ -183,15 +177,15 @@ void paintLife(
       // Any live cell with more than three live neighbours dies, as if by overpopulation.
       // Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
 
-      final bool wasAliveRed = oldSquaresI[i][j].red as double > 100;
+      final bool wasAliveRed = oldSquaresI[i][j].r * 255 > 100;
       final bool nowAliveRed =
           wasAliveRed && (neighboursRed == 2 || neighboursRed == 3) ||
               (!wasAliveRed && neighboursRed == 3);
-      final bool wasAliveGreen = oldSquaresI[i][j].green as double > 100;
+      final bool wasAliveGreen = oldSquaresI[i][j].g * 255 > 100;
       final bool nowAliveGreen =
           wasAliveGreen && (neighboursGreen == 2 || neighboursGreen == 3) ||
               (!wasAliveGreen && neighboursGreen == 3);
-      final bool wasAliveBlue = oldSquaresI[i][j].blue as double > 100;
+      final bool wasAliveBlue = oldSquaresI[i][j].b * 255 > 100;
       final bool nowAliveBlue =
           wasAliveBlue && (neighboursBlue == 2 || neighboursBlue == 3) ||
               (!wasAliveBlue && neighboursBlue == 3);
@@ -205,13 +199,12 @@ void paintLife(
       //save the colour
       squaresJ.add(nextColor);
 
-      final x = borderX + i * (zoomOpArt.value as double);
-      final y = borderY + j * (zoomOpArt.value as double);
+      final x = borderX + i * (zoomOpArt.doubleValue);
+      final y = borderY + j * (zoomOpArt.doubleValue);
 
       // draw the square
       canvas.drawRect(
-          Offset(x, y) &
-              Size(zoomOpArt.value as double, zoomOpArt.value as double),
+          Offset(x, y) & Size(zoomOpArt.doubleValue, zoomOpArt.doubleValue),
           Paint()
             ..strokeWidth = 0.0
             ..color = nextColor

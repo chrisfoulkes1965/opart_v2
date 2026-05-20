@@ -153,7 +153,7 @@ void paintRhombus(
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
-    opArt.selectPalette(paletteList.value as String);
+    opArt.selectPalette(paletteList.stringValue);
   }
 
   // Initialise the canvas
@@ -163,11 +163,11 @@ void paintRhombus(
   const double borderY = 0;
 
   // Work out the X and Y
-  final double cellWidth = canvasWidth / (columns.value as num);
-  final double cellHeight = cellWidth / (ratio.value as num);
-  final int cellsX = columns.value.toInt() as int;
+  final double cellWidth = canvasWidth / (columns.numValue);
+  final double cellHeight = cellWidth / (ratio.numValue);
+  final int cellsX = columns.intValue;
   final int cellsY = (canvasHeight / cellHeight).ceil();
-  final int extraY = ((offsetY.value as num) / cellHeight).ceil();
+  final int extraY = ((offsetY.numValue) / cellHeight).ceil();
 
   int colourOrder = 0;
   Color nextColor;
@@ -178,18 +178,21 @@ void paintRhombus(
     for (int j = -extraY; j < cellsY + extraY; ++j) {
       // Choose the next colour
       colourOrder++;
-      nextColor = (randomColors.value == false)
-          ? opArt.palette.colorList[colourOrder % (numberOfColors.value as int)]
-              .withValues(alpha: opacity.value as double)
-          : opArt.palette.colorList[rnd.nextInt(numberOfColors.value as int)]
-              .withValues(alpha: opacity.value as double);
+      nextColor = (!randomColors.boolValue)
+          ? opArt.palette.colorList[colourOrder % (numberOfColors.intValue)]
+              .withValues(alpha: opacity.doubleValue)
+          : opArt.palette.colorList[rnd.nextInt(numberOfColors.intValue)]
+              .withValues(alpha: opacity.doubleValue);
 
       final x = borderX + i * cellWidth;
       final y = borderY + j * cellHeight;
 
       // var p1 = [x, y];
-      final p2 = [x + cellWidth, y - (offsetY.value as double)];
-      final p3 = [x + cellWidth, y + cellHeight - (offsetY.value as double)];
+      final List<double> p2 = [x + cellWidth, y - (offsetY.doubleValue)];
+      final List<double> p3 = [
+        x + cellWidth,
+        y + cellHeight - (offsetY.doubleValue)
+      ];
       final p4 = [x, y + cellHeight];
 
       // draw the rhombus
@@ -208,14 +211,14 @@ void paintRhombus(
             ..isAntiAlias = false
             ..style = PaintingStyle.fill);
 
-      if (lineWidth.value as double > 0) {
+      if (lineWidth.doubleValue > 0) {
         canvas.drawPath(
             rhombus,
             Paint()
-              ..color =
-                  backgroundColor.value.withOpacity(opacity.value) as Color
+              ..color = (backgroundColor.colorValue)
+                  .withValues(alpha: opacity.doubleValue)
               ..style = PaintingStyle.stroke
-              ..strokeWidth = lineWidth.value as double);
+              ..strokeWidth = lineWidth.doubleValue);
       }
     }
   }

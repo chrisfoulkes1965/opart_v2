@@ -193,7 +193,7 @@ class _CanvasWidgetState extends State<CanvasWidget>
     );
   }
 
-  Widget _controlButton(IconData icon, Function onPressed, bool active) {
+  Widget _controlButton(IconData icon, VoidCallback onPressed, bool active) {
     return Container(
       decoration: BoxDecoration(
           shape: BoxShape.circle,

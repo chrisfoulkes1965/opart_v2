@@ -16,15 +16,16 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
   @override
   Widget build(BuildContext context) {
     Color oldColor = currentColor > 100
-        ? widget.opArt.attributes[currentColor - 100].value as Color
+        ? widget.opArt.attributes[currentColor - 100].colorValue
         : widget.opArt.palette.colorList[currentColor];
-    if (oldColor.red == oldColor.blue && oldColor.blue == oldColor.green) {
-      if (oldColor.red < 255) {
-        oldColor =
-            Color.fromRGBO(oldColor.red + 1, oldColor.green, oldColor.blue, 1);
+    final int oldR = (oldColor.r * 255.0).round();
+    final int oldG = (oldColor.g * 255.0).round();
+    final int oldB = (oldColor.b * 255.0).round();
+    if (oldR == oldB && oldB == oldG) {
+      if (oldR < 255) {
+        oldColor = Color.fromRGBO(oldR + 1, oldG, oldB, 1);
       } else {
-        oldColor =
-            Color.fromRGBO(oldColor.red - 1, oldColor.green, oldColor.blue, 1);
+        oldColor = Color.fromRGBO(oldR - 1, oldG, oldB, 1);
       }
     }
 
@@ -51,7 +52,7 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
                               child: ColorPicker(
                                 pickerAreaHeightPercent: 0.2,
                                 displayThumbColor: true,
-                                showLabel: false,
+                                labelTypes: const [],
                                 enableAlpha: false,
                                 pickerColor: oldColor,
                                 onColorChanged: (color) {

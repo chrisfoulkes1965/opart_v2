@@ -173,7 +173,7 @@ void paintWave(
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
-    opArt.selectPalette(paletteList.value as String);
+    opArt.selectPalette(paletteList.stringValue);
   }
 
   generateWave(
@@ -185,17 +185,17 @@ void paintWave(
     size.height,
     0,
     0,
-    zoomOpArt.value as double,
-    stepY.value as double,
-    frequency.value as double,
-    amplitude.value as double,
-    offset.value as double,
-    fanWidth.value as double,
-    zigZag.value as bool,
-    randomColors.value == true,
-    numberOfColors.value.toInt() as int,
-    paletteType.value as String,
-    opacity.value as double,
+    zoomOpArt.doubleValue,
+    stepY.doubleValue,
+    frequency.doubleValue,
+    amplitude.doubleValue,
+    offset.doubleValue,
+    fanWidth.doubleValue,
+    zigZag.boolValue,
+    randomColors.boolValue,
+    numberOfColors.intValue,
+    paletteType.stringValue,
+    opacity.doubleValue,
     opArt.palette.colorList,
     animationVariable * 1000,
   );
@@ -221,7 +221,7 @@ void generateWave(
   int currentNumberOfColors,
   String currentPaletteType,
   double currentOpacity,
-  List currentPalette,
+  List<Color> currentPalette,
   double animationVariable,
 ) {
   int colourOrder = 0;
@@ -237,10 +237,10 @@ void generateWave(
   for (double i = start; i < end; i += currentStepX) {
     Color waveColor;
     if (currentRandomColors) {
-      waveColor = currentPalette[rnd.nextInt(currentNumberOfColors)] as Color;
+      waveColor = currentPalette[rnd.nextInt(currentNumberOfColors)];
     } else {
       colourOrder++;
-      waveColor = currentPalette[colourOrder % currentNumberOfColors] as Color;
+      waveColor = currentPalette[colourOrder % currentNumberOfColors];
     }
 
     final Path wave = Path();

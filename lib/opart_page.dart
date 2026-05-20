@@ -119,16 +119,18 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
       );
 
       if (imageBytes != null && mounted) {
-        await Share.shareXFiles(
-          [
-            XFile.fromData(
-              imageBytes,
-              name: 'opart_image.png',
-              mimeType: 'image/png',
-            ),
-          ],
-          subject: 'Created with OpArt Lab',
-          text: 'Created with OpArt Lab',
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [
+              XFile.fromData(
+                imageBytes,
+                name: 'opart_image.png',
+                mimeType: 'image/png',
+              ),
+            ],
+            subject: 'Created with OpArt Lab',
+            text: 'Created with OpArt Lab',
+          ),
         );
       }
     } catch (e) {
@@ -148,8 +150,8 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
     return ValueListenableBuilder<int>(
         valueListenable: rebuildOpArtPage,
         builder: (context, value, child) {
-          return WillPopScope(
-            onWillPop: () async => false,
+          return PopScope(
+            canPop: false,
             child: Scaffold(
               key: _scaffoldKey,
               extendBodyBehindAppBar: true,

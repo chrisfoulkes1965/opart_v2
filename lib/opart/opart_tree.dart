@@ -438,26 +438,24 @@ void paintTree(
 
   // colour in the canvas
   canvas.drawRect(
-      const Offset(borderX, borderY) & Size(imageWidth, imageHeight),
+      Offset.zero & Size(imageWidth, imageHeight),
       Paint()
-        ..color = backgroundColor.value as Color
+        ..color = backgroundColor.colorValue
         ..style = PaintingStyle.fill);
 
   // Starting point of the tree
   const double direction = pi / 2;
-  final List treeBaseA = [
+  final List<double> treeBaseA = [
     borderX +
-        (imageWidth - (trunkWidth.value as num) * (zoomOpArt.value as num)) /
-            2 +
-        (centerX.value as num),
-    borderY + imageHeight + (centerY.value as num)
+        (imageWidth - (trunkWidth.numValue) * (zoomOpArt.numValue)) / 2 +
+        (centerX.numValue),
+    borderY + imageHeight + (centerY.numValue)
   ];
-  final List treeBaseB = [
+  final List<double> treeBaseB = [
     borderX +
-        (imageWidth + (trunkWidth.value as num) * (zoomOpArt.value as num)) /
-            2 +
-        (centerX.value as num),
-    borderY + imageHeight + (centerY.value as num)
+        (imageWidth + (trunkWidth.numValue) * (zoomOpArt.numValue)) / 2 +
+        (centerX.numValue),
+    borderY + imageHeight + (centerY.numValue)
   ];
 
   drawSegment(
@@ -465,33 +463,33 @@ void paintTree(
     rnd,
     treeBaseA,
     treeBaseB,
-    (trunkWidth.value as double) * (zoomOpArt.value as double),
-    segmentLength.value * zoomOpArt.value as double,
+    (trunkWidth.doubleValue) * (zoomOpArt.doubleValue),
+    ((segmentLength.numValue) * (zoomOpArt.numValue)).toDouble(),
     direction,
-    ratio.value as double,
+    ratio.doubleValue,
     0,
-    trunkStrokeWidth.value * zoomOpArt.value as double,
-    leafRadius.value * zoomOpArt.value as double,
-    randomLeafLength.value as double,
-    leafShape.value as String,
+    ((trunkStrokeWidth.numValue) * (zoomOpArt.numValue)).toDouble(),
+    ((leafRadius.numValue) * (zoomOpArt.numValue)).toDouble(),
+    randomLeafLength.doubleValue,
+    leafShape.stringValue,
     false,
     animationVariable,
-    branch.value as double,
-    angle.value as double,
-    widthDecay.value as double,
-    segmentDecay.value as double,
-    bulbousness.value as double,
-    leavesAfter.value as int,
-    maxDepth.value as int,
-    leafAngle.value as double,
-    leafDecay.value as double,
-    leafSquareness.value as double,
-    leafAsymmetry.value as double,
-    trunkFillColor.value as Color,
-    opacity.value as double,
-    numberOfColors.value.toInt() as int,
-    trunkStrokeWidth.value as double,
-    trunkOutlineColor.value as Color,
+    branch.doubleValue,
+    angle.doubleValue,
+    widthDecay.doubleValue,
+    segmentDecay.doubleValue,
+    bulbousness.doubleValue,
+    leavesAfter.intValue,
+    maxDepth.intValue,
+    leafAngle.doubleValue,
+    leafDecay.doubleValue,
+    leafSquareness.doubleValue,
+    leafAsymmetry.doubleValue,
+    trunkFillColor.colorValue,
+    opacity.doubleValue,
+    numberOfColors.intValue,
+    trunkStrokeWidth.doubleValue,
+    trunkOutlineColor.colorValue,
     opArt.palette.colorList,
   );
 
@@ -526,8 +524,8 @@ void paintTree(
 void drawSegment(
   Canvas canvas,
   Random rnd,
-  List rootA,
-  List rootB,
+  List<double> rootA,
+  List<double> rootB,
   double width,
   double segmentLength,
   double direction,
@@ -555,16 +553,16 @@ void drawSegment(
   int numberOfColors,
   double trunkStrokeWidth,
   Color trunkOutlineColor,
-  List palette,
+  List<Color> palette,
 ) {
-  final List segmentBaseCentre = [
+  final List<double> segmentBaseCentre = [
     (rootA[0] + rootB[0]) / 2,
     (rootA[1] + rootB[1]) / 2
   ];
 
   //branch
   if (!justBranched && rnd.nextDouble() < branch) {
-    final List rootX = [
+    final List<double> rootX = [
       segmentBaseCentre[0] + width * cos(direction),
       segmentBaseCentre[1] - width * sin(direction)
     ];
@@ -684,15 +682,15 @@ void drawSegment(
     );
   } else {
     //grow
-    final List pD = [
+    final List<double> pD = [
       segmentBaseCentre[0] + segmentLength * cos(direction),
       segmentBaseCentre[1] - segmentLength * sin(direction)
     ];
-    final List p2 = [
+    final List<double> p2 = [
       pD[0] + 0.5 * width * widthDecay * sin(direction),
       pD[1] + 0.5 * width * widthDecay * cos(direction)
     ];
-    final List p3 = [
+    final List<double> p3 = [
       pD[0] - 0.5 * width * widthDecay * sin(direction),
       pD[1] - 0.5 * width * widthDecay * cos(direction)
     ];
@@ -782,38 +780,36 @@ void drawSegment(
 void drawTheTrunk(
   Canvas canvas,
   Random rnd,
-  List p1,
-  List p2,
-  List p3,
-  List p4,
+  List<double> p1,
+  List<double> p2,
+  List<double> p3,
+  List<double> p4,
   double bulbousness,
   Color trunkFillColor,
   double opacity,
   double trunkStrokeWidth,
   Color trunkOutlineColor,
 ) {
-  final List pC = [
+  final List<double> pC = [
     (p1[0] + p2[0] + p3[0] + p4[0]) / 4,
     (p1[1] + p2[1] + p3[1] + p4[1]) / 4
   ];
-  final List p12 = [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
-  final List pX = [
+  final List<double> p12 = [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
+  final List<double> pX = [
     pC[0] * (1 - bulbousness) + p12[0] * bulbousness,
     pC[1] * (1 - bulbousness) + p12[1] * bulbousness
   ];
-  final List p34 = [(p3[0] + p4[0]) / 2, (p3[1] + p4[1]) / 2];
-  final List pY = [
+  final List<double> p34 = [(p3[0] + p4[0]) / 2, (p3[1] + p4[1]) / 2];
+  final List<double> pY = [
     pC[0] * (1 - bulbousness) + p34[0] * bulbousness,
     pC[1] * (1 - bulbousness) + p34[1] * bulbousness
   ];
 
   final Path trunk = Path();
-  trunk.moveTo(p1[0] as double, p1[1] as double);
-  trunk.quadraticBezierTo(
-      pX[0] as double, pX[1] as double, p2[0] as double, p2[1] as double);
-  trunk.lineTo(p3[0] as double, p3[1] as double);
-  trunk.quadraticBezierTo(
-      pY[0] as double, pY[1] as double, p4[0] as double, p4[1] as double);
+  trunk.moveTo(p1[0], p1[1]);
+  trunk.quadraticBezierTo(pX[0], pX[1], p2[0], p2[1]);
+  trunk.lineTo(p3[0], p3[1]);
+  trunk.quadraticBezierTo(pY[0], pY[1], p4[0], p4[1]);
   trunk.close();
 
   canvas.drawPath(
@@ -833,18 +829,18 @@ void drawTheTrunk(
 void drawTheTriangle(
   Canvas canvas,
   Random rnd,
-  List p1,
-  List p2,
-  List p3,
+  List<double> p1,
+  List<double> p2,
+  List<double> p3,
   Color trunkFillColor,
   double opacity,
   double trunkStrokeWidth,
   Color trunkOutlineColor,
 ) {
   final Path trunk = Path();
-  trunk.moveTo(p1[0] as double, p1[1] as double);
-  trunk.lineTo(p2[0] as double, p2[1] as double);
-  trunk.lineTo(p3[0] as double, p3[1] as double);
+  trunk.moveTo(p1[0], p1[1]);
+  trunk.lineTo(p2[0], p2[1]);
+  trunk.lineTo(p3[0], p3[1]);
   trunk.close();
 
   canvas.drawPath(
@@ -864,7 +860,7 @@ void drawTheTriangle(
 void drawTheLeaf(
   Canvas canvas,
   Random rnd,
-  List leafPosition,
+  List<double> leafPosition,
   double lineWidth,
   double leafAngle,
   double leafRadius,
@@ -876,13 +872,13 @@ void drawTheLeaf(
   double animationVariable,
   double opacity,
   int numberOfColors,
-  List palette,
+  List<Color> palette,
 ) {
   // pick a random color
   final Color leafColor =
-      palette[rnd.nextInt(numberOfColors)].withValues(alpha: opacity) as Color;
+      palette[rnd.nextInt(numberOfColors)].withValues(alpha: opacity);
 
-  leafRadius = leafRadius + rnd.nextDouble() * randomLeafLength;
+  var radius = leafRadius + rnd.nextDouble() * randomLeafLength;
 
   // have each leaf oscillate on a different cycle
 
@@ -891,24 +887,24 @@ void drawTheLeaf(
           animationVariable * ((1 - rnd.nextDouble() * 0.5) * 20000));
 
   // find the centre of the leaf
-  final List pC = [
-    leafPosition[0] + leafRadius * cos(randomizedLeafAngle),
-    leafPosition[1] - leafRadius * sin(randomizedLeafAngle)
+  final List<double> pC = [
+    leafPosition[0] + radius * cos(randomizedLeafAngle),
+    leafPosition[1] - radius * sin(randomizedLeafAngle)
   ];
 
   switch (leafShape) {
     case 'petal':
-      leafRadius = leafRadius * 2;
+      radius = radius * 2;
 
       canvas.drawArc(
           Rect.fromCenter(
               center: Offset(
-                  (leafPosition[0] as double) +
-                      cos(randomizedLeafAngle - pi / 4) * leafRadius / sqrt(2),
-                  (leafPosition[1] as double) -
-                      sin(randomizedLeafAngle - pi / 4) * leafRadius / sqrt(2)),
-              height: leafRadius * sqrt(2),
-              width: leafRadius * sqrt(2)),
+                  (leafPosition[0]) +
+                      cos(randomizedLeafAngle - pi / 4) * radius / sqrt(2),
+                  (leafPosition[1]) -
+                      sin(randomizedLeafAngle - pi / 4) * radius / sqrt(2)),
+              height: radius * sqrt(2),
+              width: radius * sqrt(2)),
           pi * 1.25 - randomizedLeafAngle,
           pi / 2,
           false,
@@ -920,12 +916,12 @@ void drawTheLeaf(
       canvas.drawArc(
           Rect.fromCenter(
               center: Offset(
-                  (leafPosition[0] as double) +
-                      cos(randomizedLeafAngle + pi / 4) * leafRadius / sqrt(2),
-                  (leafPosition[1] as double) -
-                      sin(randomizedLeafAngle + pi / 4) * leafRadius / sqrt(2)),
-              height: leafRadius * sqrt(2),
-              width: leafRadius * sqrt(2)),
+                  (leafPosition[0]) +
+                      cos(randomizedLeafAngle + pi / 4) * radius / sqrt(2),
+                  (leafPosition[1]) -
+                      sin(randomizedLeafAngle + pi / 4) * radius / sqrt(2)),
+              height: radius * sqrt(2),
+              width: radius * sqrt(2)),
           pi * 0.25 - randomizedLeafAngle,
           pi / 2,
           false,
@@ -936,8 +932,8 @@ void drawTheLeaf(
 
     case 'circle':
       canvas.drawCircle(
-          Offset(pC[0] as double, pC[1] as double),
-          leafRadius,
+          Offset(pC[0], pC[1]),
+          radius,
           Paint()
             ..style = PaintingStyle.fill
             ..color = leafColor.withValues(alpha: opacity));
@@ -945,29 +941,25 @@ void drawTheLeaf(
     case 'triangle':
 
       // find the tips of the leaf
-      final List pA = [
-        pC[0] - leafRadius * cos(randomizedLeafAngle + pi * 0),
-        pC[1] + leafRadius * sin(randomizedLeafAngle + pi * 0)
+      final List<double> pA = [
+        pC[0] - radius * cos(randomizedLeafAngle + pi * 0),
+        pC[1] + radius * sin(randomizedLeafAngle + pi * 0)
       ];
 
-      final List pB1 = [
-        pC[0] -
-            leafRadius * cos(randomizedLeafAngle + pi * (0.5 - leafSquareness)),
-        pC[1] +
-            leafRadius * sin(randomizedLeafAngle + pi * (0.5 - leafSquareness))
+      final List<double> pB1 = [
+        pC[0] - radius * cos(randomizedLeafAngle + pi * (0.5 - leafSquareness)),
+        pC[1] + radius * sin(randomizedLeafAngle + pi * (0.5 - leafSquareness))
       ];
 
-      final List pB2 = [
-        pC[0] -
-            leafRadius * cos(randomizedLeafAngle - pi * (0.5 - leafSquareness)),
-        pC[1] +
-            leafRadius * sin(randomizedLeafAngle - pi * (0.5 - leafSquareness))
+      final List<double> pB2 = [
+        pC[0] - radius * cos(randomizedLeafAngle - pi * (0.5 - leafSquareness)),
+        pC[1] + radius * sin(randomizedLeafAngle - pi * (0.5 - leafSquareness))
       ];
 
       final Path leaf = Path();
-      leaf.moveTo(pA[0] as double, pA[1] as double);
-      leaf.lineTo(pB1[0] as double, pB1[1] as double);
-      leaf.lineTo(pB2[0] as double, pB2[1] as double);
+      leaf.moveTo(pA[0], pA[1]);
+      leaf.lineTo(pB1[0], pB1[1]);
+      leaf.lineTo(pB2[0], pB2[1]);
       leaf.close();
 
       canvas.drawPath(
@@ -979,35 +971,31 @@ void drawTheLeaf(
     case 'square':
 
       // find the tips of the leaf
-      final List pA = [
-        pC[0] - leafRadius * cos(randomizedLeafAngle + pi * 0),
-        pC[1] + leafRadius * sin(randomizedLeafAngle + pi * 0)
+      final List<double> pA = [
+        pC[0] - radius * cos(randomizedLeafAngle + pi * 0),
+        pC[1] + radius * sin(randomizedLeafAngle + pi * 0)
       ];
 
-      final List pB1 = [
-        pC[0] -
-            leafRadius * cos(randomizedLeafAngle + pi * (0.5 - leafSquareness)),
-        pC[1] +
-            leafRadius * sin(randomizedLeafAngle + pi * (0.5 - leafSquareness))
+      final List<double> pB1 = [
+        pC[0] - radius * cos(randomizedLeafAngle + pi * (0.5 - leafSquareness)),
+        pC[1] + radius * sin(randomizedLeafAngle + pi * (0.5 - leafSquareness))
       ];
 
-      final List pB2 = [
-        pC[0] - leafRadius * cos(randomizedLeafAngle - pi * 1),
-        pC[1] + leafRadius * sin(randomizedLeafAngle - pi * 1)
+      final List<double> pB2 = [
+        pC[0] - radius * cos(randomizedLeafAngle - pi * 1),
+        pC[1] + radius * sin(randomizedLeafAngle - pi * 1)
       ];
 
-      final List pB3 = [
-        pC[0] -
-            leafRadius * cos(randomizedLeafAngle - pi * (0.5 - leafSquareness)),
-        pC[1] +
-            leafRadius * sin(randomizedLeafAngle - pi * (0.5 - leafSquareness))
+      final List<double> pB3 = [
+        pC[0] - radius * cos(randomizedLeafAngle - pi * (0.5 - leafSquareness)),
+        pC[1] + radius * sin(randomizedLeafAngle - pi * (0.5 - leafSquareness))
       ];
 
       final Path leaf = Path();
-      leaf.moveTo(pA[0] as double, pA[1] as double);
-      leaf.lineTo(pB1[0] as double, pB1[1] as double);
-      leaf.lineTo(pB2[0] as double, pB2[1] as double);
-      leaf.lineTo(pB3[0] as double, pB3[1] as double);
+      leaf.moveTo(pA[0], pA[1]);
+      leaf.lineTo(pB1[0], pB1[1]);
+      leaf.lineTo(pB2[0], pB2[1]);
+      leaf.lineTo(pB3[0], pB3[1]);
       leaf.close();
 
       canvas.drawPath(
@@ -1018,35 +1006,31 @@ void drawTheLeaf(
 
     case 'diamond':
       // find the tip of the leaf
-      final List pS = [
-        pC[0] - leafRadius * cos(randomizedLeafAngle + pi),
-        pC[1] + leafRadius * sin(randomizedLeafAngle + pi)
+      final List<double> pS = [
+        pC[0] - radius * cos(randomizedLeafAngle + pi),
+        pC[1] + radius * sin(randomizedLeafAngle + pi)
       ];
 
       // find the offset centre of the leaf
-      final List pOC = [
-        pC[0] + leafAsymmetry * leafRadius * cos(randomizedLeafAngle + pi),
-        pC[1] - leafAsymmetry * leafRadius * sin(randomizedLeafAngle + pi)
+      final List<double> pOC = [
+        pC[0] + leafAsymmetry * radius * cos(randomizedLeafAngle + pi),
+        pC[1] - leafAsymmetry * radius * sin(randomizedLeafAngle + pi)
       ];
 
-      final List pE = [
-        pOC[0] -
-            leafSquareness * leafRadius * cos(randomizedLeafAngle + pi * 0.5),
-        pOC[1] +
-            leafSquareness * leafRadius * sin(randomizedLeafAngle + pi * 0.5)
+      final List<double> pE = [
+        pOC[0] - leafSquareness * radius * cos(randomizedLeafAngle + pi * 0.5),
+        pOC[1] + leafSquareness * radius * sin(randomizedLeafAngle + pi * 0.5)
       ];
-      final List pW = [
-        pOC[0] -
-            leafSquareness * leafRadius * cos(randomizedLeafAngle + pi * 1.5),
-        pOC[1] +
-            leafSquareness * leafRadius * sin(randomizedLeafAngle + pi * 1.5)
+      final List<double> pW = [
+        pOC[0] - leafSquareness * radius * cos(randomizedLeafAngle + pi * 1.5),
+        pOC[1] + leafSquareness * radius * sin(randomizedLeafAngle + pi * 1.5)
       ];
 
       final Path leaf = Path();
-      leaf.moveTo(leafPosition[0] as double, leafPosition[1] as double);
-      leaf.lineTo(pE[0] as double, pE[1] as double);
-      leaf.lineTo(pS[0] as double, pS[1] as double);
-      leaf.lineTo(pW[0] as double, pW[1] as double);
+      leaf.moveTo(leafPosition[0], leafPosition[1]);
+      leaf.lineTo(pE[0], pE[1]);
+      leaf.lineTo(pS[0], pS[1]);
+      leaf.lineTo(pW[0], pW[1]);
       leaf.close();
 
       canvas.drawPath(
@@ -1058,36 +1042,30 @@ void drawTheLeaf(
     case 'quadratic':
 
       // find the tip of the leaf
-      final List pS = [
-        pC[0] - leafRadius * cos(randomizedLeafAngle + pi),
-        pC[1] + leafRadius * sin(randomizedLeafAngle + pi)
+      final List<double> pS = [
+        pC[0] - radius * cos(randomizedLeafAngle + pi),
+        pC[1] + radius * sin(randomizedLeafAngle + pi)
       ];
 
       // find the offset centre of the leaf
-      final List pOC = [
-        pC[0] + leafAsymmetry * leafRadius * cos(randomizedLeafAngle + pi),
-        pC[1] - leafAsymmetry * leafRadius * sin(randomizedLeafAngle + pi)
+      final List<double> pOC = [
+        pC[0] + leafAsymmetry * radius * cos(randomizedLeafAngle + pi),
+        pC[1] - leafAsymmetry * radius * sin(randomizedLeafAngle + pi)
       ];
 
-      final List pE = [
-        pOC[0] -
-            leafSquareness * leafRadius * cos(randomizedLeafAngle + pi * 0.5),
-        pOC[1] +
-            leafSquareness * leafRadius * sin(randomizedLeafAngle + pi * 0.5)
+      final List<double> pE = [
+        pOC[0] - leafSquareness * radius * cos(randomizedLeafAngle + pi * 0.5),
+        pOC[1] + leafSquareness * radius * sin(randomizedLeafAngle + pi * 0.5)
       ];
-      final List pW = [
-        pOC[0] -
-            leafSquareness * leafRadius * cos(randomizedLeafAngle + pi * 1.5),
-        pOC[1] +
-            leafSquareness * leafRadius * sin(randomizedLeafAngle + pi * 1.5)
+      final List<double> pW = [
+        pOC[0] - leafSquareness * radius * cos(randomizedLeafAngle + pi * 1.5),
+        pOC[1] + leafSquareness * radius * sin(randomizedLeafAngle + pi * 1.5)
       ];
 
       final Path leaf = Path();
-      leaf.moveTo(leafPosition[0] as double, leafPosition[1] as double);
-      leaf.quadraticBezierTo(
-          pE[0] as double, pE[1] as double, pS[0] as double, pS[1] as double);
-      leaf.quadraticBezierTo(pW[0] as double, pW[1] as double,
-          leafPosition[0] as double, leafPosition[1] as double);
+      leaf.moveTo(leafPosition[0], leafPosition[1]);
+      leaf.quadraticBezierTo(pE[0], pE[1], pS[0], pS[1]);
+      leaf.quadraticBezierTo(pW[0], pW[1], leafPosition[0], leafPosition[1]);
       leaf.close();
 
       canvas.drawPath(
@@ -1100,7 +1078,7 @@ void drawTheLeaf(
 
 void drawPetal(
   Canvas canvas,
-  List leafPosition,
+  List<double> leafPosition,
   double leafAngle,
   double leafRadius,
 ) {
@@ -1123,7 +1101,7 @@ void drawPetal(
   //       ..style = PaintingStyle.stroke
   //       ..color = Colors.black);
 
-  final List petalCentre1 = [
+  final List<double> petalCentre1 = [
     leafPosition[0] + cos(leafAngle - pi / 4) * leafRadius / sqrt(2),
     leafPosition[1] - sin(leafAngle - pi / 4) * leafRadius / sqrt(2)
   ];
@@ -1135,7 +1113,7 @@ void drawPetal(
 
   canvas.drawArc(
       Rect.fromCenter(
-          center: Offset(petalCentre1[0] as double, petalCentre1[1] as double),
+          center: Offset(petalCentre1[0], petalCentre1[1]),
           height: leafRadius * sqrt(2),
           width: leafRadius * sqrt(2)),
       pi * 1.25 - leafAngle,
@@ -1145,7 +1123,7 @@ void drawPetal(
         ..style = PaintingStyle.fill
         ..color = Colors.green);
 
-  final List petalCentre2 = [
+  final List<double> petalCentre2 = [
     leafPosition[0] + cos(leafAngle + pi / 4) * leafRadius / sqrt(2),
     leafPosition[1] - sin(leafAngle + pi / 4) * leafRadius / sqrt(2)
   ];
@@ -1157,7 +1135,7 @@ void drawPetal(
 
   canvas.drawArc(
       Rect.fromCenter(
-          center: Offset(petalCentre2[0] as double, petalCentre2[1] as double),
+          center: Offset(petalCentre2[0], petalCentre2[1]),
           height: leafRadius * sqrt(2),
           width: leafRadius * sqrt(2)),
       pi * 0.25 - leafAngle,

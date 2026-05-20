@@ -302,7 +302,7 @@ void paintFibonacci(
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
-    opArt.selectPalette(paletteList.value as String);
+    opArt.selectPalette(paletteList.stringValue);
   }
 
   generateFlower(
@@ -316,25 +316,25 @@ void paintFibonacci(
     0,
     size.width / 2,
     size.height / 2,
-    animationVariable * 2 * pi + (angleIncrement.value as num),
-    zoomOpArt.value as double,
-    petalSize.value as double,
-    ratio.value as double,
-    randomizeAngle.value as double,
-    petalPointiness.value as double,
-    petalRotation.value as double,
-    petalRotationRatio.value as double,
-    petalType.value as String,
-    maxPetals.value.toInt() as int,
-    radialOscAmplitude.value as double,
-    radialOscPeriod.value as double,
-    backgroundColor.value as Color,
-    lineColor.value as Color,
-    lineWidth.value as double,
-    randomColors.value == true,
-    numberOfColors.value.toInt() as int,
-    paletteType.value as String,
-    opacity.value as double,
+    animationVariable * 2 * pi + (angleIncrement.numValue),
+    zoomOpArt.doubleValue,
+    petalSize.doubleValue,
+    ratio.doubleValue,
+    randomizeAngle.doubleValue,
+    petalPointiness.doubleValue,
+    petalRotation.doubleValue,
+    petalRotationRatio.doubleValue,
+    petalType.stringValue,
+    maxPetals.intValue,
+    radialOscAmplitude.doubleValue,
+    radialOscPeriod.doubleValue,
+    backgroundColor.colorValue,
+    lineColor.colorValue,
+    lineWidth.doubleValue,
+    randomColors.boolValue,
+    numberOfColors.intValue,
+    paletteType.stringValue,
+    opacity.doubleValue,
     opArt.palette.colorList,
   );
 }
@@ -369,7 +369,7 @@ void generateFlower(
   int currentNumberOfColors,
   String currentPaletteType,
   double currentOpacity,
-  List currentPalette,
+  List<Color> currentPalette,
 ) {
   // colour in the canvas
   //a rectangle
@@ -385,7 +385,7 @@ void generateFlower(
   int colourOrder = 0;
   Color nextColor;
 
-  final List p0 = [flowerCentreX + borderX, flowerCentreY + borderY];
+  final List<double> p0 = [flowerCentreX + borderX, flowerCentreY + borderY];
 
   final double maxRadius = (imageWidth < imageHeight)
       ? currentFlowerFill * imageWidth / 2
@@ -397,9 +397,9 @@ void generateFlower(
   do {
     // Choose the next colour
     colourOrder++;
-    nextColor = currentPalette[colourOrder % currentNumberOfColors] as Color;
+    nextColor = currentPalette[colourOrder % currentNumberOfColors];
     if (currentRandomColors) {
-      nextColor = currentPalette[rnd.nextInt(currentNumberOfColors)] as Color;
+      nextColor = currentPalette[rnd.nextInt(currentNumberOfColors)];
     }
     final Color petalColor = nextColor.withValues(alpha: currentOpacity);
 
@@ -446,9 +446,9 @@ void generateFlower(
 void drawPetal(
   Canvas canvas,
   Random rnd,
-  List p0,
-  double angle,
-  double radius,
+  List<double> p0,
+  double initAngle,
+  double initRadius,
   Color colour,
   double currentAngleIncrement,
   double currentFlowerFill,
@@ -469,33 +469,33 @@ void drawPetal(
   int currentNumberOfColors,
   String currentPaletteType,
   double currentOpacity,
-  List currentPalette,
+  List<Color> currentPalette,
 ) {
-  angle = angle + (rnd.nextDouble() - 0.5) * currentRandomizeAngle;
+  final angle = initAngle + (rnd.nextDouble() - 0.5) * currentRandomizeAngle;
 
-  radius = radius +
-      radius *
+  final radius = initRadius +
+      initRadius *
           (sin(currentRadialOscPeriod * angle) + 1) *
           currentRadialOscAmplitude;
 
   switch (currentPetalType) {
     case 'circle': //'circle': not quite a circle
 
-      final List p1 = [
+      final List<double> p1 = [
         p0[0] + radius * cos(angle),
         p0[1] + radius * sin(angle)
       ];
       final petalRadius = radius * currentPetalToRadius;
 
       canvas.drawCircle(
-          Offset(p1[0] as double, p1[1] as double),
+          Offset(p1[0], p1[1]),
           petalRadius,
           Paint()
             ..style = PaintingStyle.fill
             ..color = colour);
       if (currentLineWidth > 0) {
         canvas.drawCircle(
-            Offset(p1[0] as double, p1[1] as double),
+            Offset(p1[0], p1[1]),
             petalRadius,
             Paint()
               ..style = PaintingStyle.stroke
@@ -505,13 +505,13 @@ void drawPetal(
 
     case 'triangle': //'triangle':
 
-      final List p1 = [
+      final List<double> p1 = [
         p0[0] + radius * cos(angle),
         p0[1] + radius * sin(angle)
       ];
       final double petalRadius = radius * currentPetalToRadius;
 
-      final List pA = [
+      final List<double> pA = [
         p1[0] +
             petalRadius *
                 cos(angle +
@@ -523,7 +523,7 @@ void drawPetal(
                     currentPetalRotation +
                     angle * currentPetalRotationRatio)
       ];
-      final List pB = [
+      final List<double> pB = [
         p1[0] +
             petalRadius *
                 cos(angle +
@@ -537,7 +537,7 @@ void drawPetal(
                     angle * currentPetalRotationRatio +
                     pi * currentPetalPointiness)
       ];
-      final List pC = [
+      final List<double> pC = [
         p1[0] +
             petalRadius *
                 cos(angle +
@@ -553,9 +553,9 @@ void drawPetal(
       ];
 
       final Path triangle = Path();
-      triangle.moveTo(pA[0] as double, pA[1] as double);
-      triangle.lineTo(pB[0] as double, pB[1] as double);
-      triangle.lineTo(pC[0] as double, pC[1] as double);
+      triangle.moveTo(pA[0], pA[1]);
+      triangle.lineTo(pB[0], pB[1]);
+      triangle.lineTo(pC[0], pC[1]);
       triangle.close();
 
       canvas.drawPath(
@@ -574,13 +574,13 @@ void drawPetal(
 
     case 'square': // 'square':
 
-      final List p1 = [
+      final List<double> p1 = [
         p0[0] + radius * cos(angle),
         p0[1] + radius * sin(angle)
       ];
       final double petalRadius = radius * currentPetalToRadius;
 
-      final List pA = [
+      final List<double> pA = [
         p1[0] +
             petalRadius *
                 cos(angle +
@@ -599,7 +599,7 @@ void drawPetal(
                     pi / 4)
       ];
 
-      final List pB = [
+      final List<double> pB = [
         p1[0] +
             petalRadius *
                 cos(angle +
@@ -618,7 +618,7 @@ void drawPetal(
                     pi / 4)
       ];
 
-      final List pC = [
+      final List<double> pC = [
         p1[0] +
             petalRadius *
                 cos(angle +
@@ -637,7 +637,7 @@ void drawPetal(
                     pi / 4)
       ];
 
-      final List pD = [
+      final List<double> pD = [
         p1[0] +
             petalRadius *
                 cos(angle +
@@ -657,10 +657,10 @@ void drawPetal(
       ];
 
       final Path square = Path();
-      square.moveTo(pA[0] as double, pA[1] as double);
-      square.lineTo(pB[0] as double, pB[1] as double);
-      square.lineTo(pC[0] as double, pC[1] as double);
-      square.lineTo(pD[0] as double, pD[1] as double);
+      square.moveTo(pA[0], pA[1]);
+      square.lineTo(pB[0], pB[1]);
+      square.lineTo(pC[0], pC[1]);
+      square.lineTo(pD[0], pD[1]);
       square.close();
 
       canvas.drawPath(
@@ -679,7 +679,7 @@ void drawPetal(
 
     // case 'petal': //'petal':
     //
-    //   List p1 = [P0[0] + radius * cos(angle), P0[1] + radius * sin(angle)];
+    //   List<double> p1 = [P0[0] + radius * cos(angle), P0[1] + radius * sin(angle)];
     //   var petalRadius = radius * currentPetalToRadius;
     //
     //   List pA = [

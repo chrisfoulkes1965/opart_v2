@@ -16,20 +16,20 @@ class SettingsModel {
   Icon? icon;
   SettingCategory? settingCategory;
   bool? proFeature;
-  dynamic options;
-  Function? onChange;
+  List<String>? options;
+  VoidCallback? onChange;
   bool? silent;
 
-  dynamic min;
-  dynamic max;
-  dynamic randomMin;
-  dynamic randomMax;
+  Object? min;
+  Object? max;
+  Object? randomMin;
+  Object? randomMax;
   double? randomTrue;
   double? zoom;
-  dynamic defaultValue;
+  Object? defaultValue;
 
   bool locked = false;
-  dynamic value;
+  Object? value;
 
   SettingsModel({
     required this.settingType,
@@ -67,9 +67,9 @@ class SettingsModel {
           // print(settingType);
           // print(value);
           final double min =
-              (randomMin != null) ? randomMin as double : this.min as double;
+              (randomMin != null) ? randomMin! as double : this.min! as double;
           final double max =
-              (randomMax != null) ? randomMax as double : this.max as double;
+              (randomMax != null) ? randomMax! as double : this.max! as double;
 
           // half the time use the default
           value = (rnd.nextBool() == true)
@@ -91,15 +91,19 @@ class SettingsModel {
               : rnd.nextBool();
 
         case SettingType.color:
-          value = Color((rnd.nextDouble() * 0xFFFFFF).toInt()).withValues(alpha: 1);
+          value =
+              Color((rnd.nextDouble() * 0xFFFFFF).toInt()).withValues(alpha: 1);
 
         case SettingType.button:
           value = false;
 
         case SettingType.list:
-          value = (rnd.nextBool() == true)
-              ? options[rnd.nextInt(options.length as int)]
-              : defaultValue;
+          final opts = options;
+          if (opts != null && opts.isNotEmpty) {
+            value = (rnd.nextBool() == true)
+                ? opts[rnd.nextInt(opts.length)]
+                : defaultValue;
+          }
       }
     }
   }
@@ -108,6 +112,62 @@ class SettingsModel {
     value = defaultValue;
     locked = false;
   }
+
+  double get doubleValue {
+    final v = value;
+    if (v is double) return v;
+    if (v is num) return v.toDouble();
+    final d = defaultValue;
+    if (d is double) return d;
+    if (d is num) return d.toDouble();
+    return 0.0;
+  }
+
+  int get intValue {
+    final v = value;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    final d = defaultValue;
+    if (d is int) return d;
+    if (d is num) return d.toInt();
+    return 0;
+  }
+
+  num get numValue {
+    final v = value;
+    if (v is num) return v;
+    final d = defaultValue;
+    if (d is num) return d;
+    return 0;
+  }
+
+  bool get boolValue => value == true;
+
+  Color get colorValue {
+    final v = value;
+    if (v is Color) return v;
+    final d = defaultValue;
+    if (d is Color) return d;
+    return Colors.transparent;
+  }
+
+  String get stringValue {
+    final v = value;
+    if (v is String) return v;
+    return v?.toString() ?? defaultValue?.toString() ?? '';
+  }
+
+  double get minDouble {
+    final m = min;
+    if (m is num) return m.toDouble();
+    return 0.0;
+  }
+
+  double get maxDouble {
+    final m = max;
+    if (m is num) return m.toDouble();
+    return 0.0;
+  }
 }
 
 void resetAllDefaults() {
@@ -115,35 +175,29 @@ void resetAllDefaults() {
 }
 
 void generatePalette() {
-  final dynamic numberOfColoursValue = currentOpArtPageState?.opArt.attributes
+  final attributes = currentOpArtPageState?.opArt.attributes;
+  if (attributes == null) return;
+  final int numberOfColours = attributes
       .firstWhere((element) => element.name == 'numberOfColors')
-      .value;
-  final int numberOfColours = (numberOfColoursValue is num)
-      ? numberOfColoursValue.toInt()
-      : int.tryParse(numberOfColoursValue?.toString() ?? '') ?? 5;
-  final String paletteType = currentOpArtPageState?.opArt.attributes
-          .firstWhere((element) => element.name == 'paletteType')
-          .value
-          .toString() ??
-      'random';
+      .intValue;
+  final String paletteType = attributes
+      .firstWhere((element) => element.name == 'paletteType')
+      .stringValue;
   currentOpArtPageState?.opArt.palette.randomize(paletteType, numberOfColours);
 }
 
 void checkNumberOfColors() {
-  final dynamic numberOfColoursValue = currentOpArtPageState?.opArt.attributes
+  final attributes = currentOpArtPageState?.opArt.attributes;
+  if (attributes == null) return;
+  final int numberOfColours = attributes
       .firstWhere((element) => element.name == 'numberOfColors')
-      .value;
-  final int numberOfColours = (numberOfColoursValue is num)
-      ? numberOfColoursValue.toInt()
-      : int.tryParse(numberOfColoursValue?.toString() ?? '') ?? 5;
+      .intValue;
   final int paletteLength =
       currentOpArtPageState?.opArt.palette.colorList.length ?? 0;
   if (numberOfColours > paletteLength) {
-    final String paletteType = currentOpArtPageState?.opArt.attributes
-            .firstWhere((element) => element.name == 'paletteType')
-            .value
-            .toString() ??
-        'random';
+    final String paletteType = attributes
+        .firstWhere((element) => element.name == 'paletteType')
+        .stringValue;
     currentOpArtPageState?.opArt.palette
         .randomize(paletteType, numberOfColours);
   }

@@ -303,21 +303,21 @@ void paintEye(
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
-    opArt.selectPalette(paletteList.value as String);
+    opArt.selectPalette(paletteList.stringValue);
   }
 
   // colour in the canvas
   canvas.drawRect(
       Offset.zero & Size(size.width, size.height),
       Paint()
-        ..color = backgroundColor.value as Color
+        ..color = backgroundColor.colorValue
         ..style = PaintingStyle.fill);
 
-  for (int t = 0; t < (numberOfTrees.value as int); t++) {
-    final double treeAngle = t * 2 * pi / (numberOfTrees.value as num);
-    final List treeBase = [
-      size.width / 2 + (irisRadius.value as num) * cos(treeAngle),
-      size.height / 2 - (irisRadius.value as num) * sin(treeAngle)
+  for (int t = 0; t < (numberOfTrees.intValue); t++) {
+    final double treeAngle = t * 2 * pi / (numberOfTrees.numValue);
+    final List<double> treeBase = [
+      size.width / 2 + (irisRadius.numValue) * cos(treeAngle),
+      size.height / 2 - (irisRadius.numValue) * sin(treeAngle)
     ];
 
     drawSegment(
@@ -326,35 +326,35 @@ void paintEye(
         0,
         0,
         treeBase,
-        (trunkWidth.value as double) * (zoomOpArt.value as double),
-        segmentLength.value * zoomOpArt.value as double,
+        (trunkWidth.doubleValue) * (zoomOpArt.doubleValue),
+        ((segmentLength.numValue) * (zoomOpArt.numValue)).toDouble(),
         treeAngle,
-        ratio.value as double,
+        ratio.doubleValue,
         0,
         false,
         animationVariable,
-        branch.value as double,
-        angle.value as double,
-        widthDecay.value as double,
-        segmentDecay.value as double,
-        maxDepth.value as int,
-        trunkFillColor.value as Color,
-        opacity.value as double,
-        colorDecay.value as double,
+        branch.doubleValue,
+        angle.doubleValue,
+        widthDecay.doubleValue,
+        segmentDecay.doubleValue,
+        maxDepth.intValue,
+        trunkFillColor.colorValue,
+        opacity.doubleValue,
+        colorDecay.doubleValue,
         1.0,
-        numberOfColors.value.toInt() as int,
+        numberOfColors.intValue,
         opArt.palette.colorList,
         0,
-        randomColors.value as bool);
+        randomColors.boolValue);
   }
 
   canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
-      irisRadius.value as double,
+      irisRadius.doubleValue,
       Paint()
         ..style = PaintingStyle.fill
-        ..color = (trunkFillColor.value as Color)
-            .withValues(alpha: opacity.value as double));
+        ..color =
+            (trunkFillColor.colorValue).withValues(alpha: opacity.doubleValue));
 }
 
 void drawSegment(
@@ -362,7 +362,7 @@ void drawSegment(
   Random rnd,
   double borderX,
   double borderY,
-  List root,
+  List<double> root,
   double width,
   double segmentLength,
   double direction,
@@ -380,27 +380,22 @@ void drawSegment(
   double colorDecay,
   double colorRatio,
   int numberOfColors,
-  List palette,
+  List<Color> palette,
   int colourOrder,
   bool randomColors,
 ) {
+  var orderIndex = colourOrder;
   if (currentDepth < maxDepth) {
     // Choose the next colour
-    colourOrder++;
-    Color nextColor = palette[colourOrder % numberOfColors] as Color;
+    orderIndex++;
+    Color nextColor = palette[orderIndex % numberOfColors];
     if (randomColors) {
-      nextColor = palette[rnd.nextInt(numberOfColors)] as Color;
+      nextColor = palette[rnd.nextInt(numberOfColors)];
     }
 
     // blend the color with the trunk color
-    nextColor = Color.fromRGBO(
-        (nextColor.red * (1 - colorRatio) + trunkFillColor.red * colorRatio)
-            .toInt(),
-        (nextColor.green * (1 - colorRatio) + trunkFillColor.green * colorRatio)
-            .toInt(),
-        (nextColor.blue * (1 - colorRatio) + trunkFillColor.blue * colorRatio)
-            .toInt(),
-        opacity);
+    nextColor = Color.lerp(nextColor, trunkFillColor, colorRatio)!
+        .withValues(alpha: opacity);
 
     //branch
     if (!justBranched && rnd.nextDouble() < branch) {
@@ -458,7 +453,7 @@ void drawSegment(
         colorRatio * colorDecay,
         numberOfColors,
         palette,
-        colourOrder,
+        orderIndex,
         randomColors,
       );
       drawSegment(
@@ -485,12 +480,12 @@ void drawSegment(
         colorRatio * colorDecay,
         numberOfColors,
         palette,
-        colourOrder,
+        orderIndex,
         randomColors,
       );
     } else {
       // draw the trunk
-      final List pD = [
+      final List<double> pD = [
         root[0] + segmentLength * cos(direction),
         root[1] - segmentLength * sin(direction)
       ];
@@ -522,18 +517,26 @@ void drawSegment(
         colorRatio * colorDecay,
         numberOfColors,
         palette,
-        colourOrder,
+        orderIndex,
         randomColors,
       );
     }
   }
 }
 
-void drawTheTrunk(Canvas canvas, Random rnd, double borderX, double borderY,
-    List p1, List p2, Color trunkFillColor, double opacity, double width) {
+void drawTheTrunk(
+    Canvas canvas,
+    Random rnd,
+    double borderX,
+    double borderY,
+    List<double> p1,
+    List<double> p2,
+    Color trunkFillColor,
+    double opacity,
+    double width) {
   canvas.drawLine(
-      Offset(p1[0] as double, p1[1] as double),
-      Offset(p2[0] as double, p2[1] as double),
+      Offset(p1[0], p1[1]),
+      Offset(p2[0], p2[1]),
       Paint()
         ..style = PaintingStyle.stroke
         ..color = trunkFillColor.withValues(alpha: opacity)

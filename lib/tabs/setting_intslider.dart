@@ -7,9 +7,9 @@ class SettingsIntSlider extends StatefulWidget {
   final int min;
   final int max;
   final bool locked;
-  final Function onChanged;
-  final Function toggleLock;
-  final Function updateCache;
+  final ValueChanged<double> onChanged;
+  final ValueChanged<bool> toggleLock;
+  final VoidCallback updateCache;
 
   const SettingsIntSlider(this.label, this.tooltip, this.currentValue, this.min,
       this.max, this.locked, this.onChanged, this.toggleLock, this.updateCache);
@@ -54,8 +54,7 @@ class _SettingsIntSliderState extends State<SettingsIntSlider> {
             value: widget.currentValue.toDouble(),
             min: widget.min.toDouble(),
             max: widget.max.toDouble(),
-            onChanged:
-                widget.locked ? null : widget.onChanged as Function(double),
+            onChanged: widget.locked ? null : widget.onChanged,
             divisions: widget.max - widget.min,
             label: widget.currentValue.toString(),
           ),

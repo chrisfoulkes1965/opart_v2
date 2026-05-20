@@ -42,8 +42,8 @@ class _InformationPageState extends State<InformationPage> {
               ),
               IconButton(
                 icon: const Icon(Icons.mail),
-                onPressed: () {
-                  launch(emailLaunchUri.toString());
+                onPressed: () async {
+                  await launchUrl(emailLaunchUri);
                 },
               ),
               const SizedBox(height: 18),

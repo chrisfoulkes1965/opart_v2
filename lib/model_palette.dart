@@ -162,7 +162,7 @@ List<String> defaultPalleteNames() {
   ];
 }
 
-List<List> defaultPalettes = [
+List<List<Object?>> defaultPalettes = [
   [
     'Default',
     10,
@@ -625,37 +625,46 @@ class OpArtPalette {
       case 'random':
         {
           for (int colorIndex = 0; colorIndex < numberOfColours; colorIndex++) {
-            palette.add(
-                Color((rnd.nextDouble() * 0xFFFFFF).toInt()).withValues(alpha: 1));
+            palette.add(Color((rnd.nextDouble() * 0xFFFFFF).toInt())
+                .withValues(alpha: 1));
           }
         }
 
       // blended random
       case 'blended random':
         {
-          final Color blendColour = Color(rnd.nextInt(0xFFFFFF)).withValues(alpha: 1);
+          final Color blendColour =
+              Color(rnd.nextInt(0xFFFFFF)).withValues(alpha: 1);
           palette.add(blendColour);
           for (int colourIndex = 1;
               colourIndex < numberOfColours;
               colourIndex++) {
             final Color randomColor = Color(rnd.nextInt(0xFFFFFF));
             palette.add(Color.fromARGB(
-                (blendColour.alpha * 2 + randomColor.alpha) ~/ 3,
-                (blendColour.red * 2 + randomColor.red) ~/ 3,
-                (blendColour.green * 2 + randomColor.green) ~/ 3,
-                (blendColour.blue * 2 + randomColor.blue) ~/ 3));
+                (((blendColour.a * 255.0).round() & 0xff) * 2 +
+                        ((randomColor.a * 255.0).round() & 0xff)) ~/
+                    3,
+                (((blendColour.r * 255.0).round() & 0xff) * 2 +
+                        ((randomColor.r * 255.0).round() & 0xff)) ~/
+                    3,
+                (((blendColour.g * 255.0).round() & 0xff) * 2 +
+                        ((randomColor.g * 255.0).round() & 0xff)) ~/
+                    3,
+                (((blendColour.b * 255.0).round() & 0xff) * 2 +
+                        ((randomColor.b * 255.0).round() & 0xff)) ~/
+                    3));
           }
         }
 
       // linear random
       case 'linear random':
         {
-          final List startColour = [
+          final List<int> startColour = [
             rnd.nextInt(255),
             rnd.nextInt(255),
             rnd.nextInt(255)
           ];
-          final List endColour = [
+          final List<int> endColour = [
             rnd.nextInt(255),
             rnd.nextInt(255),
             rnd.nextInt(255)
@@ -667,15 +676,15 @@ class OpArtPalette {
                 ((startColour[0] * colourIndex +
                             endColour[0] * (numberOfColours - colourIndex)) /
                         numberOfColours)
-                    .round() as int,
+                    .round(),
                 ((startColour[1] * colourIndex +
                             endColour[1] * (numberOfColours - colourIndex)) /
                         numberOfColours)
-                    .round() as int,
+                    .round(),
                 ((startColour[2] * colourIndex +
                             endColour[2] * (numberOfColours - colourIndex)) /
                         numberOfColours)
-                    .round() as int,
+                    .round(),
                 1));
           }
         }
@@ -683,15 +692,15 @@ class OpArtPalette {
       // linear complementary
       case 'linear complementary':
         {
-          final List startColour = [
+          final List<int> startColour = [
             rnd.nextInt(255),
             rnd.nextInt(255),
             rnd.nextInt(255)
           ];
-          final List endColour = [
-            255 - (startColour[0] as num),
-            255 - (startColour[1] as num),
-            255 - (startColour[2] as num)
+          final List<int> endColour = [
+            255 - startColour[0],
+            255 - startColour[1],
+            255 - startColour[2]
           ];
           for (int colourIndex = 0;
               colourIndex < numberOfColours;
@@ -700,15 +709,15 @@ class OpArtPalette {
                 ((startColour[0] * colourIndex +
                             endColour[0] * (numberOfColours - colourIndex)) /
                         numberOfColours)
-                    .round() as int,
+                    .round(),
                 ((startColour[1] * colourIndex +
                             endColour[1] * (numberOfColours - colourIndex)) /
                         numberOfColours)
-                    .round() as int,
+                    .round(),
                 ((startColour[2] * colourIndex +
                             endColour[2] * (numberOfColours - colourIndex)) /
                         numberOfColours)
-                    .round() as int,
+                    .round(),
                 1));
           }
         }

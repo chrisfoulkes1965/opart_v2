@@ -311,7 +311,7 @@ void paintShapes(
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
-    opArt.selectPalette(paletteList.value as String);
+    opArt.selectPalette(paletteList.stringValue);
   }
 
   // Initialise the canvas
@@ -329,47 +329,46 @@ void paintShapes(
 
   // Work out the X and Y
   final int cellsX =
-      (canvasWidth / (zoomOpArt.value as double) + 0.9999999).toInt();
-  borderX = (canvasWidth - (zoomOpArt.value as num) * cellsX) / 2;
+      (canvasWidth / (zoomOpArt.doubleValue) + 0.9999999).toInt();
+  borderX = (canvasWidth - (zoomOpArt.numValue) * cellsX) / 2;
 
-  final int cellsY =
-      (canvasHeight / (zoomOpArt.value as num) + 0.9999999).toInt();
-  borderY = (canvasHeight - (zoomOpArt.value as num) * cellsY) / 2;
+  final int cellsY = (canvasHeight / (zoomOpArt.numValue) + 0.9999999).toInt();
+  borderY = (canvasHeight - (zoomOpArt.numValue) * cellsY) / 2;
 
   int colourOrder = 0;
 
   // Now make some art
 
-  final List shapesArray = [];
-  if (shapeHalfDiagonalTriangle.value == true) {
+  final List<String> shapesArray = [];
+  if (shapeHalfDiagonalTriangle.boolValue) {
     shapesArray.add('shapeHalfDiagonalTriangle');
   }
-  if (shapeCircle.value == true) {
+  if (shapeCircle.boolValue) {
     shapesArray.add('shapeCircle');
   }
-  if (shapeQuarterCircle.value == true) {
+  if (shapeQuarterCircle.boolValue) {
     shapesArray.add('shapeQuarterCircle');
   }
-  if (shapeHalfCircle.value == true) {
+  if (shapeHalfCircle.boolValue) {
     shapesArray.add('shapeHalfCircle');
   }
-  if (shapeQuarterTriangle.value == true) {
+  if (shapeQuarterTriangle.boolValue) {
     shapesArray.add('shapeQuarterTriangle');
   }
-  if (shapeQuarterSquare.value == true) {
+  if (shapeQuarterSquare.boolValue) {
     shapesArray.add('shapeQuarterSquare');
   }
-  if (shapeMiniCircle.value == true) {
+  if (shapeMiniCircle.boolValue) {
     shapesArray.add('shapeMiniCircle');
   }
-  if (shapeS.value == true) {
+  if (shapeS.boolValue) {
     shapesArray.add('shapeS');
   }
-  if (shapeSquaredCircle.value == true) {
+  if (shapeSquaredCircle.boolValue) {
     shapesArray.add('shapeSquaredCircle');
   }
 
-  final double side = zoomOpArt.value as double;
+  final double side = zoomOpArt.doubleValue;
 
   // reset the colours
   colourOrder = 0;
@@ -385,7 +384,7 @@ void paintShapes(
           [borderX + i * side, borderY + j * side],
           side,
           0,
-          randomSize.value as bool ? rnd.nextDouble() : 1);
+          randomSize.boolValue ? rnd.nextDouble() : 1);
     }
   }
 }
@@ -393,24 +392,25 @@ void paintShapes(
 int drawSquare(
     Canvas canvas,
     Random rnd,
-    List palette,
+    List<Color> palette,
     int colourOrder,
-    List shapesArray,
+    List<String> shapesArray,
     List<double> pA,
     double side,
     int recursion,
     double ratio) {
   Color nextColor;
+  var index = colourOrder;
 
-  if (recursion < (recursionDepth.value as num) &&
-      rnd.nextDouble() < (recursionRatio.value as num)) {
-    colourOrder = drawSquare(canvas, rnd, palette, colourOrder, shapesArray, pA,
-        side / 2, recursion + 1, ratio);
-    colourOrder = drawSquare(canvas, rnd, palette, colourOrder, shapesArray,
+  if (recursion < (recursionDepth.numValue) &&
+      rnd.nextDouble() < (recursionRatio.numValue)) {
+    index = drawSquare(canvas, rnd, palette, index, shapesArray, pA, side / 2,
+        recursion + 1, ratio);
+    index = drawSquare(canvas, rnd, palette, index, shapesArray,
         [pA[0] + side / 2, pA[1]], side / 2, recursion + 1, ratio);
-    colourOrder = drawSquare(canvas, rnd, palette, colourOrder, shapesArray,
+    index = drawSquare(canvas, rnd, palette, index, shapesArray,
         [pA[0] + side / 2, pA[1] + side / 2], side / 2, recursion + 1, ratio);
-    colourOrder = drawSquare(canvas, rnd, palette, colourOrder, shapesArray,
+    index = drawSquare(canvas, rnd, palette, index, shapesArray,
         [pA[0], pA[1] + side / 2], side / 2, recursion + 1, ratio);
   } else {
     // Centre of the square
@@ -421,12 +421,12 @@ int drawSquare(
     final List<double> pC = [pA[0] + side, pA[1] + side];
     final List<double> pD = [pA[0], pA[1] + side];
 
-    if (box.value == true) {
+    if (box.boolValue) {
       // Choose the next colour
-      colourOrder++;
-      nextColor = (randomColors.value as bool)
-          ? palette[colourOrder % (numberOfColors.value as int)] as Color
-          : palette[rnd.nextInt(numberOfColors.value as int)] as Color;
+      index++;
+      nextColor = (randomColors.boolValue)
+          ? palette[index % (numberOfColors.intValue)]
+          : palette[rnd.nextInt(numberOfColors.intValue)];
 
       // fill the square
       canvas.drawRect(
@@ -434,25 +434,25 @@ int drawSquare(
           Paint()
             ..style = PaintingStyle.fill
             ..isAntiAlias = false
-            ..color = nextColor.withValues(alpha: opacity.value as double));
+            ..color = nextColor.withValues(alpha: opacity.doubleValue));
     }
 
     // now  draw the shape
     if (shapesArray.isNotEmpty) {
       // Choose the next colour
-      colourOrder++;
-      nextColor = (randomColors.value as bool)
-          ? palette[colourOrder % (numberOfColors.value as int)] as Color
-          : palette[rnd.nextInt(numberOfColors.value as int)] as Color;
+      index++;
+      nextColor = (randomColors.boolValue)
+          ? palette[index % (numberOfColors.intValue)]
+          : palette[rnd.nextInt(numberOfColors.intValue)];
       final Paint paint = Paint()
         ..style = PaintingStyle.fill
         ..isAntiAlias = false
-        ..color = nextColor.withValues(alpha: opacity.value as double);
+        ..color = nextColor.withValues(alpha: opacity.doubleValue);
 
       final Path shape = Path();
 
       // pick a random shape
-      switch (shapesArray[rnd.nextInt(shapesArray.length)] as String) {
+      switch (shapesArray[rnd.nextInt(shapesArray.length)]) {
         case 'shapeHalfDiagonalTriangle': // half diagonal triangle
 
           final shapeOrientation = rnd.nextInt(4);
@@ -753,5 +753,5 @@ int drawSquare(
     }
   }
 
-  return colourOrder;
+  return index;
 }

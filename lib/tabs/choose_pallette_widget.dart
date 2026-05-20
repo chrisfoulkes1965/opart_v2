@@ -11,7 +11,9 @@ Widget choosePaletteTabWidget() {
   // Animation<double> _animation;
 
   List<Widget> circularPalette(int index) {
-    final int sizeOfPalette = defaultPalettes[index][3].length as int;
+    final List<String> paletteColors = List<String>.from(
+        (defaultPalettes[index][3]! as List<Object?>).map((e) => e.toString()));
+    final int sizeOfPalette = paletteColors.length;
 
     final List<Widget> list = [];
     if (sizeOfPalette < 11) {
@@ -24,8 +26,7 @@ Widget choosePaletteTabWidget() {
                 decoration: BoxDecoration(
                   border: Border.all(width: 0.6),
                   shape: BoxShape.circle,
-                  color:
-                      Color(int.parse(defaultPalettes[index][3][i] as String)),
+                  color: Color(int.parse(paletteColors[i])),
                 ),
                 height: 15,
                 width: 15,
@@ -43,8 +44,7 @@ Widget choosePaletteTabWidget() {
                   decoration: BoxDecoration(
                     border: Border.all(width: 0.6),
                     shape: BoxShape.circle,
-                    color: Color(
-                        int.parse(defaultPalettes[index][3][i] as String)),
+                    color: Color(int.parse(paletteColors[i])),
                   ),
                   height: 15,
                   width: 15,
@@ -61,8 +61,7 @@ Widget choosePaletteTabWidget() {
                     decoration: BoxDecoration(
                       border: Border.all(width: 0.6),
                       shape: BoxShape.circle,
-                      color: Color(
-                          int.parse(defaultPalettes[index][3][i] as String)),
+                      color: Color(int.parse(paletteColors[i])),
                     ),
                     height: 15,
                     width: 15,
@@ -80,8 +79,9 @@ Widget choosePaletteTabWidget() {
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
-            final List<String> newPalette =
-                defaultPalettes[index][3] as List<String>;
+            final List<String> newPalette = List<String>.from(
+                (defaultPalettes[index][3]! as List<Object?>)
+                    .map((e) => e.toString()));
             opart_page.currentOpArtPageState?.opArt.palette.colorList = [];
             opacity.value = 1.0;
             for (int i = 0; i < newPalette.length; i++) {
@@ -103,7 +103,7 @@ Widget choosePaletteTabWidget() {
                   padding: const EdgeInsets.all(8.0),
                   child: Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(0.0),
+                      padding: EdgeInsets.zero,
                       child: Stack(
                         children: circularPalette(index),
                       ),
@@ -112,7 +112,7 @@ Widget choosePaletteTabWidget() {
                 ),
               ),
               Text(
-                defaultPalettes[index][0] as String,
+                defaultPalettes[index][0]!.toString(),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),

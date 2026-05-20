@@ -165,7 +165,7 @@ void paintQuads(
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
-    opArt.selectPalette(paletteList.value as String);
+    opArt.selectPalette(paletteList.stringValue);
   }
 
   // Initialise the canvas
@@ -179,9 +179,9 @@ void paintQuads(
   const int recursionDepth = 0;
   const colourOrder = 0;
 
-  final p1 = [0.0, 0.0];
-  final p2 = [imageSize, 0.0];
-  final p3 = [imageSize, imageSize];
+  final List<double> p1 = [0.0, 0.0];
+  final List<double> p2 = [imageSize, 0.0];
+  final List<double> p3 = [imageSize, imageSize];
   final p4 = [0.0, imageSize];
 
   drawQuadrilateral(
@@ -192,25 +192,25 @@ void paintQuads(
     p3,
     p4,
     recursionDepth,
-    minimumDepth.value.toInt() as int,
-    maximumDepth.value.toInt() as int,
-    ratio.value as double,
-    density.value as double,
-    randomiseRatio.value as bool,
+    minimumDepth.intValue,
+    maximumDepth.intValue,
+    ratio.doubleValue,
+    density.doubleValue,
+    randomiseRatio.boolValue,
     colourOrder,
     0,
-    lineColor.value as Color,
-    lineWidth.value as double,
+    lineColor.colorValue,
+    lineWidth.doubleValue,
   );
 }
 
 void drawQuadrilateral(
     Canvas canvas,
-    List colorList,
-    List p0,
-    List p1,
-    List p2,
-    List p3,
+    List<Color> colorList,
+    List<double> p0,
+    List<double> p1,
+    List<double> p2,
+    List<double> p3,
     int recursionDepth,
     int minimumDepth,
     int maximumDepth,
@@ -218,25 +218,26 @@ void drawQuadrilateral(
     double density,
     bool randomiseRatio,
     int colourOrder,
-    direction,
+    int direction,
     Color lineColor,
     double lineWidth) {
   Color nextColor;
 
+  var orderIndex = colourOrder;
   // Choose the next colour
-  colourOrder++;
-  nextColor = colorList[colourOrder % (numberOfColors.value as int)]
-      .withOpacity(opacity.value) as Color;
+  orderIndex++;
+  nextColor = colorList[orderIndex % (numberOfColors.intValue)]
+      .withValues(alpha: opacity.doubleValue);
   Color localLineColor = lineColor;
   if (lineWidth == 0) {
     localLineColor = nextColor;
   }
 
   final Path quad = Path();
-  quad.moveTo(p0[0] as double, p0[1] as double);
-  quad.lineTo(p1[0] as double, p1[1] as double);
-  quad.lineTo(p2[0] as double, p2[1] as double);
-  quad.lineTo(p3[0] as double, p3[1] as double);
+  quad.moveTo(p0[0], p0[1]);
+  quad.lineTo(p1[0], p1[1]);
+  quad.lineTo(p2[0], p2[1]);
+  quad.lineTo(p3[0], p3[1]);
   quad.close();
   canvas.drawPath(
       quad,
@@ -260,11 +261,11 @@ void drawQuadrilateral(
     }
 
     if (direction == 0) {
-      final List pA = [
+      final List<double> pA = [
         p0[0] * localRatio + p1[0] * (1 - localRatio),
         p0[1] * localRatio + p1[1] * (1 - localRatio)
       ];
-      final List pB = [
+      final List<double> pB = [
         p2[0] * localRatio + p3[0] * (1 - localRatio),
         p2[1] * localRatio + p3[1] * (1 - localRatio)
       ];
@@ -282,7 +283,7 @@ void drawQuadrilateral(
           ratio,
           density,
           randomiseRatio,
-          colourOrder + 1,
+          orderIndex + 1,
           1,
           lineColor,
           lineWidth);
@@ -299,16 +300,16 @@ void drawQuadrilateral(
           ratio,
           density,
           randomiseRatio,
-          colourOrder + 1,
+          orderIndex + 1,
           1,
           lineColor,
           lineWidth);
     } else {
-      final List pA = [
+      final List<double> pA = [
         p1[0] * localRatio + p2[0] * (1 - localRatio),
         p1[1] * localRatio + p2[1] * (1 - localRatio)
       ];
-      final List pB = [
+      final List<double> pB = [
         p3[0] * localRatio + p0[0] * (1 - localRatio),
         p3[1] * localRatio + p0[1] * (1 - localRatio)
       ];
@@ -326,7 +327,7 @@ void drawQuadrilateral(
           ratio,
           density,
           randomiseRatio,
-          colourOrder + 1,
+          orderIndex + 1,
           0,
           lineColor,
           lineWidth);
@@ -343,7 +344,7 @@ void drawQuadrilateral(
           ratio,
           density,
           randomiseRatio,
-          colourOrder + 1,
+          orderIndex + 1,
           0,
           lineColor,
           lineWidth);
