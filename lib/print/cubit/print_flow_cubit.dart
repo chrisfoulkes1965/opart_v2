@@ -2,25 +2,60 @@ import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opart_v2/print/cubit/print_flow_state.dart';
+import 'package:opart_v2/print/models/apparel_catalog.dart';
+import 'package:opart_v2/print/models/device_case_catalog.dart';
 import 'package:opart_v2/print/models/print_catalog.dart';
 import 'package:opart_v2/print/models/print_models.dart';
 import 'package:opart_v2/print/models/print_placement.dart';
-import 'package:opart_v2/print/models/print_spec.dart';
 import 'package:opart_v2/print/print_flow_log.dart';
 import 'package:opart_v2/print/repositories/printful_repository.dart';
+import 'package:opart_v2/print/services/print_artwork_raster_service.dart';
 import 'package:opart_v2/print/services/print_export_service.dart';
 
 class PrintFlowCubit extends Cubit<PrintFlowState> {
-  PrintFlowCubit({
+  factory PrintFlowCubit({
     required Map<String, dynamic> recipe,
     PrintfulRepository? repository,
+    PrintArtworkRasterService? rasterService,
     PrintExportService? exportService,
-  })  : _repository = repository ?? PrintfulRepository(),
-        _exportService = exportService ?? const PrintExportService(),
-        super(PrintFlowState(recipe: recipe));
+  }) {
+    final sharedRaster = rasterService ?? PrintArtworkRasterService();
+    return PrintFlowCubit._(
+      recipe: recipe,
+      repository: repository ?? PrintfulRepository(),
+      rasterService: sharedRaster,
+      exportService:
+          exportService ?? PrintExportService(rasterService: sharedRaster),
+    );
+  }
+
+  PrintFlowCubit._({
+    required Map<String, dynamic> recipe,
+    required PrintfulRepository repository,
+    required PrintArtworkRasterService rasterService,
+    required PrintExportService exportService,
+  })  : _repository = repository,
+        _rasterService = rasterService,
+        _exportService = exportService,
+        super(
+          PrintFlowState(
+            recipe: recipe,
+            status: PrintFlowStatus.loading,
+            progressMessage: 'Loading products…',
+          ),
+        );
 
   final PrintfulRepository _repository;
+  final PrintArtworkRasterService _rasterService;
   final PrintExportService _exportService;
+
+  PrintArtworkRasterService get rasterService => _rasterService;
+
+  @override
+  Future<void> close() {
+    _rasterService.clearCache();
+    return super.close();
+  }
 
   final Map<String, RegisteredDesign> _designsByArtworkKey = {};
   final Map<String, Future<RegisteredDesign>> _designFuturesByArtworkKey = {};
@@ -57,13 +92,18 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
 
     try {
       final products = await _repository.fetchProducts();
-      final previews = await _buildProductPreviews(products);
+      final designPreview = await _exportService.renderRecipeToPng(
+        recipe: state.recipe,
+        spec: PrintCatalog.squareArtworkPreviewSpec,
+        placement: PrintPlacement.initial,
+      );
 
       emit(
         state.copyWith(
           status: PrintFlowStatus.ready,
           products: products,
-          productPreviewByProductId: previews,
+          designPreviewBytes: designPreview,
+          productPreviewByProductId: const {},
           progressMessage: null,
           clearError: true,
         ),
@@ -79,23 +119,20 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
     }
   }
 
-  Future<Map<int, Uint8List>> _buildProductPreviews(
-    List<PrintProduct> products,
-  ) async {
-    final previews = <int, Uint8List>{};
-    final fit = PrintFitMode.cover;
-
-    for (final product in products) {
-      final spec = PrintCatalog.canonicalPreviewSpec(product.id)
-          .scaledToMaxDimension(PrintCatalog.previewMaxDimensionPx);
-
-      previews[product.id] = await _exportService.renderRecipeToPng(
-        recipe: state.recipe,
-        spec: spec,
-        fit: fit,
-        placement: PrintPlacement.initial,
-      );
+  Future<Map<int, Uint8List>> _previewForProduct(PrintProduct product) async {
+    final previews = Map<int, Uint8List>.from(state.productPreviewByProductId);
+    if (previews.containsKey(product.id)) {
+      return previews;
     }
+
+    final spec = PrintCatalog.canonicalPreviewSpec(product.id)
+        .scaledToMaxDimension(PrintCatalog.previewMaxDimensionPx);
+
+    previews[product.id] = await _exportService.renderRecipeToPng(
+      recipe: state.recipe,
+      spec: spec,
+      placement: PrintPlacement.initial,
+    );
 
     return previews;
   }
@@ -114,9 +151,12 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
         variants: const [],
         selectedVariant: null,
         selectedSpec: null,
+        clearPhoneCaseBrand: true,
+        clearPhoneCaseVariantsByBrand: true,
+        phoneCaseFinish: PhoneCaseFinish.glossy,
+        clearApparelSelection: true,
         placement: PrintPlacement.initial,
         registeredDesign: null,
-        clearSquareArtworkBytes: true,
         clearPreviewMockupUrl: true,
         clearError: true,
       ),
@@ -129,10 +169,21 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
       }
 
       final filtered = PrintCatalog.filterVariants(product.id, variants);
+      final previews = await _previewForProduct(product);
+      if (_activeProductId != product.id) {
+        return;
+      }
+
+      final apparelDefaults = PrintCatalog.isApparelFront(product.id)
+          ? ApparelCatalog.defaultSelection(filtered)
+          : null;
 
       emit(
         state.copyWith(
           variants: filtered,
+          productPreviewByProductId: previews,
+          selectedApparelColor: apparelDefaults?.color,
+          selectedApparelSize: apparelDefaults?.size,
           status: PrintFlowStatus.ready,
           progressMessage: null,
           clearError: true,
@@ -152,64 +203,164 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
     }
   }
 
-  Future<void> selectVariant(PrintVariant variant) async {
-    final product = state.selectedProduct;
+  Future<void> selectPhoneCaseGroup() async {
+    final product = _productForBrand(PhoneCaseBrand.iphone);
     if (product == null) {
       return;
     }
 
-    final spec = PrintCatalog.resolveSpec(product: product, variant: variant);
-
-    emit(
-      state.copyWith(
-        selectedVariant: variant,
-        selectedSpec: spec,
-        placement: PrintPlacement.initial,
-        step: PrintFlowStep.crop,
-        status: PrintFlowStatus.loading,
-        progressMessage: 'Preparing crop editor…',
-        clearSquareArtworkBytes: true,
-        clearPreviewMockupUrl: true,
-        clearError: true,
-      ),
+    await _enterPhoneCaseFlow(
+      brand: PhoneCaseBrand.iphone,
+      product: product,
     );
-
-    await _loadSquareArtwork();
   }
 
-  void updatePlacement(PrintPlacement placement) {
-    emit(state.copyWith(placement: placement, clearError: true));
-  }
-
-  Future<void> _loadSquareArtwork() async {
-    final product = state.selectedProduct;
-    if (product == null) {
+  Future<void> selectPhoneCaseBrand(PhoneCaseBrand brand) async {
+    if (state.phoneCaseBrand == brand) {
       return;
     }
 
-    try {
-      final bytes = await _exportService.renderRecipeToPng(
-        recipe: state.recipe,
-        spec: PrintCatalog.squareArtworkPreviewSpec,
-        fit: PrintCatalog.fitModeFor(product.id),
-        placement: PrintPlacement.initial,
-      );
-
-      if (state.step != PrintFlowStep.crop) {
+    final cached = state.phoneCaseVariantsByBrand[brand];
+    if (cached != null) {
+      final product = _productForBrand(brand);
+      if (product == null) {
         return;
       }
 
       emit(
         state.copyWith(
-          squareArtworkBytes: bytes,
+          phoneCaseBrand: brand,
+          selectedProduct: product,
+          variants: cached,
+          status: PrintFlowStatus.ready,
+          progressMessage: null,
+          clearError: true,
+        ),
+      );
+      return;
+    }
+
+    final product = _productForBrand(brand);
+    if (product == null) {
+      return;
+    }
+
+    await _enterPhoneCaseFlow(
+      brand: brand,
+      product: product,
+      existingCache: state.phoneCaseVariantsByBrand,
+    );
+  }
+
+  void selectPhoneCaseFinish(PhoneCaseFinish finish) {
+    if (state.phoneCaseBrand == null || state.phoneCaseFinish == finish) {
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        phoneCaseFinish: finish,
+        clearError: true,
+      ),
+    );
+  }
+
+  Future<void> selectPhoneCaseModel(String modelSize) async {
+    final brand = state.phoneCaseBrand;
+    if (brand == null) {
+      return;
+    }
+
+    final variants = state.phoneCaseVariantsByBrand[brand] ?? state.variants;
+    final variant = DeviceCaseCatalog.findVariant(
+      variants: variants,
+      modelSize: modelSize,
+      finish: state.phoneCaseFinish,
+    );
+    if (variant == null) {
+      return;
+    }
+
+    final product = _productForBrand(brand);
+    if (product == null) {
+      return;
+    }
+
+    if (state.selectedProduct?.id != product.id) {
+      emit(state.copyWith(selectedProduct: product));
+    }
+
+    await selectVariant(variant);
+  }
+
+  PrintProduct? _productForBrand(PhoneCaseBrand brand) {
+    for (final product in state.products) {
+      if (product.id == brand.productId) {
+        return product;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _enterPhoneCaseFlow({
+    required PhoneCaseBrand brand,
+    required PrintProduct product,
+    Map<PhoneCaseBrand, List<PrintVariant>> existingCache = const {},
+  }) async {
+    _activeProductId = product.id;
+    _designsByArtworkKey.clear();
+    _designFuturesByArtworkKey.clear();
+
+    emit(
+      state.copyWith(
+        selectedProduct: product,
+        phoneCaseBrand: brand,
+        phoneCaseFinish: PhoneCaseFinish.glossy,
+        phoneCaseVariantsByBrand: existingCache,
+        step: PrintFlowStep.variant,
+        status: PrintFlowStatus.loading,
+        progressMessage: 'Loading models…',
+        variants: const [],
+        selectedVariant: null,
+        selectedSpec: null,
+        placement: PrintPlacement.initial,
+        registeredDesign: null,
+        clearPreviewMockupUrl: true,
+        clearError: true,
+      ),
+    );
+
+    try {
+      final variants = await _repository.fetchVariants(product.id);
+      if (_activeProductId != product.id) {
+        return;
+      }
+
+      final filtered = PrintCatalog.filterVariants(product.id, variants);
+      final previews = await _previewForProduct(product);
+      if (_activeProductId != product.id) {
+        return;
+      }
+
+      final cache = Map<PhoneCaseBrand, List<PrintVariant>>.from(existingCache)
+        ..[brand] = filtered;
+
+      emit(
+        state.copyWith(
+          variants: filtered,
+          phoneCaseVariantsByBrand: cache,
+          productPreviewByProductId: previews,
           status: PrintFlowStatus.ready,
           progressMessage: null,
           clearError: true,
         ),
       );
     } catch (error, stackTrace) {
+      if (_activeProductId != product.id) {
+        return;
+      }
       _emitError(
-        context: '_loadSquareArtwork',
+        context: 'selectPhoneCaseGroup',
         message: error.toString(),
         error: error,
         stackTrace: stackTrace,
@@ -218,11 +369,163 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
     }
   }
 
+  void selectApparelColor(String color) {
+    final size = ApparelCatalog.firstValidSizeForColor(
+      state.variants,
+      color: color,
+      preferredSize: state.selectedApparelSize,
+    );
+
+    emit(
+      state.copyWith(
+        selectedApparelColor: color,
+        selectedApparelSize: size,
+        clearError: true,
+      ),
+    );
+  }
+
+  void selectApparelSize(String size) {
+    emit(
+      state.copyWith(
+        selectedApparelSize: size,
+        clearError: true,
+      ),
+    );
+  }
+
+  Future<void> confirmApparelSelection() async {
+    final color = state.selectedApparelColor;
+    final size = state.selectedApparelSize;
+    if (color == null || size == null) {
+      return;
+    }
+
+    final variant = ApparelCatalog.variantFor(
+      state.variants,
+      color: color,
+      size: size,
+    );
+    if (variant == null) {
+      return;
+    }
+
+    await selectVariant(variant);
+  }
+
+  Future<void> selectVariant(PrintVariant variant) async {
+    final product = state.selectedProduct;
+    if (product == null) {
+      return;
+    }
+
+    var spec = PrintCatalog.resolveSpec(product: product, variant: variant);
+
+    emit(
+      state.copyWith(
+        selectedVariant: variant,
+        selectedSpec: spec,
+        placement: PrintPlacement.initial,
+        printAreaResolved: false,
+        step: PrintFlowStep.crop,
+        status: PrintFlowStatus.loading,
+        progressMessage: 'Loading print area…',
+        clearPreviewMockupUrl: true,
+        clearExportPreviewBytes: true,
+        clearError: true,
+      ),
+    );
+
+    try {
+      final printArea = await _repository.fetchPrintArea(
+        productId: product.id,
+        variantId: variant.id,
+        placement: PrintCatalog.mockupPlacementFor(product.id),
+      );
+
+      if (state.selectedVariant?.id != variant.id ||
+          state.step != PrintFlowStep.crop) {
+        return;
+      }
+
+      if (printArea.widthPx <= 0 || printArea.heightPx <= 0) {
+        emit(
+          state.copyWith(
+            status: PrintFlowStatus.failure,
+            progressMessage: null,
+            printAreaResolved: false,
+            errorMessage:
+                'Print dimensions are unavailable for this product. Please try again.',
+          ),
+        );
+        return;
+      }
+
+      spec = spec.withPrintArea(
+        widthPx: printArea.widthPx,
+        heightPx: printArea.heightPx,
+        dpi: printArea.dpi,
+      );
+
+      emit(
+        state.copyWith(
+          selectedSpec: spec,
+          placement: PrintPlacement.initial,
+          printAreaResolved: true,
+          status: PrintFlowStatus.ready,
+          progressMessage: null,
+          clearError: true,
+        ),
+      );
+    } catch (error) {
+      if (state.selectedVariant?.id != variant.id ||
+          state.step != PrintFlowStep.crop) {
+        return;
+      }
+
+      PrintFlowLog.info(
+        'fetchPrintArea failed for ${product.id}/${variant.id}: $error',
+      );
+
+      emit(
+        state.copyWith(
+          status: PrintFlowStatus.failure,
+          progressMessage: null,
+          printAreaResolved: false,
+          errorMessage:
+              'Could not load print dimensions. Please check your connection and try again.',
+        ),
+      );
+    }
+  }
+
+  Future<void> retryPrintArea() async {
+    final variant = state.selectedVariant;
+    if (variant == null) {
+      return;
+    }
+    await selectVariant(variant);
+  }
+
+  void updatePlacement(PrintPlacement placement) {
+    emit(state.copyWith(placement: placement, clearError: true));
+  }
+
   Future<void> confirmCrop() async {
     final product = state.selectedProduct;
     final variant = state.selectedVariant;
-    final spec = state.selectedSpec;
-    if (product == null || variant == null || spec == null) {
+    final exportSpec = state.selectedSpec;
+    if (product == null || variant == null || exportSpec == null) {
+      return;
+    }
+
+    if (!state.printAreaResolved) {
+      emit(
+        state.copyWith(
+          errorMessage:
+              'Print dimensions are not ready. Please retry loading the print area.',
+        ),
+      );
       return;
     }
 
@@ -230,19 +533,23 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
       state.copyWith(
         step: PrintFlowStep.preview,
         status: PrintFlowStatus.loading,
-        progressMessage: 'Generating product preview…',
+        progressMessage: 'Generating print file…',
         clearPreviewMockupUrl: true,
+        clearExportPreviewBytes: true,
         clearError: true,
       ),
     );
 
     try {
-      final artworkKey = state.artworkKeyFor(spec, state.placement);
+      if (state.step != PrintFlowStep.preview) {
+        return;
+      }
+
+      final artworkKey = state.artworkKeyFor(exportSpec, state.placement);
 
       final pngBytes = await _exportService.renderRecipeToPng(
         recipe: state.recipe,
-        spec: spec,
-        fit: PrintCatalog.fitModeFor(product.id),
+        spec: exportSpec,
         placement: state.placement,
       );
 
@@ -250,12 +557,17 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
         return;
       }
 
-      emit(state.copyWith(progressMessage: 'Uploading design…'));
+      emit(
+        state.copyWith(
+          exportPreviewBytes: pngBytes,
+          progressMessage: 'Uploading design…',
+        ),
+      );
 
       final registered = await _repository.uploadDesign(
         pngBytes: pngBytes,
         recipe: state.recipe,
-        spec: spec,
+        spec: exportSpec,
         localOpArtId: state.recipe['id'] as int?,
       );
       _designsByArtworkKey[artworkKey] = registered;
@@ -264,10 +576,15 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
         return;
       }
 
+      emit(
+        state.copyWith(progressMessage: 'Generating product mockup…'),
+      );
+
       final mockups = await _repository.generateMockups(
         productId: product.id,
         variantIds: [variant.id],
         designId: registered.designId,
+        placement: PrintCatalog.mockupPlacementFor(product.id),
       );
 
       if (state.step != PrintFlowStep.preview) {
@@ -458,6 +775,10 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
             step: PrintFlowStep.product,
             status: PrintFlowStatus.ready,
             progressMessage: null,
+            clearPhoneCaseBrand: true,
+            clearPhoneCaseVariantsByBrand: true,
+            phoneCaseFinish: PhoneCaseFinish.glossy,
+            clearApparelSelection: true,
             clearError: true,
           ),
         );
@@ -466,7 +787,6 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
           state.copyWith(
             step: PrintFlowStep.variant,
             status: PrintFlowStatus.ready,
-            clearSquareArtworkBytes: true,
             clearError: true,
           ),
         );
@@ -476,6 +796,7 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
             step: PrintFlowStep.crop,
             status: PrintFlowStatus.ready,
             clearPreviewMockupUrl: true,
+            clearExportPreviewBytes: true,
             clearError: true,
           ),
         );

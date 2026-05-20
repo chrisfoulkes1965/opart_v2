@@ -5,12 +5,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:opart_v2/app_shell.dart';
 import 'package:opart_v2/bottom_app_bar.dart';
 import 'package:opart_v2/canvas.dart';
-import 'package:opart_v2/home_page.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_settings.dart';
-import 'package:opart_v2/mygallery.dart';
 import 'package:opart_v2/print/models/opart_recipe.dart';
 import 'package:opart_v2/print/pages/print_flow_page.dart';
 import 'package:opart_v2/settings_overlay_layout.dart';
@@ -320,13 +319,7 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                           SystemUiMode.manual,
                           overlays: SystemUiOverlay.values,
                         );
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const MyHomePage(title: 'OpArt Lab'),
-                          ),
-                        );
+                        Navigator.pop(context);
                       },
                     ),
                     actions: [
@@ -375,23 +368,10 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                                                       SystemUiOverlay.values,
                                                 );
                                                 Navigator.pop(context);
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        MyGallery(
+                                                AppShell.navigateToTab(
+                                                  AppTab.gallery,
+                                                  galleryIndex:
                                                       savedOpArt.length,
-                                                    ),
-                                                  ),
-                                                );
-                                                Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const MyHomePage(
-                                                      title: 'OpArt Lab',
-                                                    ),
-                                                  ),
                                                 );
                                               },
                                             ),

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:opart_v2/config/supabase_config.dart';
 import 'package:opart_v2/print/models/opart_recipe.dart';
 import 'package:opart_v2/print/models/print_models.dart';
+import 'package:opart_v2/print/models/print_print_area.dart';
 import 'package:opart_v2/print/models/print_spec.dart';
 import 'package:opart_v2/print/print_flow_log.dart';
 import 'package:opart_v2/services/supabase_service.dart';
@@ -49,6 +50,26 @@ class PrintfulRepository {
     return products.map(PrintProduct.fromJson).toList();
   }
 
+  Future<PrintPrintArea> fetchPrintArea({
+    required int productId,
+    required int variantId,
+    String? placement,
+  }) async {
+    final queryParameters = {
+      'product_id': '$productId',
+      'variant_id': '$variantId',
+      if (placement != null && placement.isNotEmpty) 'placement': placement,
+    };
+
+    final response = await _invokeWithRetry(
+      'catalog-print-area',
+      queryParameters: queryParameters,
+    );
+    final data = _asMap(response.data);
+    _throwIfError('catalog-print-area', data, response.data);
+    return PrintPrintArea.fromJson(data);
+  }
+
   Future<List<PrintVariant>> fetchVariants(int productId) async {
     final response = await _invokeWithRetry(
       'catalog-variants',
@@ -89,6 +110,7 @@ class PrintfulRepository {
     required int productId,
     required List<int> variantIds,
     required String designId,
+    String? placement,
   }) async {
     final response = await _invokeWithRetry(
       'mockups-generate',
@@ -96,6 +118,7 @@ class PrintfulRepository {
         'product_id': productId,
         'variant_ids': variantIds,
         'design_id': designId,
+        if (placement != null && placement.isNotEmpty) 'placement': placement,
       },
     );
     final data = _asMap(response.data);

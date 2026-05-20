@@ -5,6 +5,9 @@ import 'package:opart_v2/print/cubit/print_flow_state.dart';
 import 'package:opart_v2/print/pages/print_checkout_step.dart';
 import 'package:opart_v2/print/pages/print_confirmation_step.dart';
 import 'package:opart_v2/print/pages/print_crop_step.dart';
+import 'package:opart_v2/print/pages/print_apparel_step.dart';
+import 'package:opart_v2/print/pages/print_phone_case_step.dart';
+import 'package:opart_v2/print/models/print_catalog.dart';
 import 'package:opart_v2/print/pages/print_preview_step.dart';
 import 'package:opart_v2/print/pages/print_product_step.dart';
 import 'package:opart_v2/print/pages/print_variant_step.dart';
@@ -81,7 +84,7 @@ class _PrintFlowPageState extends State<PrintFlowPage> {
             appBar: AppBar(
               backgroundColor: Colors.cyan.withValues(alpha: 0.85),
               title: Text(
-                _titleForStep(state.step),
+                _titleForStep(state),
                 style: const TextStyle(
                   fontFamily: 'Righteous',
                   fontWeight: FontWeight.bold,
@@ -148,8 +151,18 @@ class _PrintFlowPageState extends State<PrintFlowPage> {
     );
   }
 
-  String _titleForStep(PrintFlowStep step) {
-    return switch (step) {
+  String _titleForStep(PrintFlowState state) {
+    if (state.step == PrintFlowStep.variant && state.phoneCaseBrand != null) {
+      return 'Choose phone';
+    }
+
+    if (state.step == PrintFlowStep.variant &&
+        state.selectedProduct != null &&
+        PrintCatalog.isApparelFront(state.selectedProduct!.id)) {
+      return 'Choose colour & size';
+    }
+
+    return switch (state.step) {
       PrintFlowStep.product => 'Print Your Design',
       PrintFlowStep.variant => 'Choose Size',
       PrintFlowStep.crop => 'Adjust Crop',
@@ -162,7 +175,12 @@ class _PrintFlowPageState extends State<PrintFlowPage> {
   Widget _buildStep(BuildContext context, PrintFlowState state) {
     return switch (state.step) {
       PrintFlowStep.product => PrintProductStep(products: state.products),
-      PrintFlowStep.variant => const PrintVariantStep(),
+      PrintFlowStep.variant => state.phoneCaseBrand != null
+          ? const PrintPhoneCaseStep()
+          : state.selectedProduct != null &&
+                  PrintCatalog.isApparelFront(state.selectedProduct!.id)
+              ? const PrintApparelStep()
+              : const PrintVariantStep(),
       PrintFlowStep.crop => const PrintCropStep(),
       PrintFlowStep.preview => const PrintPreviewStep(),
       PrintFlowStep.checkout => const PrintCheckoutStep(),

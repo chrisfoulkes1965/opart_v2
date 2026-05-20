@@ -4,16 +4,39 @@ import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/print/models/opart_recipe.dart';
 import 'package:opart_v2/print/models/print_placement.dart';
 import 'package:opart_v2/print/models/print_spec.dart';
+import 'package:opart_v2/print/services/print_artwork_raster_service.dart';
 import 'package:opart_v2/print/services/print_export_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('PrintExportService', () {
-    const service = PrintExportService();
+  group('PrintArtworkRasterService', () {
+    test('renders a flat square bitmap from recipe', () async {
+      final recipe = OpArtRecipe.fromOpArt(
+        OpArt(opArtType: OpArtType.Riley),
+        seed: 4,
+        animationValue: 1,
+      );
+      final service = PrintArtworkRasterService();
 
-    test('renderToPng returns PNG bytes at requested dimensions', () async {
-      final opArt = OpArt(opArtType: OpArtType.Riley);
+      final image = await service.artworkImage(recipe);
+
+      expect(image.width, PrintArtworkRasterService.canonicalSidePx);
+      expect(image.height, PrintArtworkRasterService.canonicalSidePx);
+
+      service.clearCache();
+    });
+  });
+
+  group('PrintExportService', () {
+    test('renderRecipeToPng returns PNG bytes at requested dimensions',
+        () async {
+      final recipe = OpArtRecipe.fromOpArt(
+        OpArt(opArtType: OpArtType.Riley),
+        seed: 42,
+        animationValue: 1,
+      );
+      final service = PrintExportService();
       const spec = PrintSpec(
         id: 'test',
         label: 'Test',
@@ -24,10 +47,8 @@ void main() {
         heightInches: 2.67,
       );
 
-      final bytes = await service.renderToPng(
-        opArt: opArt,
-        seed: 42,
-        animationValue: 1,
+      final bytes = await service.renderRecipeToPng(
+        recipe: recipe,
         spec: spec,
       );
 
@@ -38,9 +59,13 @@ void main() {
       expect(bytes[3], 0x47);
     });
 
-    test('cover fills wide mug print area without square letterboxing',
-        () async {
-      final opArt = OpArt(opArtType: OpArtType.Riley);
+    test('renders wide mug print area from crop selection', () async {
+      final recipe = OpArtRecipe.fromOpArt(
+        OpArt(opArtType: OpArtType.Riley),
+        seed: 1,
+        animationValue: 1,
+      );
+      final service = PrintExportService();
       const spec = PrintSpec(
         id: '11oz',
         label: '11 oz',
@@ -51,19 +76,21 @@ void main() {
         heightInches: 3.5,
       );
 
-      final bytes = await service.renderToPng(
-        opArt: opArt,
-        seed: 1,
-        animationValue: 1,
+      final bytes = await service.renderRecipeToPng(
+        recipe: recipe,
         spec: spec,
-        fit: PrintFitMode.cover,
       );
 
       expect(bytes, isNotEmpty);
     });
 
-    test('placement scale changes rendered PNG bytes', () async {
-      final opArt = OpArt(opArtType: OpArtType.Tree);
+    test('placement size changes rendered PNG bytes', () async {
+      final recipe = OpArtRecipe.fromOpArt(
+        OpArt(opArtType: OpArtType.Tree),
+        seed: 3,
+        animationValue: 1,
+      );
+      final service = PrintExportService();
       const spec = PrintSpec(
         id: 'mug',
         label: 'Mug',
@@ -74,40 +101,24 @@ void main() {
         heightInches: 3.5,
       );
 
-      final baseline = await service.renderToPng(
-        opArt: opArt,
-        seed: 3,
-        animationValue: 1,
+      final baseline = await service.renderRecipeToPng(
+        recipe: recipe,
         spec: spec,
       );
 
-      final zoomed = await service.renderToPng(
-        opArt: opArt,
-        seed: 3,
-        animationValue: 1,
+      final cropped = await service.renderRecipeToPng(
+        recipe: recipe,
         spec: spec,
-        placement: const PrintPlacement(scale: 2),
+        placement: const PrintPlacement(
+          centerX: 0.25,
+          centerY: 0.75,
+          size: 0.5,
+        ),
       );
 
       expect(baseline, isNotEmpty);
-      expect(zoomed, isNotEmpty);
-      expect(baseline, isNot(equals(zoomed)));
-    });
-
-    test('renderRecipeToPng renders from saved recipe map', () async {
-      final opArt = OpArt(opArtType: OpArtType.Wave);
-      final recipe = OpArtRecipe.fromOpArt(
-        opArt,
-        seed: 7,
-        animationValue: 1,
-      );
-
-      final bytes = await service.renderRecipeToPng(
-        recipe: recipe,
-        spec: PosterPrintSpecs.defaults.first,
-      );
-
-      expect(bytes.length, greaterThan(100));
+      expect(cropped, isNotEmpty);
+      expect(baseline, isNot(equals(cropped)));
     });
 
     test('renderRecipeToPng handles squares with mismatched palette size',
@@ -131,7 +142,7 @@ void main() {
         heightInches: 8,
       );
 
-      final bytes = await service.renderRecipeToPng(
+      final bytes = await PrintExportService().renderRecipeToPng(
         recipe: recipe,
         spec: spec,
       );

@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.224.0/http/server.ts';
-import { getDesignSignedUrl } from '../_shared/designs.ts';
+import { getDesignSignedUrl, getStoredDesign } from '../_shared/designs.ts';
 import { handleOptions, jsonResponse } from '../_shared/http.ts';
 import {
   buildMockupFilePayload,
@@ -35,12 +35,15 @@ serve(async (req) => {
     }
 
     const service = createServiceClient();
+    const design = await getStoredDesign(service, body.design_id);
     const imageUrl = await getDesignSignedUrl(service, body.design_id, 60 * 60);
     const mockupFile = await buildMockupFilePayload(
       body.product_id,
       body.variant_ids,
       imageUrl,
       body.placement,
+      design.width_px,
+      design.height_px,
     );
 
     const task = await printfulFetch<{

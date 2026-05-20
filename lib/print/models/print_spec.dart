@@ -69,6 +69,25 @@ class PrintSpec {
       printfulProductId: productId,
     );
   }
+
+  /// Applies Printful print-area dimensions (crop + export match fulfillment).
+  PrintSpec withPrintArea({
+    required int widthPx,
+    required int heightPx,
+    required int dpi,
+  }) {
+    return PrintSpec(
+      id: id,
+      label: label,
+      widthPx: widthPx,
+      heightPx: heightPx,
+      dpi: dpi,
+      widthInches: widthPx / dpi,
+      heightInches: heightPx / dpi,
+      printfulVariantId: printfulVariantId,
+      printfulProductId: printfulProductId,
+    );
+  }
 }
 
 class PosterPrintSpecs {

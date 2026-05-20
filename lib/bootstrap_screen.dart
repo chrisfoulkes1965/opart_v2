@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:opart_v2/app_warmup.dart';
-import 'package:opart_v2/home_page.dart';
+import 'package:opart_v2/app_shell.dart';
 
 class BootstrapScreen extends StatefulWidget {
   const BootstrapScreen({super.key});
@@ -28,7 +28,7 @@ class _BootstrapScreenState extends State<BootstrapScreen> {
 
     await Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
-        builder: (context) => const MyHomePage(title: 'Op Art Studio'),
+        builder: (context) => AppShell(),
       ),
     );
   }

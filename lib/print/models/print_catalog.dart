@@ -1,25 +1,65 @@
 import 'package:opart_v2/print/models/print_models.dart';
+import 'package:opart_v2/print/models/print_product_definition.dart';
 import 'package:opart_v2/print/models/print_spec.dart';
+import 'package:opart_v2/print/models/print_spec_templates.dart';
 
-enum PrintProductKind {
-  poster,
-  apparel,
-  mug,
+sealed class PrintCatalogDisplayItem {
+  const PrintCatalogDisplayItem();
+}
+
+class PrintCatalogProductItem extends PrintCatalogDisplayItem {
+  const PrintCatalogProductItem(this.product);
+
+  final PrintProduct product;
+}
+
+class PrintCatalogGroupItem extends PrintCatalogDisplayItem {
+  const PrintCatalogGroupItem({
+    required this.groupId,
+    required this.title,
+    required this.representativeProduct,
+    required this.productIds,
+    required this.variantCount,
+  });
+
+  final String groupId;
+  final String title;
+  final PrintProduct representativeProduct;
+  final List<int> productIds;
+  final int variantCount;
 }
 
 class PrintCatalog {
-  static const int posterProductId = 268;
-  static const int tShirtProductId = 71;
-  static const int mugProductId = 19;
+  PrintCatalog._();
 
-  static const List<int> productIds = [
-    posterProductId,
-    tShirtProductId,
-    mugProductId,
+  static final Map<int, PrintProductDefinition> definitions =
+      PrintProductRegistry.byId;
+
+  static List<int> get productIds => PrintProductRegistry.productIds;
+
+  static const int posterProductId = PrintSpecTemplates.posterProductId;
+  static const int tShirtProductId = PrintSpecTemplates.tShirtProductId;
+  static const int mugProductId = PrintSpecTemplates.mugProductId;
+  static const String phoneCaseGroupId = 'phone_cases';
+  static const List<int> phoneCaseProductIds = [
+    PrintSpecTemplates.phoneCaseProductId,
+    PrintSpecTemplates.samsungPhoneCaseProductId,
   ];
 
-  static const List<String> _apparelPreferredColors = ['White', 'Black'];
-  static const List<String> _apparelSizeOrder = [
+  static const List<String> apparelPreferredColors = [
+    'White',
+    'Black',
+    'Navy',
+    'Red',
+    'Dark Grey Heather',
+    'Athletic Heather',
+    'Asphalt',
+    'Forest',
+    'Maroon',
+    'Royal',
+  ];
+
+  static const List<String> apparelSizeOrder = [
     'XS',
     'S',
     'M',
@@ -31,19 +71,57 @@ class PrintCatalog {
     '5XL',
   ];
 
-  static PrintProductKind kindFor(int productId) {
-    switch (productId) {
-      case tShirtProductId:
-        return PrintProductKind.apparel;
-      case mugProductId:
-        return PrintProductKind.mug;
-      default:
-        return PrintProductKind.poster;
-    }
+  static PrintProductDefinition? definitionFor(int productId) {
+    return definitions[productId];
+  }
+
+  static PrintProductCategory categoryFor(int productId) {
+    return definitionFor(productId)?.category ?? PrintProductCategory.wallArt;
+  }
+
+  static PrintProductBehavior behaviorFor(int productId) {
+    return definitionFor(productId)?.behavior ??
+        PrintProductBehavior.posterSizes;
+  }
+
+  static bool isDeviceCase(int productId) {
+    return behaviorFor(productId) == PrintProductBehavior.deviceCase;
+  }
+
+  static bool isPhoneCaseGroupId(String? groupId) {
+    return groupId == phoneCaseGroupId;
+  }
+
+  static bool isPhoneCaseProduct(int productId) {
+    return phoneCaseProductIds.contains(productId);
+  }
+
+  static bool isApparelFront(int productId) {
+    return behaviorFor(productId) == PrintProductBehavior.apparelFront;
   }
 
   static PrintFitMode fitModeFor(int productId) {
-    return PrintFitMode.cover;
+    return definitionFor(productId)?.fitMode ?? PrintFitMode.cover;
+  }
+
+  static String? mockupPlacementFor(int productId) {
+    return definitionFor(productId)?.mockupPlacement;
+  }
+
+  static String displayTitleFor(PrintProduct product) {
+    final override = definitionFor(product.id)?.displayTitle;
+    if (override != null && override.isNotEmpty) {
+      return override;
+    }
+    return _shortCatalogTitle(product.title);
+  }
+
+  static String _shortCatalogTitle(String title) {
+    final pipeIndex = title.indexOf('|');
+    if (pipeIndex == -1) {
+      return title.trim();
+    }
+    return title.substring(0, pipeIndex).trim();
   }
 
   static const int previewMaxDimensionPx = 640;
@@ -63,32 +141,91 @@ class PrintCatalog {
   }
 
   static PrintSpec canonicalPreviewSpec(int productId) {
-    switch (kindFor(productId)) {
-      case PrintProductKind.mug:
-        return _mugSpecForSize('11 oz');
-      case PrintProductKind.apparel:
-        return _tShirtSpec;
-      case PrintProductKind.poster:
-        return PosterPrintSpecs.defaults.first;
-    }
+    return PrintSpecTemplates.canonicalFor(productId);
   }
 
   static String variantSubtitle(PrintProduct product) {
-    switch (kindFor(product.id)) {
-      case PrintProductKind.apparel:
-        return 'Colors & sizes';
-      case PrintProductKind.mug:
-        return '${product.variantCount} sizes';
-      case PrintProductKind.poster:
-        return '${product.variantCount} sizes';
+    return switch (behaviorFor(product.id)) {
+      PrintProductBehavior.apparelFront => 'Colors & sizes',
+      PrintProductBehavior.deviceCase => '${product.variantCount} models',
+      PrintProductBehavior.singlePlacement => 'Cover print',
+      PrintProductBehavior.allOverPrint => '${product.variantCount} options',
+      PrintProductBehavior.mugWrap ||
+      PrintProductBehavior.posterSizes ||
+      PrintProductBehavior.squareSizes =>
+        '${product.variantCount} sizes',
+    };
+  }
+
+  static List<PrintProductCategory> orderedCategories() {
+    return PrintProductCategory.values.toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+  }
+
+  static List<PrintProduct> productsForCategory(
+    List<PrintProduct> products,
+    PrintProductCategory category,
+  ) {
+    final idsInCategory =
+        productIds.where((id) => categoryFor(id) == category).toSet();
+    final byId = {for (final product in products) product.id: product};
+    return productIds
+        .where(idsInCategory.contains)
+        .map((id) => byId[id])
+        .whereType<PrintProduct>()
+        .toList();
+  }
+
+  static List<PrintCatalogDisplayItem> displayItemsForCategory(
+    List<PrintProduct> products,
+    PrintProductCategory category,
+  ) {
+    final categoryProducts = productsForCategory(products, category);
+    final items = <PrintCatalogDisplayItem>[];
+    final seenGroups = <String>{};
+
+    for (final product in categoryProducts) {
+      final def = definitionFor(product.id);
+      final groupId = def?.catalogGroupId;
+      if (groupId != null && groupId.isNotEmpty) {
+        if (seenGroups.contains(groupId)) {
+          continue;
+        }
+        seenGroups.add(groupId);
+
+        final groupProducts = categoryProducts.where((candidate) {
+          return definitionFor(candidate.id)?.catalogGroupId == groupId;
+        }).toList();
+        final groupTitle = def?.catalogGroupTitle ?? displayTitleFor(product);
+        final representative = groupProducts.first;
+        final variantCount = groupProducts.fold<int>(
+          0,
+          (sum, groupProduct) => sum + groupProduct.variantCount,
+        );
+
+        items.add(
+          PrintCatalogGroupItem(
+            groupId: groupId,
+            title: groupTitle,
+            representativeProduct: representative,
+            productIds: groupProducts.map((p) => p.id).toList(),
+            variantCount: variantCount,
+          ),
+        );
+        continue;
+      }
+
+      items.add(PrintCatalogProductItem(product));
     }
+
+    return items;
   }
 
   static List<PrintVariant> filterVariants(
     int productId,
     List<PrintVariant> variants,
   ) {
-    if (kindFor(productId) != PrintProductKind.apparel) {
+    if (behaviorFor(productId) != PrintProductBehavior.apparelFront) {
       return variants.where((variant) => variant.inStock).toList();
     }
 
@@ -96,20 +233,20 @@ class PrintCatalog {
       if (!variant.inStock) {
         return false;
       }
-      return _apparelPreferredColors.contains(variant.color);
+      return apparelPreferredColors.contains(variant.color);
     }).toList();
 
     filtered.sort((a, b) {
-      final colorCompare = _apparelPreferredColors
+      final colorCompare = apparelPreferredColors
           .indexOf(a.color)
-          .compareTo(_apparelPreferredColors.indexOf(b.color));
+          .compareTo(apparelPreferredColors.indexOf(b.color));
       if (colorCompare != 0) {
         return colorCompare;
       }
 
-      final sizeCompare = _apparelSizeOrder
+      final sizeCompare = apparelSizeOrder
           .indexOf(a.size)
-          .compareTo(_apparelSizeOrder.indexOf(b.size));
+          .compareTo(apparelSizeOrder.indexOf(b.size));
       if (sizeCompare != 0) {
         return sizeCompare;
       }
@@ -120,93 +257,30 @@ class PrintCatalog {
     return filtered;
   }
 
+  static List<PrintVariant> searchVariants(
+    List<PrintVariant> variants,
+    String query,
+  ) {
+    final trimmed = query.trim().toLowerCase();
+    if (trimmed.isEmpty) {
+      return variants;
+    }
+
+    return variants.where((variant) {
+      return variant.name.toLowerCase().contains(trimmed) ||
+          variant.size.toLowerCase().contains(trimmed) ||
+          variant.color.toLowerCase().contains(trimmed) ||
+          variant.displayLabel.toLowerCase().contains(trimmed);
+    }).toList();
+  }
+
   static PrintSpec resolveSpec({
     required PrintProduct? product,
     required PrintVariant variant,
   }) {
-    switch (kindFor(variant.productId)) {
-      case PrintProductKind.mug:
-        return _mugSpecForSize(variant.size).withPrintfulVariant(
-          variantId: variant.id,
-          productId: variant.productId,
-          sizeLabel: variant.size,
-        );
-      case PrintProductKind.apparel:
-        return _tShirtSpec.withPrintfulVariant(
-          variantId: variant.id,
-          productId: variant.productId,
-          sizeLabel: '${variant.color} · ${variant.size}',
-        );
-      case PrintProductKind.poster:
-        return _resolvePosterSpec(variant);
-    }
-  }
-
-  static PrintSpec _resolvePosterSpec(PrintVariant variant) {
-    for (final spec in PosterPrintSpecs.defaults) {
-      if (variant.size.contains('${spec.widthInches.toInt()}') &&
-          variant.size.contains('${spec.heightInches.toInt()}')) {
-        return spec.withPrintfulVariant(
-          variantId: variant.id,
-          productId: variant.productId,
-          sizeLabel: variant.size,
-        );
-      }
-    }
-
-    return PosterPrintSpecs.defaults.first.withPrintfulVariant(
-      variantId: variant.id,
+    return PrintSpecTemplates.resolveForVariant(
       productId: variant.productId,
-      sizeLabel: variant.size,
+      variant: variant,
     );
   }
-
-  static PrintSpec _mugSpecForSize(String size) {
-    switch (size) {
-      case '15 oz':
-        return const PrintSpec(
-          id: '15oz',
-          label: '15 oz',
-          widthPx: 2700,
-          heightPx: 1140,
-          dpi: 300,
-          widthInches: 9,
-          heightInches: 3.8,
-          printfulProductId: mugProductId,
-        );
-      case '20 oz':
-        return const PrintSpec(
-          id: '20oz',
-          label: '20 oz',
-          widthPx: 2700,
-          heightPx: 1140,
-          dpi: 300,
-          widthInches: 9,
-          heightInches: 3.8,
-          printfulProductId: mugProductId,
-        );
-      default:
-        return const PrintSpec(
-          id: '11oz',
-          label: '11 oz',
-          widthPx: 2700,
-          heightPx: 1050,
-          dpi: 300,
-          widthInches: 9,
-          heightInches: 3.5,
-          printfulProductId: mugProductId,
-        );
-    }
-  }
-
-  static const PrintSpec _tShirtSpec = PrintSpec(
-    id: 'front',
-    label: 'Front print',
-    widthPx: 3600,
-    heightPx: 4800,
-    dpi: 300,
-    widthInches: 12,
-    heightInches: 16,
-    printfulProductId: tShirtProductId,
-  );
 }

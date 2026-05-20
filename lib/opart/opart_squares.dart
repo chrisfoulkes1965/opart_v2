@@ -191,23 +191,13 @@ void paintSquares(
       //save the colour
       squaresJ.add(nextColor);
 
-      // draw the square
       canvas.drawRect(
         Offset(p1[0], p1[1]) &
             Size(zoomOpArt.doubleValue, zoomOpArt.doubleValue),
         Paint()
-          ..strokeWidth = 0.0
           ..color = nextColor
           ..isAntiAlias = false
           ..style = PaintingStyle.fill,
-      );
-      canvas.drawRect(
-        Offset(p1[0], p1[1]) &
-            Size(zoomOpArt.doubleValue, zoomOpArt.doubleValue),
-        Paint()
-          ..color = nextColor
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 0.1,
       );
     }
     squares.add(squaresJ);

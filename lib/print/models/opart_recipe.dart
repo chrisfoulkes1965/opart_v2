@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_settings.dart';
+import 'package:opart_v2/op_art_catalog.dart';
 
 class OpArtRecipe {
   const OpArtRecipe._();
@@ -136,6 +137,41 @@ class OpArtRecipe {
     return opArt;
   }
 
+  /// Restores full-canvas artwork for print crop/export.
+  ///
+  /// Some op-art types (e.g. Diagonal) shrink the painted background when an
+  /// aspect ratio is set, leaving pattern/background mismatched on a square
+  /// canvas. Print always uses the whole square design.
+  static OpArt toOpArtForPrint(Map<String, dynamic> settings) {
+    final opArt = toOpArt(settings);
+    for (final attribute in opArt.attributes) {
+      if (attribute.name == 'aspectRatio') {
+        attribute.value = 'full screen';
+      }
+    }
+    return opArt;
+  }
+
+  static Color backgroundColorFrom(OpArt opArt) {
+    for (final attribute in opArt.attributes) {
+      if (attribute.name == 'backgroundColor') {
+        final parsed = parseColor(attribute.value);
+        if (parsed != null) {
+          return parsed;
+        }
+      }
+    }
+    return const Color(0xFFFFFFFF);
+  }
+
+  /// Stable cache key for rasterized print artwork.
+  static String rasterCacheKey(Map<String, dynamic> recipe) {
+    final id = recipe['id'];
+    final seed = recipe['seed'];
+    final type = recipe['type']?.toString() ?? '';
+    return 'id_${id}_seed_${seed}_type_${type}_${recipe.hashCode}';
+  }
+
   static int seedFrom(Map<String, dynamic> settings) {
     return (settings['seed'] as int?) ?? 0;
   }
@@ -146,6 +182,36 @@ class OpArtRecipe {
 
   static int? localIdFrom(Map<String, dynamic> settings) {
     return settings['id'] as int?;
+  }
+
+  static String displayName(Map<String, dynamic> recipe) {
+    final type = _parseTypeOptional(recipe['type']);
+    if (type != null) {
+      for (final entry in kOpArtCatalog) {
+        if (entry.opArtType == type) {
+          return entry.name;
+        }
+      }
+      return type.name;
+    }
+
+    final paletteName = recipe['paletteName'] as String?;
+    if (paletteName != null && paletteName.isNotEmpty) {
+      return paletteName;
+    }
+
+    return 'Your design';
+  }
+
+  static OpArtType? _parseTypeOptional(Object? raw) {
+    if (raw == null) {
+      return null;
+    }
+    try {
+      return _parseType(raw);
+    } catch (_) {
+      return null;
+    }
   }
 
   static OpArtType _parseType(Object? raw) {

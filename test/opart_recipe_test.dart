@@ -85,5 +85,21 @@ void main() {
 
       expect(restored.palette.colorList, source.palette.colorList);
     });
+
+    test('toOpArtForPrint forces full-screen aspect for crop rendering', () {
+      final source = OpArt(opArtType: OpArtType.Diagonal);
+      final recipe = OpArtRecipe.fromOpArt(
+        source,
+        seed: 1,
+        animationValue: 1,
+      );
+      recipe['Aspect Ratio'] = '4:3';
+
+      final printOpArt = OpArtRecipe.toOpArtForPrint(recipe);
+      final aspect = printOpArt.attributes
+          .firstWhere((attribute) => attribute.name == 'aspectRatio');
+
+      expect(aspect.value, 'full screen');
+    });
   });
 }

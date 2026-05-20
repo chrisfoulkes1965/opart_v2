@@ -1,211 +1,355 @@
-import 'dart:math' as math;
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:opart_v2/print/models/print_placement.dart';
+import 'package:opart_v2/print/models/print_raster_artwork.dart';
+import 'package:opart_v2/print/services/print_artwork_raster_service.dart';
+import 'package:opart_v2/print/services/print_crop_geometry.dart';
+
+/// Sizes [child] to the print aspect ratio without distorting it.
+class PrintCropFrame extends StatelessWidget {
+  const PrintCropFrame({
+    super.key,
+    required this.aspectRatio,
+    required this.child,
+    this.maxHeight = 480,
+  });
+
+  final double aspectRatio;
+  final Widget child;
+  final double maxHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth;
+        var width = maxWidth;
+        var height = width / aspectRatio;
+        if (height > maxHeight) {
+          height = maxHeight;
+          width = height * aspectRatio;
+        }
+
+        return Center(
+          child: SizedBox(
+            width: width,
+            height: height,
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+}
 
 class PrintCropEditor extends StatefulWidget {
   const PrintCropEditor({
     super.key,
-    required this.squareArtworkBytes,
+    required this.recipe,
     required this.aspectRatio,
     required this.placement,
-    required this.onPlacementChanged,
+    this.rasterService,
+    this.interactive = true,
+    this.onPlacementChanged,
   });
 
-  final Uint8List squareArtworkBytes;
+  final Map<String, dynamic> recipe;
   final double aspectRatio;
   final PrintPlacement placement;
-  final ValueChanged<PrintPlacement> onPlacementChanged;
+  final PrintArtworkRasterService? rasterService;
+  final bool interactive;
+  final ValueChanged<PrintPlacement>? onPlacementChanged;
 
   @override
-  State<PrintCropEditor> createState() => _PrintCropEditorState();
+  State<PrintCropEditor> createState() => PrintCropEditorState();
 }
 
-class _PrintCropEditorState extends State<PrintCropEditor> {
+class PrintCropEditorState extends State<PrintCropEditor> {
+  static const double _dimOverlayOpacity = 0.5;
+
+  final _repaintTick = ValueNotifier<int>(0);
+  PrintArtworkRasterService? _ownedRasterService;
+
+  PrintArtworkRasterService get _rasterService =>
+      widget.rasterService ??
+      (_ownedRasterService ??= PrintArtworkRasterService());
+
+  PrintPlacement? _activePlacement;
   PrintPlacement? _gestureStartPlacement;
-  Offset? _gestureStartFocalPoint;
+  Offset? _gestureStartFocalNormalized;
+  PrintRasterArtwork? _artwork;
+  bool _loadingArtwork = true;
+  Object? _loadError;
 
-  double _baselineSide(double frameWidth, double frameHeight) {
-    return math.max(frameWidth, frameHeight);
+  PrintPlacement get _effectivePlacement =>
+      _activePlacement ?? widget.placement;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadArtwork();
   }
 
-  /// Mirrors [PrintExportService._paintOpArtInRect] so crop matches preview.
-  _CropLayout _layoutFor(
-    PrintPlacement placement,
-    double frameWidth,
-    double frameHeight,
+  @override
+  void dispose() {
+    _repaintTick.dispose();
+    _ownedRasterService?.clearCache();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(PrintCropEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.recipe != widget.recipe) {
+      _loadArtwork();
+    }
+    if (oldWidget.placement != widget.placement) {
+      _activePlacement = null;
+      _repaintTick.value++;
+    }
+  }
+
+  PrintPlacement get currentPlacement => _effectivePlacement;
+
+  Future<void> _loadArtwork() async {
+    setState(() {
+      _loadingArtwork = true;
+      _loadError = null;
+      _artwork = null;
+    });
+
+    try {
+      final artwork = await _rasterService.artwork(widget.recipe);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _artwork = artwork;
+        _loadingArtwork = false;
+      });
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _loadError = error;
+        _loadingArtwork = false;
+      });
+    }
+  }
+
+  void _onScaleStart(ScaleStartDetails details, Rect artworkRect) {
+    _gestureStartPlacement = _effectivePlacement;
+    _gestureStartFocalNormalized =
+        PrintCropGeometry.viewportToArtworkNormalized(
+      viewportPoint: details.localFocalPoint,
+      artworkRect: artworkRect,
+    );
+  }
+
+  void _onScaleUpdate(
+    ScaleUpdateDetails details,
+    Rect artworkRect,
+    double frameAspectRatio,
   ) {
-    final baseline = _baselineSide(frameWidth, frameHeight);
-    final scale = placement.scale.clamp(0.5, 4.0);
-    final paintedSide = baseline * scale;
-    final maxPanX = math.max(0.0, (paintedSide - frameWidth) / 2);
-    final maxPanY = math.max(0.0, (paintedSide - frameHeight) / 2);
-    final panX = placement.offsetX.clamp(-1.0, 1.0) * maxPanX;
-    final panY = placement.offsetY.clamp(-1.0, 1.0) * maxPanY;
-    final left = (frameWidth - paintedSide) / 2 + panX;
-    final top = (frameHeight - paintedSide) / 2 + panY;
-
-    return _CropLayout(
-      paintedSide: paintedSide,
-      maxPanX: maxPanX,
-      maxPanY: maxPanY,
-      left: left,
-      top: top,
-    );
-  }
-
-  PrintPlacement _placementFromPosition({
-    required double left,
-    required double top,
-    required double scale,
-    required double frameWidth,
-    required double frameHeight,
-  }) {
-    final baseline = _baselineSide(frameWidth, frameHeight);
-    final clampedScale = scale.clamp(0.5, 4.0);
-    final paintedSide = baseline * clampedScale;
-    final maxPanX = math.max(0.0, (paintedSide - frameWidth) / 2);
-    final maxPanY = math.max(0.0, (paintedSide - frameHeight) / 2);
-
-    final offsetX = maxPanX > 0
-        ? ((left - (frameWidth - paintedSide) / 2) / maxPanX).clamp(-1.0, 1.0)
-        : 0.0;
-    final offsetY = maxPanY > 0
-        ? ((top - (frameHeight - paintedSide) / 2) / maxPanY).clamp(-1.0, 1.0)
-        : 0.0;
-
-    return PrintPlacement(
-      scale: clampedScale,
-      offsetX: offsetX,
-      offsetY: offsetY,
-    );
-  }
-
-  void _onScaleStart(ScaleStartDetails details) {
-    _gestureStartPlacement = widget.placement;
-    _gestureStartFocalPoint = details.localFocalPoint;
-  }
-
-  void _onScaleUpdate(ScaleUpdateDetails details, Size frameSize) {
-    final startPlacement = _gestureStartPlacement;
-    final startFocalPoint = _gestureStartFocalPoint;
-    if (startPlacement == null || startFocalPoint == null) {
+    final start = _gestureStartPlacement;
+    final startFocal = _gestureStartFocalNormalized;
+    if (start == null || startFocal == null) {
       return;
     }
 
-    final newScale = (startPlacement.scale * details.scale).clamp(0.5, 4.0);
-    final startLayout = _layoutFor(
-      startPlacement,
-      frameSize.width,
-      frameSize.height,
+    final currentFocal = PrintCropGeometry.viewportToArtworkNormalized(
+      viewportPoint: details.localFocalPoint,
+      artworkRect: artworkRect,
     );
-    final scaleRatio = newScale / startPlacement.scale;
 
-    var left = startFocalPoint.dx -
-        (startFocalPoint.dx - startLayout.left) * scaleRatio;
-    var top = startFocalPoint.dy -
-        (startFocalPoint.dy - startLayout.top) * scaleRatio;
-
-    left += details.localFocalPoint.dx - startFocalPoint.dx;
-    top += details.localFocalPoint.dy - startFocalPoint.dy;
-
-    widget.onPlacementChanged(
-      _placementFromPosition(
-        left: left,
-        top: top,
-        scale: newScale,
-        frameWidth: frameSize.width,
-        frameHeight: frameSize.height,
-      ),
+    _activePlacement = PrintCropGeometry.applyScaleGesture(
+      start: start,
+      startFocalNormalized: startFocal,
+      currentFocalNormalized: currentFocal,
+      gestureScale: details.scale,
+      frameAspectRatio: frameAspectRatio,
+      cropAspectRatio: widget.aspectRatio,
     );
+    _repaintTick.value++;
   }
 
   void _onScaleEnd(ScaleEndDetails details) {
+    final placement = _activePlacement;
+    if (placement != null) {
+      widget.onPlacementChanged?.call(placement);
+    }
     _gestureStartPlacement = null;
-    _gestureStartFocalPoint = null;
+    _gestureStartFocalNormalized = null;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          'Pinch and drag to position your design',
-          style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
-        ),
-        const SizedBox(height: 12),
-        AspectRatio(
-          aspectRatio: widget.aspectRatio,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final frameSize = Size(
-                constraints.maxWidth,
-                constraints.maxHeight,
-              );
-              final layout = _layoutFor(
-                widget.placement,
-                frameSize.width,
-                frameSize.height,
-              );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final viewportSize = Size(
+          constraints.maxWidth,
+          constraints.maxHeight,
+        );
 
-              return DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.grey.shade400, width: 2),
-                  borderRadius: BorderRadius.circular(8),
+        if (_loadingArtwork) {
+          return _chrome(
+            viewportSize: viewportSize,
+            child: const Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (_loadError != null) {
+          return _chrome(
+            viewportSize: viewportSize,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  'Could not render design.\n$_loadError',
+                  textAlign: TextAlign.center,
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: GestureDetector(
-                    onScaleStart: _onScaleStart,
-                    onScaleUpdate: (details) =>
-                        _onScaleUpdate(details, frameSize),
-                    onScaleEnd: _onScaleEnd,
-                    child: SizedBox(
-                      width: frameSize.width,
-                      height: frameSize.height,
-                      child: Stack(
-                        clipBehavior: Clip.hardEdge,
-                        children: [
-                          Positioned(
-                            left: layout.left,
-                            top: layout.top,
-                            width: layout.paintedSide,
-                            height: layout.paintedSide,
-                            child: Image.memory(
-                              widget.squareArtworkBytes,
-                              fit: BoxFit.cover,
-                              gaplessPlayback: true,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+              ),
+            ),
+          );
+        }
+
+        final artwork = _artwork;
+        if (artwork == null) {
+          return _chrome(
+            viewportSize: viewportSize,
+            child: const Center(child: Text('No artwork available.')),
+          );
+        }
+
+        final content = artwork.contentRect;
+        final frameAspectRatio = artwork.contentAspectRatio;
+        final artworkRect = PrintCropGeometry.artworkRectForFrame(
+          viewportSize: viewportSize,
+          frameAspectRatio: frameAspectRatio,
+        );
+
+        final painted = ListenableBuilder(
+          listenable: _repaintTick,
+          builder: (context, child) {
+            final cropRect = PrintCropGeometry.cropRectInViewport(
+              placement: _effectivePlacement,
+              artworkRect: artworkRect,
+              frameWidth: content.width,
+              frameHeight: content.height,
+              cropAspectRatio: widget.aspectRatio,
+            );
+
+            return CustomPaint(
+              size: viewportSize,
+              painter: _RasterCropPainter(
+                artwork: artwork,
+                artworkRect: artworkRect,
+                cropRect: cropRect,
+                dimOverlayOpacity: _dimOverlayOpacity,
+              ),
+            );
+          },
+        );
+
+        return _chrome(
+          viewportSize: viewportSize,
+          child: widget.interactive
+              ? GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onScaleStart: (details) =>
+                      _onScaleStart(details, artworkRect),
+                  onScaleUpdate: (details) => _onScaleUpdate(
+                    details,
+                    artworkRect,
+                    frameAspectRatio,
                   ),
-                ),
-              );
-            },
-          ),
+                  onScaleEnd: _onScaleEnd,
+                  child: painted,
+                )
+              : painted,
+        );
+      },
+    );
+  }
+
+  Widget _chrome({
+    required Size viewportSize,
+    required Widget child,
+  }) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: SizedBox(
+          width: viewportSize.width,
+          height: viewportSize.height,
+          child: child,
         ),
-      ],
+      ),
     );
   }
 }
 
-class _CropLayout {
-  const _CropLayout({
-    required this.paintedSide,
-    required this.maxPanX,
-    required this.maxPanY,
-    required this.left,
-    required this.top,
+class _RasterCropPainter extends CustomPainter {
+  const _RasterCropPainter({
+    required this.artwork,
+    required this.artworkRect,
+    required this.cropRect,
+    required this.dimOverlayOpacity,
   });
 
-  final double paintedSide;
-  final double maxPanX;
-  final double maxPanY;
-  final double left;
-  final double top;
+  final PrintRasterArtwork artwork;
+  final Rect artworkRect;
+  final Rect cropRect;
+  final double dimOverlayOpacity;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.save();
+    canvas.clipRect(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    canvas.drawImageRect(
+      artwork.image,
+      artwork.contentRect,
+      artworkRect,
+      Paint()..filterQuality = FilterQuality.medium,
+    );
+
+    final overlayPath = Path()
+      ..fillType = PathFillType.evenOdd
+      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..addRect(cropRect);
+    canvas.drawPath(
+      overlayPath,
+      Paint()..color = Colors.black.withValues(alpha: dimOverlayOpacity),
+    );
+
+    canvas.drawRect(
+      cropRect,
+      Paint()
+        ..color = Colors.white
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.5,
+    );
+    canvas.drawRect(
+      cropRect,
+      Paint()
+        ..color = Colors.cyan.shade700
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1,
+    );
+
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _RasterCropPainter oldDelegate) {
+    return oldDelegate.artwork != artwork ||
+        oldDelegate.artworkRect != artworkRect ||
+        oldDelegate.cropRect != cropRect ||
+        oldDelegate.dimOverlayOpacity != dimOverlayOpacity;
+  }
 }

@@ -1,19 +1,34 @@
 import { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
 
-export async function getDesignSignedUrl(
+export interface StoredDesign {
+  storage_path: string;
+  width_px: number;
+  height_px: number;
+}
+
+export async function getStoredDesign(
   service: SupabaseClient,
   designId: string,
-  expiresInSeconds = 3600,
-): Promise<string> {
+): Promise<StoredDesign> {
   const { data: design, error } = await service
     .from('print_designs')
-    .select('storage_path')
+    .select('storage_path, width_px, height_px')
     .eq('id', designId)
     .single();
 
   if (error || !design?.storage_path) {
     throw new Error('Design not found');
   }
+
+  return design as StoredDesign;
+}
+
+export async function getDesignSignedUrl(
+  service: SupabaseClient,
+  designId: string,
+  expiresInSeconds = 3600,
+): Promise<string> {
+  const design = await getStoredDesign(service, designId);
 
   const { data: signed, error: signError } = await service.storage
     .from('print-files')

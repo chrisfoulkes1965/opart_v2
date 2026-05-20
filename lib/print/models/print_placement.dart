@@ -1,36 +1,39 @@
 import 'package:equatable/equatable.dart';
 
+/// Selects a region of the square artwork for print export.
+///
+/// [centerX] and [centerY] are normalized coordinates (0–1) within the artwork.
+/// [size] is the crop window size as a fraction of the largest crop rect that
+/// fits on the artwork at the target aspect ratio (1 = as large as possible).
 class PrintPlacement extends Equatable {
   const PrintPlacement({
-    this.scale = 1,
-    this.offsetX = 0,
-    this.offsetY = 0,
+    this.centerX = 0.5,
+    this.centerY = 0.5,
+    this.size = 1,
   });
 
-  /// Multiplier on baseline cover fit (1 = fill print area).
-  final double scale;
-
-  /// Normalized pan, roughly -1..1 along each axis.
-  final double offsetX;
-  final double offsetY;
+  final double centerX;
+  final double centerY;
+  final double size;
 
   static const PrintPlacement initial = PrintPlacement();
 
   PrintPlacement copyWith({
-    double? scale,
-    double? offsetX,
-    double? offsetY,
+    double? centerX,
+    double? centerY,
+    double? size,
   }) {
     return PrintPlacement(
-      scale: scale ?? this.scale,
-      offsetX: offsetX ?? this.offsetX,
-      offsetY: offsetY ?? this.offsetY,
+      centerX: centerX ?? this.centerX,
+      centerY: centerY ?? this.centerY,
+      size: size ?? this.size,
     );
   }
 
   String get cacheKey =>
-      's${scale.toStringAsFixed(3)}_x${offsetX.toStringAsFixed(3)}_y${offsetY.toStringAsFixed(3)}';
+      'cx${centerX.toStringAsFixed(3)}_cy${centerY.toStringAsFixed(3)}'
+      '_s${size.toStringAsFixed(3)}';
 
   @override
-  List<Object?> get props => [scale, offsetX, offsetY];
+  List<Object?> get props => [centerX, centerY, size];
 }

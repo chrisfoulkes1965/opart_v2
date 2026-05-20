@@ -5,7 +5,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:opart_v2/database_helper.dart';
-import 'package:opart_v2/home_page.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/opart_page.dart';
 import 'package:opart_v2/print/pages/print_flow_page.dart';
@@ -13,14 +12,21 @@ import 'package:opart_v2/print/pages/print_flow_page.dart';
 CarouselSliderController buttonCarouselController = CarouselSliderController();
 
 class MyGallery extends StatefulWidget {
+  const MyGallery(
+    this.currentImage, {
+    super.key,
+    this.showHomeButton = false,
+  });
+
   final int currentImage;
-  const MyGallery(this.currentImage);
+  final bool showHomeButton;
+
   @override
   _MyGalleryState createState() => _MyGalleryState();
 }
 
 class _MyGalleryState extends State<MyGallery> {
-  bool carouselView = true;
+  bool carouselView = false;
   int currentIndex = 0;
   String currentSize = "8' x 10'";
   Color frameColor = Colors.black;
@@ -51,18 +57,12 @@ class _MyGalleryState extends State<MyGallery> {
                 color: Colors.black,
               ),
             ),
-            leading: IconButton(
-              icon: const Icon(Icons.home, color: Colors.black),
-              onPressed: () {
-                // Navigator.pop(context);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MyHomePage(title: 'OpArt Lab'),
-                  ),
-                );
-              },
-            ),
+            leading: widget.showHomeButton
+                ? IconButton(
+                    icon: const Icon(Icons.home, color: Colors.black),
+                    onPressed: () => Navigator.pop(context),
+                  )
+                : null,
             actions: [
               IconButton(
                 onPressed: () {
@@ -112,9 +112,9 @@ class _MyGalleryState extends State<MyGallery> {
                                 _rebuildDelete.value++;
                               },
                               onTap: () {
-                                Navigator.pushReplacement(
+                                Navigator.push(
                                   context,
-                                  MaterialPageRoute(
+                                  MaterialPageRoute<void>(
                                     builder: (context) => OpArtPage(
                                       savedOpArt[index]['type'] as OpArtType,
                                       opArtSettings: savedOpArt[index],
@@ -252,9 +252,9 @@ class _MyGalleryState extends State<MyGallery> {
                                 _rebuildDelete.value++;
                               },
                               onTap: () {
-                                Navigator.pushReplacement(
+                                Navigator.push(
                                   context,
-                                  MaterialPageRoute(
+                                  MaterialPageRoute<void>(
                                     builder: (context) => OpArtPage(
                                       savedOpArt[index]['type'] as OpArtType,
                                       opArtSettings: savedOpArt[index],

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opart_v2/print/cubit/print_flow_cubit.dart';
 import 'package:opart_v2/print/cubit/print_flow_state.dart';
 import 'package:opart_v2/print/models/print_catalog.dart';
+import 'package:opart_v2/print/models/print_models.dart';
 
 class PrintVariantStep extends StatelessWidget {
   const PrintVariantStep({super.key});
@@ -14,7 +15,9 @@ class PrintVariantStep extends StatelessWidget {
     return BlocBuilder<PrintFlowCubit, PrintFlowState>(
       buildWhen: (previous, current) =>
           previous.variants != current.variants ||
+          previous.status != current.status ||
           previous.selectedVariant != current.selectedVariant ||
+          previous.selectedProduct != current.selectedProduct ||
           previous.productPreviewByProductId !=
               current.productPreviewByProductId,
       builder: (context, state) {
@@ -26,6 +29,25 @@ class PrintVariantStep extends StatelessWidget {
         }
 
         if (variants.isEmpty) {
+          if (state.isBusy) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(),
+                  if (state.progressMessage != null) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      state.progressMessage!,
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ],
+              ),
+            );
+          }
+
           return const Center(
             child: Text('No sizes in stock for this product.'),
           );
@@ -39,36 +61,61 @@ class PrintVariantStep extends StatelessWidget {
           separatorBuilder: (_, __) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
             final variant = variants[index];
-            final spec = PrintCatalog.resolveSpec(
-              product: product,
+            return _VariantTile(
               variant: variant,
-            );
-
-            return Card(
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                leading: _VariantThumb(
-                  bytes: productThumb,
-                  aspectRatio: spec.aspectRatio,
-                ),
-                title: Text(
-                  variant.displayLabel,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                subtitle: Text('\$${variant.price}'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: state.isBusy
-                    ? null
-                    : () =>
-                        context.read<PrintFlowCubit>().selectVariant(variant),
-              ),
+              product: product,
+              productThumb: productThumb,
+              isBusy: state.isBusy,
+              onTap: () =>
+                  context.read<PrintFlowCubit>().selectVariant(variant),
             );
           },
         );
       },
+    );
+  }
+}
+
+class _VariantTile extends StatelessWidget {
+  const _VariantTile({
+    required this.variant,
+    required this.product,
+    required this.productThumb,
+    required this.isBusy,
+    required this.onTap,
+  });
+
+  final PrintVariant variant;
+  final PrintProduct product;
+  final Uint8List? productThumb;
+  final bool isBusy;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final spec = PrintCatalog.resolveSpec(
+      product: product,
+      variant: variant,
+    );
+
+    return Card(
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 8,
+        ),
+        leading: _VariantThumb(
+          bytes: productThumb,
+          aspectRatio: spec.aspectRatio,
+        ),
+        title: Text(
+          variant.displayLabel,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text('\$${variant.price}'),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: isBusy ? null : onTap,
+      ),
     );
   }
 }

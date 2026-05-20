@@ -144,17 +144,23 @@ export interface MockupFilePayload {
   };
 }
 
-export async function buildMockupFilePayload(
+export interface ResolvedPrintArea {
+  placement: string;
+  width: number;
+  height: number;
+  dpi: number;
+  fill_mode: string;
+}
+
+export async function resolvePrintArea(
   productId: number,
-  variantIds: number[],
-  imageUrl: string,
+  variantId: number,
   placementOverride?: string,
-): Promise<MockupFilePayload> {
+): Promise<ResolvedPrintArea> {
   const printfiles = await printfulFetch<PrintfilesResponse>(
     `/mockup-generator/printfiles/${productId}`,
   );
 
-  const variantId = variantIds[0];
   const variantMapping =
     printfiles.result.variant_printfiles.find(
       (entry) => entry.variant_id === variantId,
@@ -178,17 +184,41 @@ export async function buildMockupFilePayload(
       (entry) => entry.printfile_id === printfileId,
     ) ?? printfiles.result.printfiles[0];
 
-  const areaWidth = printfile.width;
-  const areaHeight = printfile.height;
-
   return {
     placement,
+    width: printfile.width,
+    height: printfile.height,
+    dpi: printfile.dpi,
+    fill_mode: printfile.fill_mode,
+  };
+}
+
+export async function buildMockupFilePayload(
+  productId: number,
+  variantIds: number[],
+  imageUrl: string,
+  placementOverride?: string,
+  imageWidthPx?: number,
+  imageHeightPx?: number,
+): Promise<MockupFilePayload> {
+  const area = await resolvePrintArea(
+    productId,
+    variantIds[0],
+    placementOverride,
+  );
+
+  const width = imageWidthPx && imageWidthPx > 0 ? imageWidthPx : area.width;
+  const height =
+    imageHeightPx && imageHeightPx > 0 ? imageHeightPx : area.height;
+
+  return {
+    placement: area.placement,
     image_url: imageUrl,
     position: {
-      area_width: areaWidth,
-      area_height: areaHeight,
-      width: areaWidth,
-      height: areaHeight,
+      area_width: area.width,
+      area_height: area.height,
+      width,
+      height,
       top: 0,
       left: 0,
     },

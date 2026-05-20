@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
+import 'package:opart_v2/print/models/device_case_catalog.dart';
 import 'package:opart_v2/print/models/print_catalog.dart';
 import 'package:opart_v2/print/models/print_models.dart';
 import 'package:opart_v2/print/models/print_placement.dart';
@@ -32,13 +33,20 @@ class PrintFlowState extends Equatable {
     this.products = const [],
     this.variants = const [],
     this.productPreviewByProductId = const {},
-    this.squareArtworkBytes,
+    this.designPreviewBytes,
+    this.exportPreviewBytes,
     this.mockups = const [],
     this.previewMockupUrl,
     this.selectedProduct,
     this.selectedVariant,
     this.selectedSpec,
+    this.phoneCaseBrand,
+    this.phoneCaseFinish = PhoneCaseFinish.glossy,
+    this.phoneCaseVariantsByBrand = const {},
+    this.selectedApparelColor,
+    this.selectedApparelSize,
     this.placement = PrintPlacement.initial,
+    this.printAreaResolved = false,
     this.registeredDesign,
     this.estimate,
     this.checkoutSession,
@@ -62,13 +70,20 @@ class PrintFlowState extends Equatable {
   final List<PrintProduct> products;
   final List<PrintVariant> variants;
   final Map<int, Uint8List> productPreviewByProductId;
-  final Uint8List? squareArtworkBytes;
+  final Uint8List? designPreviewBytes;
+  final Uint8List? exportPreviewBytes;
   final List<PrintMockup> mockups;
   final String? previewMockupUrl;
   final PrintProduct? selectedProduct;
   final PrintVariant? selectedVariant;
   final PrintSpec? selectedSpec;
+  final PhoneCaseBrand? phoneCaseBrand;
+  final PhoneCaseFinish phoneCaseFinish;
+  final Map<PhoneCaseBrand, List<PrintVariant>> phoneCaseVariantsByBrand;
+  final String? selectedApparelColor;
+  final String? selectedApparelSize;
   final PrintPlacement placement;
+  final bool printAreaResolved;
   final RegisteredDesign? registeredDesign;
   final PrintEstimate? estimate;
   final CheckoutSession? checkoutSession;
@@ -100,15 +115,25 @@ class PrintFlowState extends Equatable {
     List<PrintProduct>? products,
     List<PrintVariant>? variants,
     Map<int, Uint8List>? productPreviewByProductId,
-    Uint8List? squareArtworkBytes,
-    bool clearSquareArtworkBytes = false,
+    Uint8List? designPreviewBytes,
+    Uint8List? exportPreviewBytes,
+    bool clearExportPreviewBytes = false,
     List<PrintMockup>? mockups,
     String? previewMockupUrl,
     bool clearPreviewMockupUrl = false,
     PrintProduct? selectedProduct,
     PrintVariant? selectedVariant,
     PrintSpec? selectedSpec,
+    PhoneCaseBrand? phoneCaseBrand,
+    bool clearPhoneCaseBrand = false,
+    PhoneCaseFinish? phoneCaseFinish,
+    Map<PhoneCaseBrand, List<PrintVariant>>? phoneCaseVariantsByBrand,
+    bool clearPhoneCaseVariantsByBrand = false,
+    String? selectedApparelColor,
+    String? selectedApparelSize,
+    bool clearApparelSelection = false,
     PrintPlacement? placement,
+    bool? printAreaResolved,
     RegisteredDesign? registeredDesign,
     PrintEstimate? estimate,
     CheckoutSession? checkoutSession,
@@ -126,9 +151,10 @@ class PrintFlowState extends Equatable {
       variants: variants ?? this.variants,
       productPreviewByProductId:
           productPreviewByProductId ?? this.productPreviewByProductId,
-      squareArtworkBytes: clearSquareArtworkBytes
+      designPreviewBytes: designPreviewBytes ?? this.designPreviewBytes,
+      exportPreviewBytes: clearExportPreviewBytes
           ? null
-          : squareArtworkBytes ?? this.squareArtworkBytes,
+          : exportPreviewBytes ?? this.exportPreviewBytes,
       mockups: mockups ?? this.mockups,
       previewMockupUrl: clearPreviewMockupUrl
           ? null
@@ -136,7 +162,20 @@ class PrintFlowState extends Equatable {
       selectedProduct: selectedProduct ?? this.selectedProduct,
       selectedVariant: selectedVariant ?? this.selectedVariant,
       selectedSpec: selectedSpec ?? this.selectedSpec,
+      phoneCaseBrand:
+          clearPhoneCaseBrand ? null : phoneCaseBrand ?? this.phoneCaseBrand,
+      phoneCaseFinish: phoneCaseFinish ?? this.phoneCaseFinish,
+      phoneCaseVariantsByBrand: clearPhoneCaseVariantsByBrand
+          ? const {}
+          : phoneCaseVariantsByBrand ?? this.phoneCaseVariantsByBrand,
+      selectedApparelColor: clearApparelSelection
+          ? null
+          : selectedApparelColor ?? this.selectedApparelColor,
+      selectedApparelSize: clearApparelSelection
+          ? null
+          : selectedApparelSize ?? this.selectedApparelSize,
       placement: placement ?? this.placement,
+      printAreaResolved: printAreaResolved ?? this.printAreaResolved,
       registeredDesign: registeredDesign ?? this.registeredDesign,
       estimate: estimate ?? this.estimate,
       checkoutSession: checkoutSession ?? this.checkoutSession,
@@ -155,13 +194,20 @@ class PrintFlowState extends Equatable {
         products,
         variants,
         productPreviewByProductId,
-        squareArtworkBytes,
+        designPreviewBytes,
+        exportPreviewBytes,
         mockups,
         previewMockupUrl,
         selectedProduct,
         selectedVariant,
         selectedSpec,
+        phoneCaseBrand,
+        phoneCaseFinish,
+        phoneCaseVariantsByBrand,
+        selectedApparelColor,
+        selectedApparelSize,
         placement,
+        printAreaResolved,
         registeredDesign,
         estimate,
         checkoutSession,

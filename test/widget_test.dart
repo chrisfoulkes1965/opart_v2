@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:opart_v2/home_page.dart';
+import 'package:opart_v2/app_shell.dart';
 
 void main() {
-  testWidgets('home screen shows title', (WidgetTester tester) async {
+  testWidgets('app shell shows home title and bottom navigation',
+      (WidgetTester tester) async {
     await tester.pumpWidget(
-      const MaterialApp(home: MyHomePage(title: 'Op Art Studio')),
+      MaterialApp(home: AppShell()),
     );
+    await tester.pumpAndSettle();
+
     expect(find.text('OpArt Lab'), findsOneWidget);
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('Gallery'), findsOneWidget);
+    expect(find.text('Shop'), findsOneWidget);
   });
 }
