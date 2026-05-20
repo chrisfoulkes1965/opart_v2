@@ -98,7 +98,9 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
               rebuildCanvas.value++;
             },
             onChangeEnd: (value) {
-              opart_page.currentOpArtPageState?.opArt.saveToCache();
+              opart_page.currentOpArtPageState?.opArt.saveToCache(
+                immediate: true,
+              );
             },
           ),
         ),
@@ -111,34 +113,54 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
     return ValueListenableBuilder<int>(
       valueListenable: rebuildTab,
       builder: (context, value, child) {
+        listViewWidgets.clear();
         additionalColors();
+        final List<Color> paletteColors =
+            opart_page.currentOpArtPageState?.opArt.palette.colorList ?? [];
+        final int swatchCount = numberOfColors.intValue < paletteColors.length
+            ? numberOfColors.intValue
+            : paletteColors.length;
         listViewWidgets.add(
           SizedBox(
             height: 30,
             child: IconButton(
               icon: const Icon(Icons.remove),
               onPressed: () {
-                if (enableButton) {
-                  enableButton = false;
-
-                  if ((numberOfColors.intValue) > 1) {
-                    numberOfColors.value = (numberOfColors.intValue) - 1;
-                    opart_page.currentOpArtPageState?.opArt.palette.colorList
-                        .removeLast();
-                    if (numberOfColors.intValue > paletteLength) {
-                      opart_page.currentOpArtPageState?.opArt.palette.randomize(
-                        paletteType.value.toString(),
-                        numberOfColors.intValue,
-                      );
-                    }
-                    height = ((numberOfColors.doubleValue) + 2) * 30;
-                    if (height > MediaQuery.of(context).size.height * 0.7) {
-                      height = MediaQuery.of(context).size.height * 0.7;
-                    }
-                    opart_page.currentOpArtPageState?.opArt.saveToCache();
-                    rebuildTab.value++;
-                    rebuildCanvas.value++;
+                if ((numberOfColors.intValue) > 1) {
+                  opart_page.currentOpArtPageState?.opArt.markRenderDirty();
+                  numberOfColors.value = (numberOfColors.intValue) - 1;
+                  opart_page.currentOpArtPageState?.opArt.palette.colorList
+                      .removeLast();
+                  if (numberOfColors.intValue > paletteLength) {
+                    final String paletteType =
+                        opart_page.currentOpArtPageState?.opArt.attributes
+                                .firstWhere(
+                                  (element) => element.name == 'paletteType',
+                                )
+                                .value
+                                .toString() ??
+                            'random';
+                    final contrastContext = paletteContrastContext(
+                      opart_page.currentOpArtPageState?.opArt.attributes ?? [],
+                    );
+                    opart_page.currentOpArtPageState?.opArt.palette.randomize(
+                      paletteType,
+                      numberOfColors.intValue,
+                      background: contrastContext.background,
+                      opacity: contrastContext.opacity,
+                    );
                   }
+                  height = ((numberOfColors.doubleValue) + 2) * 30;
+                  if (height > MediaQuery.of(context).size.height * 0.7) {
+                    height = MediaQuery.of(context).size.height * 0.7;
+                  }
+                  rebuildCanvas.value++;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    rebuildTab.value++;
+                  });
+                  opart_page.currentOpArtPageState?.opArt.saveToCache(
+                    immediate: true,
+                  );
                 }
               },
             ),
@@ -157,41 +179,47 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
             child: IconButton(
               icon: const Icon(Icons.add),
               onPressed: () {
-                if (enableButton) {
-                  enableButton = false;
-
-                  numberOfColors.value = (numberOfColors.intValue) + 1;
-                  opart_page.currentOpArtPageState?.opArt.attributes
-                      .firstWhere((element) => element.name == 'numberOfColors')
-                      .value = numberOfColors.value;
-                  if (numberOfColors.intValue > paletteLength) {
-                    final String paletteType =
-                        opart_page.currentOpArtPageState?.opArt.attributes
-                                .firstWhere(
-                                  (element) => element.name == 'paletteType',
-                                )
-                                .value
-                                .toString() ??
-                            'random';
-                    opart_page.currentOpArtPageState?.opArt.palette.randomize(
-                      paletteType,
-                      numberOfColors.intValue,
-                    );
-                  }
-                  height = ((numberOfColors.doubleValue) + 2) * 30;
-                  if (height > MediaQuery.of(context).size.height * 0.7) {
-                    height = MediaQuery.of(context).size.height * 0.7;
-                  }
-                  opart_page.currentOpArtPageState?.opArt.saveToCache();
-                  rebuildTab.value++;
-                  rebuildCanvas.value++;
+                opart_page.currentOpArtPageState?.opArt.markRenderDirty();
+                numberOfColors.value = (numberOfColors.intValue) + 1;
+                opart_page.currentOpArtPageState?.opArt.attributes
+                    .firstWhere((element) => element.name == 'numberOfColors')
+                    .value = numberOfColors.value;
+                if (numberOfColors.intValue > paletteLength) {
+                  final String paletteType =
+                      opart_page.currentOpArtPageState?.opArt.attributes
+                              .firstWhere(
+                                (element) => element.name == 'paletteType',
+                              )
+                              .value
+                              .toString() ??
+                          'random';
+                  final contrastContext = paletteContrastContext(
+                    opart_page.currentOpArtPageState?.opArt.attributes ?? [],
+                  );
+                  opart_page.currentOpArtPageState?.opArt.palette.randomize(
+                    paletteType,
+                    numberOfColors.intValue,
+                    background: contrastContext.background,
+                    opacity: contrastContext.opacity,
+                  );
                 }
+                height = ((numberOfColors.doubleValue) + 2) * 30;
+                if (height > MediaQuery.of(context).size.height * 0.7) {
+                  height = MediaQuery.of(context).size.height * 0.7;
+                }
+                rebuildCanvas.value++;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  rebuildTab.value++;
+                });
+                opart_page.currentOpArtPageState?.opArt.saveToCache(
+                  immediate: true,
+                );
               },
             ),
           ),
         );
 
-        for (int i = 0; i < (numberOfColors.intValue); i++) {
+        for (int i = 0; i < swatchCount; i++) {
           listViewWidgets.add(
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -213,8 +241,7 @@ class _PaletteTabWidgetState extends State<PaletteTabWidget> {
                           ? 2
                           : 0,
                     ),
-                    color: opart_page
-                        .currentOpArtPageState?.opArt.palette.colorList[i],
+                    color: paletteColors[i],
                     shape: BoxShape.circle,
                   ),
                   height: 30,

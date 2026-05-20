@@ -175,6 +175,21 @@ void resetAllDefaults() {
   currentOpArtPageState?.opArt.setDefault();
 }
 
+({Color? background, double opacity}) paletteContrastContext(
+  List<SettingsModel> attributes,
+) {
+  Color? background;
+  var opacityValue = 1.0;
+  for (final attribute in attributes) {
+    if (attribute.name == 'backgroundColor') {
+      background = attribute.colorValue;
+    } else if (attribute.name == 'opacity') {
+      opacityValue = attribute.doubleValue;
+    }
+  }
+  return (background: background, opacity: opacityValue);
+}
+
 void generatePalette() {
   final attributes = currentOpArtPageState?.opArt.attributes;
   if (attributes == null) return;
@@ -184,24 +199,41 @@ void generatePalette() {
   final String paletteType = attributes
       .firstWhere((element) => element.name == 'paletteType')
       .stringValue;
-  currentOpArtPageState?.opArt.palette.randomize(paletteType, numberOfColours);
+  final contrastContext = paletteContrastContext(attributes);
+  currentOpArtPageState?.opArt.palette.randomize(
+    paletteType,
+    numberOfColours,
+    background: contrastContext.background,
+    opacity: contrastContext.opacity,
+  );
 }
 
 void checkNumberOfColors() {
-  final attributes = currentOpArtPageState?.opArt.attributes;
-  if (attributes == null) return;
+  final opArt = currentOpArtPageState?.opArt;
+  final attributes = opArt?.attributes;
+  if (opArt == null || attributes == null) return;
+
   final int numberOfColours = attributes
       .firstWhere((element) => element.name == 'numberOfColors')
       .intValue;
-  final int paletteLength =
-      currentOpArtPageState?.opArt.palette.colorList.length ?? 0;
+  final int paletteLength = opArt.palette.colorList.length;
+
+  if (numberOfColours < paletteLength) {
+    opArt.palette.colorList =
+        opArt.palette.colorList.sublist(0, numberOfColours);
+    return;
+  }
+
   if (numberOfColours > paletteLength) {
     final String paletteType = attributes
         .firstWhere((element) => element.name == 'paletteType')
         .stringValue;
-    currentOpArtPageState?.opArt.palette.randomize(
+    final contrastContext = paletteContrastContext(attributes);
+    opArt.palette.randomize(
       paletteType,
       numberOfColours,
+      background: contrastContext.background,
+      opacity: contrastContext.opacity,
     );
   }
 }

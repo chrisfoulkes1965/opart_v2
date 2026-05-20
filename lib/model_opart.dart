@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 import 'dart:math';
@@ -29,6 +30,7 @@ import 'package:opart_v2/opart/opart_tree.dart';
 import 'package:opart_v2/opart/opart_triangles.dart';
 import 'package:opart_v2/opart/opart_wallpaper.dart';
 import 'package:opart_v2/opart/opart_wave.dart';
+import 'package:opart_v2/palette_contrast.dart';
 import 'package:screenshot/screenshot.dart';
 
 List<Map<String, dynamic>> savedOpArt = [];
@@ -85,6 +87,13 @@ class OpArt {
   late String name;
   bool animation = true;
   AnimationController? animationController;
+  int renderGeneration = 0;
+  Timer? _cacheSaveDebounce;
+  int _cacheCaptureGeneration = 0;
+
+  void markRenderDirty() {
+    renderGeneration++;
+  }
 
   // Initialise
   OpArt({required this.opArtType}) {
@@ -231,52 +240,73 @@ class OpArt {
     }
   }
 
-  void saveToCache() {
+  void saveToCache({bool immediate = false}) {
+    if (immediate) {
+      _cacheSaveDebounce?.cancel();
+      _captureCacheSnapshot();
+      return;
+    }
+
+    _cacheSaveDebounce?.cancel();
+    _cacheSaveDebounce = Timer(const Duration(milliseconds: 350), () {
+      _captureCacheSnapshot();
+    });
+  }
+
+  void _captureCacheSnapshot() {
+    final int generation = ++_cacheCaptureGeneration;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
+        await WidgetsBinding.instance.endOfFrame;
+        if (generation != _cacheCaptureGeneration) {
+          return;
+        }
+
         final Uint8List? imageBytes = await screenshotController.capture(
-          delay: const Duration(milliseconds: 200),
           pixelRatio: 0.2,
         );
 
-        if (imageBytes != null) {
-          final Map<String, dynamic> map = {};
-          for (int i = 0; i < attributes.length; i++) {
-            map.addAll({attributes[i].label: attributes[i].value});
-          }
-          map.addAll({
-            'seed': seed,
-            'image': imageBytes,
-            'paletteName': palette.paletteName,
-            'colors': palette.colorList,
-            'numberOfColors': numberOfColors.value,
-            'animationControllerValue': animation && animationController != null
-                ? animationController!.value
-                : 1.0,
-          });
+        if (generation != _cacheCaptureGeneration || imageBytes == null) {
+          return;
+        }
 
-          cache.add(map);
+        final Map<String, dynamic> map = {};
+        for (int i = 0; i < attributes.length; i++) {
+          map.addAll({attributes[i].label: attributes[i].value});
+        }
+        map.addAll({
+          'seed': seed,
+          'image': imageBytes,
+          'paletteName': palette.paletteName,
+          'colors': palette.colorList,
+          'numberOfColors': numberOfColors.value,
+          'animationControllerValue': animation && animationController != null
+              ? animationController!.value
+              : 1.0,
+        });
 
-          rebuildCache.value++;
-          if (scrollController.hasClients) {
-            await scrollController.animateTo(
-              scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.fastOutSlowIn,
-            );
-          }
-          enableButton = true;
-        } else {
-          enableButton = true;
+        cache.add(map);
+
+        rebuildCache.value++;
+        if (scrollController.hasClients) {
+          await scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.fastOutSlowIn,
+          );
         }
       } catch (e) {
         debugPrint('Error saving to cache: $e');
-        enableButton = true;
+      } finally {
+        if (generation == _cacheCaptureGeneration) {
+          enableButton = true;
+        }
       }
     });
   }
 
   void revertToCache(int index) {
+    markRenderDirty();
     seed = cache[index]['seed'] as int;
     if (animation && animationController != null) {
       animationController!.forward(
@@ -300,6 +330,9 @@ class OpArt {
   }
 
   void paint(Canvas canvas, Size size, int seed, double animationVariable) {
+    if (palette.colorList.isEmpty) {
+      checkNumberOfColors();
+    }
     switch (opArtType) {
       case OpArtType.Diagonal:
         paintDiagonal(canvas, size, seed, animationVariable, this);
@@ -344,6 +377,7 @@ class OpArt {
 
   // randomise the non-palette settings
   void randomizeSettings() {
+    markRenderDirty();
     seed = DateTime.now().millisecond;
     final Random rnd = Random(seed);
 
@@ -371,15 +405,37 @@ class OpArt {
     backgroundColor.value = Color(int.parse(newPalette[2]! as String));
   }
 
+  SettingsModel? _attributeByName(String name) {
+    for (final attribute in attributes) {
+      if (attribute.name == name) {
+        return attribute;
+      }
+    }
+    return null;
+  }
+
   // randomise the palette (does not change [seed] — shape stays stable)
   void randomizePalette() {
+    markRenderDirty();
     final Random rnd = Random();
 
     for (int i = 0; i < attributes.length; i++) {
-      if (attributes[i].settingCategory == SettingCategory.palette) {
+      if (attributes[i].settingCategory == SettingCategory.palette &&
+          attributes[i].name == 'backgroundColor') {
         attributes[i].randomize(rnd);
       }
     }
+
+    for (int i = 0; i < attributes.length; i++) {
+      if (attributes[i].settingCategory == SettingCategory.palette &&
+          attributes[i].name != 'backgroundColor') {
+        attributes[i].randomize(rnd);
+      }
+    }
+
+    final Color? background = _attributeByName('backgroundColor')?.colorValue;
+    final double paletteOpacity =
+        _attributeByName('opacity')?.doubleValue ?? 1.0;
 
     palette.randomize(
       attributes.firstWhere((element) => element.name == 'paletteType').value!
@@ -388,7 +444,22 @@ class OpArt {
               .firstWhere((element) => element.name == 'numberOfColors')
               .value! as num)
           .toInt(),
+      background: background,
+      opacity: paletteOpacity,
     );
+
+    final SettingsModel? lineWidthSetting = _attributeByName('lineWidth');
+    if (background != null &&
+        lineWidthSetting != null &&
+        lineWidthSetting.doubleValue > 0) {
+      final SettingsModel lineColorSetting = attributes.firstWhere(
+        (element) => element.name == 'lineColor',
+      );
+      lineColorSetting.value = ensureContrastAgainstBackground(
+        color: lineColorSetting.colorValue,
+        background: background,
+      );
+    }
 
     attributes.firstWhere((element) => element.name == 'paletteList').value =
         'Default';

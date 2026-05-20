@@ -163,6 +163,7 @@ class _MyGalleryState extends State<MyGallery> {
                                                 ),
                                                 child: Center(
                                                   child: FloatingActionButton(
+                                                    heroTag: null,
                                                     onPressed: () {
                                                       final DatabaseHelper
                                                           helper =
@@ -282,6 +283,7 @@ class _MyGalleryState extends State<MyGallery> {
                                                 ),
                                                 child: Center(
                                                   child: FloatingActionButton(
+                                                    heroTag: null,
                                                     onPressed: () {
                                                       final DatabaseHelper
                                                           helper =

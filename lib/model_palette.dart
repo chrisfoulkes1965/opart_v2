@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/model_settings.dart';
+import 'package:opart_v2/palette_contrast.dart';
 
 SettingsModel numberOfColors = SettingsModel(
   name: 'numberOfColors',
@@ -610,17 +611,28 @@ class OpArtPalette {
   ];
   String paletteType = 'random';
 
-  void randomize(String paletteType, int numberOfColours) {
-    // print('paletteType: $paletteType');
-    // print('numberOfColours: $numberOfColours');
+  void randomize(
+    String paletteType,
+    int numberOfColours, {
+    Color? background,
+    double opacity = 1.0,
+  }) {
+    if (numberOfColours < 1) {
+      return;
+    }
 
-    // seed = DateTime.now().millisecond;
     final Random rnd = Random(seed);
-    // print('randomizing palette');
-
     final List<Color> palette = [];
+    const knownPaletteTypes = {
+      'random',
+      'blended random',
+      'linear random',
+      'linear complementary',
+    };
+    final String effectivePaletteType =
+        knownPaletteTypes.contains(paletteType) ? paletteType : 'random';
 
-    switch (paletteType) {
+    switch (effectivePaletteType) {
       // random
       case 'random':
         {
@@ -734,6 +746,18 @@ class OpArtPalette {
         }
     }
 
-    colorList = palette;
+    if (background != null) {
+      colorList = palette
+          .map(
+            (color) => ensureContrastAgainstBackground(
+              color: color,
+              background: background,
+              alpha: opacity,
+            ),
+          )
+          .toList();
+    } else {
+      colorList = palette;
+    }
   }
 }

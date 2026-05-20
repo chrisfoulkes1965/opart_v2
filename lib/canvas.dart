@@ -83,12 +83,14 @@ class CanvasWidgetState extends State<CanvasWidget>
                       color: Colors.white,
                       width: constraints.widthConstraints().maxWidth,
                       height: constraints.heightConstraints().maxHeight,
-                      child: CustomPaint(
-                        painter: OpArtPainter(
-                          seed,
-                          rnd,
-                          widget.opArt.animation ? currentAnimation.value : 1,
-                          widget.opArt,
+                      child: RepaintBoundary(
+                        child: CustomPaint(
+                          painter: OpArtPainter(
+                            seed,
+                            rnd,
+                            widget.opArt.animation ? currentAnimation.value : 1,
+                            widget.opArt,
+                          ),
                         ),
                       ),
                     ),
@@ -233,5 +235,5 @@ class OpArtPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(OpArtPainter oldDelegate) => false;
+  bool shouldRepaint(covariant OpArtPainter oldDelegate) => true;
 }

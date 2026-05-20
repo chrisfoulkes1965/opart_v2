@@ -44,7 +44,9 @@ Widget toolBoxTab() {
               });
             },
             onChangeEnd: (value) {
-              opart_page.currentOpArtPageState?.opArt.saveToCache();
+              opart_page.currentOpArtPageState?.opArt.saveToCache(
+                immediate: true,
+              );
             },
           );
         }
@@ -65,7 +67,9 @@ Widget toolBoxTab() {
               rebuildCanvas.value++;
             },
             onChangeEnd: (value) {
-              opart_page.currentOpArtPageState?.opArt.saveToCache();
+              opart_page.currentOpArtPageState?.opArt.saveToCache(
+                immediate: true,
+              );
             },
           );
         }

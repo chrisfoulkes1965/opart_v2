@@ -1,12 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/database_helper.dart';
 import 'package:opart_v2/information.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/mygallery.dart';
+import 'package:opart_v2/op_art_catalog.dart';
 import 'package:opart_v2/opart_page.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -20,47 +22,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _rebuildDelete = ValueNotifier(0);
-  late final List<OpArtTypes> _opArtTypes;
-
-  @override
-  void initState() {
-    super.initState();
-    _opArtTypes = [
-      OpArtTypes('Flow', OpArtType.Flow, 'lib/assets/flow_200.png'),
-      OpArtTypes(
-        'Wallpaper',
-        OpArtType.Wallpaper,
-        'lib/assets/wallpaper_200.png',
-      ),
-      OpArtTypes('Diagonal', OpArtType.Diagonal, 'lib/assets/diagonal_200.png'),
-      OpArtTypes('Shapes', OpArtType.Shapes, 'lib/assets/shapes_200.png'),
-      OpArtTypes('Trees', OpArtType.Tree, 'lib/assets/tree_200.png'),
-      OpArtTypes('Maze', OpArtType.Maze, 'lib/assets/maze_200.png'),
-      OpArtTypes('Quads', OpArtType.Quads, 'lib/assets/quads_200.png'),
-      OpArtTypes('String', OpArtType.String, 'lib/assets/string_200.png'),
-      OpArtTypes('Rhombus', OpArtType.Rhombus, 'lib/assets/rhombus_200.png'),
-      OpArtTypes(
-        'Triangles',
-        OpArtType.Triangles,
-        'lib/assets/triangles_200.png',
-      ),
-      OpArtTypes('Squares', OpArtType.Squares, 'lib/assets/squares_200.png'),
-      OpArtTypes(
-        'Spirals',
-        OpArtType.Fibonacci,
-        'lib/assets/fibonacci_200.png',
-      ),
-      OpArtTypes('Eye', OpArtType.Eye, 'lib/assets/eye_200.png'),
-      OpArtTypes('Hexagons', OpArtType.Hexagons, 'lib/assets/hexagons_200.png'),
-      OpArtTypes('Waves', OpArtType.Wave, 'lib/assets/wave_200.png'),
-      OpArtTypes('Riley', OpArtType.Riley, 'lib/assets/riley_200.png'),
-      OpArtTypes(
-        'Neighbour',
-        OpArtType.Neighbour,
-        'lib/assets/neighbour_200.png',
-      ),
-    ];
-  }
 
   @override
   void dispose() {
@@ -108,26 +69,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: SingleChildScrollView(
                   child: Wrap(
                     alignment: WrapAlignment.spaceAround,
-                    children: _opArtTypes
+                    children: kOpArtCatalog
                         .map(
                           (opArtType) => Container(
                             height: 120,
                             width: 120,
                             padding: const EdgeInsets.all(8.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute<void>(
-                                    builder: (context) => OpArtPage(
-                                      opArtType.opArtType,
-                                      animationValue: 0.0,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(20),
+                                onTap: () {
+                                  HapticFeedback.lightImpact();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute<void>(
+                                      builder: (context) => OpArtPage(
+                                        opArtType.opArtType,
+                                        animationValue: 0.0,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                              child: Hero(
-                                tag: opArtType.name,
+                                  );
+                                },
                                 child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
@@ -252,6 +215,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               ),
                                               child: Center(
                                                 child: FloatingActionButton(
+                                                  heroTag: null,
                                                   onPressed: () {
                                                     final helper =
                                                         DatabaseHelper.instance;

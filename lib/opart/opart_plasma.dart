@@ -216,7 +216,7 @@ void paintPlasma(
   }
 
   // Initialise the canvas
-  final int numberOfCells = pow(2, recursionDepth.doubleValue) as int;
+  final int numberOfCells = pow(2, recursionDepth.numValue) as int;
   final double cellWidth = size.width / (numberOfCells + 1);
   final double cellHeight = size.height / (numberOfCells + 1);
 

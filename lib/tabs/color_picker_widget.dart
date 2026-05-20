@@ -72,8 +72,11 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
                                 widget.opArt.palette.colorList[currentColor] =
                                     color;
                               }
-                              rebuildTab.value++;
+                              widget.opArt.markRenderDirty();
                               rebuildCanvas.value++;
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                rebuildTab.value++;
+                              });
                               rebuildColorPicker.value++;
                             },
                           ),
@@ -87,7 +90,7 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
                       icon: const Icon(Icons.close),
                       onPressed: () {
                         currentOpArtPageState?.showCustomColorPicker = false;
-                        widget.opArt.saveToCache();
+                        widget.opArt.saveToCache(immediate: true);
                         rebuildOpArtPage.value++;
                       },
                     ),

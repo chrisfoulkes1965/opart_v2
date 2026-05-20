@@ -1,31 +1,13 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:opart_v2/database_helper.dart';
-import 'package:opart_v2/home_page.dart';
+import 'package:opart_v2/bootstrap_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const OpArtLabApp());
 }
 
-class OpArtLabApp extends StatefulWidget {
+class OpArtLabApp extends StatelessWidget {
   const OpArtLabApp({super.key});
-
-  @override
-  State<OpArtLabApp> createState() => _OpArtLabAppState();
-}
-
-class _OpArtLabAppState extends State<OpArtLabApp> {
-  @override
-  void initState() {
-    super.initState();
-    unawaited(_bootstrap());
-  }
-
-  Future<void> _bootstrap() async {
-    await DatabaseHelper.instance.getUserDb();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +18,7 @@ class _OpArtLabAppState extends State<OpArtLabApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Op Art Studio'),
+      home: const BootstrapScreen(),
     );
   }
 }

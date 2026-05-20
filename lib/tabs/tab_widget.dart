@@ -39,9 +39,9 @@ class _TabWidgetState extends State<TabWidget> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (tab.left) contentWidget(tab) else Container(),
+                  if (tab.left) _panelSlot(tab),
                   tabWidget(tab),
-                  if (!tab.left) contentWidget(tab) else Container(),
+                  if (!tab.left) _panelSlot(tab),
                 ],
               ),
             ),
@@ -49,6 +49,13 @@ class _TabWidgetState extends State<TabWidget> {
         );
       },
     );
+  }
+
+  Widget _panelSlot(GeneralTab tab) {
+    if (tab.open) {
+      return contentWidget(tab);
+    }
+    return SizedBox(width: tab.width);
   }
 
   Widget contentWidget(GeneralTab tab) {

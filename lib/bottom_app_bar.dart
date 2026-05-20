@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/opart_overlay_theme.dart';
 import 'package:opart_v2/settings_overlay_layout.dart';
 
 /// Bottom toolbar: three equal-width actions so nothing wraps off-screen.
-/// Uses top-level `enableButton` in `model_opart.dart` so taps stay in sync
-/// with [OpArt.saveToCache] (which sets the flag back when capture finishes).
+/// Uses debounced [OpArt.saveToCache] so history thumbnails are captured
+/// after the canvas has updated, without blocking toolbar taps.
 Widget customBottomAppBar({
   required BuildContext context,
   required OpArt opArt,
@@ -15,9 +16,6 @@ Widget customBottomAppBar({
     top: false,
     child: LayoutBuilder(
       builder: (context, constraints) {
-        final double w = constraints.maxWidth;
-        final bool wide = w > 400;
-
         return ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           child: SizedBox(
@@ -30,11 +28,9 @@ Widget customBottomAppBar({
                   Expanded(
                     child: _BottomToolButton(
                       onPressed: () {
-                        if (!enableButton) return;
-                        enableButton = false;
                         opArt.randomizeSettings();
-                        opArt.saveToCache();
                         rebuildCanvas.value++;
+                        opArt.saveToCache();
                       },
                       icon: Icon(
                         MdiIcons.shape,
@@ -48,13 +44,13 @@ Widget customBottomAppBar({
                   Expanded(
                     child: _BottomToolButton(
                       onPressed: () {
-                        if (!enableButton) return;
-                        enableButton = false;
                         opArt.randomizeSettings();
                         opArt.randomizePalette();
-                        opArt.saveToCache();
                         rebuildCanvas.value++;
-                        rebuildTab.value++;
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          rebuildTab.value++;
+                        });
+                        opArt.saveToCache();
                       },
                       icon: Icon(
                         MdiIcons.autoFix,
@@ -68,12 +64,12 @@ Widget customBottomAppBar({
                   Expanded(
                     child: _BottomToolButton(
                       onPressed: () {
-                        if (!enableButton) return;
-                        enableButton = false;
                         opArt.randomizePalette();
-                        opArt.saveToCache();
                         rebuildCanvas.value++;
-                        rebuildTab.value++;
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          rebuildTab.value++;
+                        });
+                        opArt.saveToCache();
                       },
                       icon: const Icon(
                         Icons.palette,
@@ -106,31 +102,38 @@ class _BottomToolButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: opArtOverlayButtonBackground,
-      borderRadius: BorderRadius.circular(10),
-      child: Tooltip(
-        message: 'Tap to $label', // Customize this as appropriate
-        waitDuration: const Duration(milliseconds: 350),
-        child: GestureDetector(
-          onTap: onPressed,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              icon,
-              const SizedBox(width: 4),
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 11,
-                  height: 1,
+    return SizedBox(
+      height: 48,
+      child: Material(
+        color: opArtOverlayButtonBackground,
+        borderRadius: BorderRadius.circular(10),
+        child: Tooltip(
+          message: 'Tap to $label', // Customize this as appropriate
+          waitDuration: const Duration(milliseconds: 350),
+          child: GestureDetector(
+            onTap: () {
+              HapticFeedback.heavyImpact();
+
+              onPressed();
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                icon,
+                const SizedBox(width: 4),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 11,
+                    height: 1,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

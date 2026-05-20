@@ -1,4 +1,7 @@
+import 'dart:async';
+import 'dart:developer' as developer;
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,11 +9,14 @@ import 'package:opart_v2/bottom_app_bar.dart';
 import 'package:opart_v2/canvas.dart';
 import 'package:opart_v2/home_page.dart';
 import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/model_settings.dart';
 import 'package:opart_v2/mygallery.dart';
 import 'package:opart_v2/settings_overlay_layout.dart';
 import 'package:opart_v2/tabs/color_picker_widget.dart';
 import 'package:opart_v2/tabs/general_tab.dart';
 import 'package:opart_v2/tabs/tab_widget.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 // Global reference to current OpArtPage state for tab classes
@@ -41,6 +47,7 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
   late ScrollController scrollController;
   late File imageFile;
   bool showCustomColorPicker = false;
+  bool _shareInProgress = false;
   late OpArt opArt;
   bool changeSettingsView = true;
   late ToolsTab toolsTab;
@@ -53,10 +60,10 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    super.initState();
     currentOpArtPageState = this;
     slider = 100;
 
-    // Initialize animation controller first
     animationController = AnimationController(
       duration: const Duration(seconds: 72000),
       vsync: this,
@@ -74,9 +81,11 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
     if (widget.opArtSettings['paletteName'] != null) {
       opArt.palette.paletteName = widget.opArtSettings['paletteName'] as String;
     }
-    if (widget.opArtSettings['colors'] != null) {
-      opArt.palette.colorList = widget.opArtSettings['colors'] as List<Color>;
+    final savedColors = widget.opArtSettings['colors'];
+    if (savedColors is List<Color> && savedColors.isNotEmpty) {
+      opArt.palette.colorList = List<Color>.from(savedColors);
     }
+    checkNumberOfColors();
     rebuildCanvas.value++;
 
     scrollController = ScrollController();
@@ -85,9 +94,10 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
     choosePaletteTab = ChoosePaletteTab();
     syncOpArtTabSingletons(toolsTab, paletteTab, choosePaletteTab);
 
-    super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
       opArt.saveToCache();
 
       paletteTab.open = true;
@@ -106,38 +116,156 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  /// Exports a print-quality PNG via the system share sheet (free).
-  Future<void> _exportHighResPng() async {
+  static const String _shareLogName = 'OpArtShare';
+  static const String _shareCaption = 'Created with OpArt Lab';
+
+  void _shareLog(
+    String message, {
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    developer.log(
+      message,
+      name: _shareLogName,
+      error: error,
+      stackTrace: stackTrace,
+    );
+    debugPrint('[$_shareLogName] $message${error != null ? ' | $error' : ''}');
+  }
+
+  /// Longest side cap for share exports (WhatsApp iOS hangs on huge PNGs).
+  static const double _shareMaxLongestSidePx = 2048;
+
+  double _shareCapturePixelRatio() {
+    if (!mounted) {
+      return 2;
+    }
+    final viewSize = MediaQuery.sizeOf(context);
+    final maxLogicalSide = math.max(viewSize.width, viewSize.height);
+    if (maxLogicalSide <= 0) {
+      return 2;
+    }
+    return (_shareMaxLongestSidePx / maxLogicalSide).clamp(1.0, 4.0);
+  }
+
+  /// Anchor rect for the iOS/iPadOS share popover (required on Apple platforms).
+  Rect _sharePositionOrigin(BuildContext anchorContext) {
+    final box = anchorContext.findRenderObject() as RenderBox?;
+    if (box != null && box.hasSize) {
+      final origin = box.localToGlobal(Offset.zero);
+      final rect = origin & box.size;
+      if (rect.width > 0 && rect.height > 0) {
+        return rect;
+      }
+      return Rect.fromCenter(center: rect.center, width: 1, height: 1);
+    }
+    final size = MediaQuery.sizeOf(anchorContext);
+    final top = MediaQuery.paddingOf(anchorContext).top;
+    return Rect.fromCenter(
+      center: Offset(size.width - 28, top + kToolbarHeight / 2),
+      width: 1,
+      height: 1,
+    );
+  }
+
+  /// Exports a PNG via the system share sheet (free).
+  Future<void> _exportHighResPng(BuildContext shareAnchorContext) async {
+    if (_shareInProgress) {
+      _shareLog('ignored: share already in progress');
+      return;
+    }
+    _shareInProgress = true;
+
+    final stopwatch = Stopwatch()..start();
+    final shareOrigin = _sharePositionOrigin(shareAnchorContext);
+    final pixelRatio = _shareCapturePixelRatio();
+
+    _shareLog(
+      'export started | platform=${Platform.operatingSystem} '
+      'mounted=$mounted showSettings=$showSettings pixelRatio=$pixelRatio',
+    );
+    _shareLog('sharePositionOrigin=$shareOrigin');
+
     if (mounted) {
       setState(() => showProgressIndicator = true);
+      _shareLog(
+        'progress indicator shown (+${stopwatch.elapsedMilliseconds}ms)',
+      );
     }
 
     try {
       await Future.delayed(const Duration(milliseconds: 100));
       await WidgetsBinding.instance.endOfFrame;
+      _shareLog('pre-capture delay done (+${stopwatch.elapsedMilliseconds}ms)');
 
+      _shareLog('screenshot capture starting (pixelRatio=$pixelRatio)');
       final Uint8List? imageBytes = await screenshotController.capture(
         delay: const Duration(milliseconds: 500),
-        pixelRatio: 10,
+        pixelRatio: pixelRatio,
+      );
+      _shareLog(
+        'screenshot capture finished (+${stopwatch.elapsedMilliseconds}ms) '
+        'bytes=${imageBytes?.length ?? 'null'}',
       );
 
-      if (imageBytes != null && mounted) {
-        await SharePlus.instance.share(
+      if (imageBytes == null) {
+        _shareLog('aborting: capture returned null');
+      } else if (!mounted) {
+        _shareLog('aborting: widget unmounted after capture');
+      } else {
+        final tempDir = await getTemporaryDirectory();
+        final filePath = p.join(
+          tempDir.path,
+          'opart_${DateTime.now().millisecondsSinceEpoch}.png',
+        );
+        final file = File(filePath);
+        await file.writeAsBytes(imageBytes);
+        final fileStat = await file.stat();
+
+        _shareLog(
+          'temp file written (+${stopwatch.elapsedMilliseconds}ms) '
+          'path=$filePath exists=${file.existsSync()} '
+          'size=${fileStat.size} bytes',
+        );
+
+        if (fileStat.size > 5 * 1024 * 1024) {
+          _shareLog(
+            'warning: PNG exceeds 5MB — may hang WhatsApp on iOS',
+          );
+        }
+
+        // Hide loading overlay before the share sheet (overlay can block iOS).
+        setState(() => showProgressIndicator = false);
+        await WidgetsBinding.instance.endOfFrame;
+        _shareLog(
+          'opening share sheet, overlay hidden '
+          '(+${stopwatch.elapsedMilliseconds}ms)',
+        );
+
+        // Caption via [text] only — do not set [subject] with files on iOS or
+        // WhatsApp drops the image.
+        final ShareResult result = await SharePlus.instance.share(
           ShareParams(
-            files: [
-              XFile.fromData(
-                imageBytes,
-                name: 'opart_image.png',
-                mimeType: 'image/png',
-              ),
-            ],
-            subject: 'Created with OpArt Lab',
-            text: 'Created with OpArt Lab',
+            files: [XFile(filePath, mimeType: 'image/png')],
+            text: _shareCaption,
+            sharePositionOrigin: shareOrigin,
           ),
         );
+        _shareLog(
+          'SharePlus.share returned (+${stopwatch.elapsedMilliseconds}ms) '
+          'status=${result.status} raw="${result.raw}"',
+        );
       }
-    } catch (e) {
-      debugPrint('Error capturing screenshot: $e');
+    } catch (e, st) {
+      _shareLog(
+        'export failed (+${stopwatch.elapsedMilliseconds}ms)',
+        error: e,
+        stackTrace: st,
+      );
+    } finally {
+      _shareInProgress = false;
+      stopwatch.stop();
+      _shareLog('export finished total=${stopwatch.elapsedMilliseconds}ms');
     }
 
     if (mounted) {
@@ -145,6 +273,9 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
         showProgressIndicator = false;
         rebuildOpArtPage.value++;
       });
+      _shareLog('UI cleanup complete');
+    } else {
+      _shareLog('skipped UI cleanup: widget no longer mounted');
     }
   }
 
@@ -213,7 +344,7 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             const Text(
-                                              'Saved to My \nGallery',
+                                              'Saved to My Gallery',
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                 fontSize: 18,
@@ -221,7 +352,10 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                                               ),
                                             ),
                                             const SizedBox(height: 12),
-                                            ElevatedButton(
+                                            FilledButton(
+                                              child: const Text(
+                                                'View My Gallery',
+                                              ),
                                               onPressed: () {
                                                 Navigator.pop(context);
                                                 rebuildMain.value++;
@@ -256,20 +390,17 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                                                   ),
                                                 );
                                               },
-                                              child: const Text(
-                                                'View My Gallery',
-                                              ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                      const Align(
+                                      Align(
                                         alignment: Alignment.topRight,
-                                        child: Material(
-                                          child: Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: CloseButton(),
-                                          ),
+                                        child: IconButton(
+                                          icon: const Icon(Icons.close),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
                                         ),
                                       ),
                                     ],
@@ -280,9 +411,14 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                           );
                         },
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.share, color: Colors.black),
-                        onPressed: _exportHighResPng,
+                      Builder(
+                        builder: (shareButtonContext) {
+                          return IconButton(
+                            icon: const Icon(Icons.share, color: Colors.black),
+                            onPressed: () =>
+                                _exportHighResPng(shareButtonContext),
+                          );
+                        },
                       ),
                     ],
                   )

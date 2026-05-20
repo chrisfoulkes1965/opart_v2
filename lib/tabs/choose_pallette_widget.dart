@@ -104,7 +104,9 @@ Widget choosePaletteTabWidget() {
           numberOfColors.value = newPalette.length;
           rebuildTab.value++;
           rebuildCanvas.value++;
-          opart_page.currentOpArtPageState?.opArt.saveToCache();
+          opart_page.currentOpArtPageState?.opArt.saveToCache(
+            immediate: true,
+          );
         },
         child: Column(
           children: [
