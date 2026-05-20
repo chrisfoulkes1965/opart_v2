@@ -124,7 +124,12 @@ List<SettingsModel> initializeHexagonsAttributes() {
 }
 
 void paintHexagons(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
@@ -176,7 +181,7 @@ void paintHexagons(
       final List<double> p2 = [x + hexRectangleWidth, y + hexHeight];
       final List<double> p3 = [
         x + hexRectangleWidth,
-        y + hexHeight + sideLength
+        y + hexHeight + sideLength,
       ];
       final List<double> p4 = [x + hexRadius, y + hexRectangleHeight];
       final List<double> p5 = [x, y + sideLength + hexHeight];
@@ -218,16 +223,18 @@ void paintHexagons(
           hexagon.lineTo(p6[0], p6[1]);
           hexagon.close();
           canvas.drawPath(
-              hexagon,
-              Paint()
-                ..color = nextColor
-                ..style = PaintingStyle.fill);
+            hexagon,
+            Paint()
+              ..color = nextColor
+              ..style = PaintingStyle.fill,
+          );
           canvas.drawPath(
-              hexagon,
-              Paint()
-                ..color = localLineColor
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.doubleValue);
+            hexagon,
+            Paint()
+              ..color = localLineColor
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = lineWidth.doubleValue,
+          );
 
         case 'three':
 
@@ -262,16 +269,18 @@ void paintHexagons(
           rhombus.lineTo(p0[0], p0[1]);
           rhombus.close();
           canvas.drawPath(
-              rhombus,
-              Paint()
-                ..color = nextColor
-                ..style = PaintingStyle.fill);
+            rhombus,
+            Paint()
+              ..color = nextColor
+              ..style = PaintingStyle.fill,
+          );
           canvas.drawPath(
-              rhombus,
-              Paint()
-                ..color = localLineColor
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.doubleValue);
+            rhombus,
+            Paint()
+              ..color = localLineColor
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = lineWidth.doubleValue,
+          );
 
           // R2
           // Choose the next colour
@@ -314,16 +323,18 @@ void paintHexagons(
           rhombus.lineTo(p0[0], p0[1]);
           rhombus.close();
           canvas.drawPath(
-              rhombus,
-              Paint()
-                ..color = nextColor
-                ..style = PaintingStyle.fill);
+            rhombus,
+            Paint()
+              ..color = nextColor
+              ..style = PaintingStyle.fill,
+          );
           canvas.drawPath(
-              rhombus,
-              Paint()
-                ..color = localLineColor
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.doubleValue);
+            rhombus,
+            Paint()
+              ..color = localLineColor
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = lineWidth.doubleValue,
+          );
 
           // R3
           // Choose the next colour
@@ -357,16 +368,18 @@ void paintHexagons(
           rhombus.lineTo(p0[0], p0[1]);
           rhombus.close();
           canvas.drawPath(
-              rhombus,
-              Paint()
-                ..color = nextColor
-                ..style = PaintingStyle.fill);
+            rhombus,
+            Paint()
+              ..color = nextColor
+              ..style = PaintingStyle.fill,
+          );
           canvas.drawPath(
-              rhombus,
-              Paint()
-                ..color = localLineColor
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.doubleValue);
+            rhombus,
+            Paint()
+              ..color = localLineColor
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = lineWidth.doubleValue,
+          );
 
         case 'six':
 
@@ -391,16 +404,18 @@ void paintHexagons(
           triangle.lineTo(p0[0], p0[1]);
           triangle.close();
           canvas.drawPath(
-              triangle,
-              Paint()
-                ..color = nextColor
-                ..style = PaintingStyle.fill);
+            triangle,
+            Paint()
+              ..color = nextColor
+              ..style = PaintingStyle.fill,
+          );
           canvas.drawPath(
-              triangle,
-              Paint()
-                ..color = localLineColor
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.doubleValue);
+            triangle,
+            Paint()
+              ..color = localLineColor
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = lineWidth.doubleValue,
+          );
 
           // T2
           // Choose the next colour
@@ -423,16 +438,18 @@ void paintHexagons(
           triangle.lineTo(p0[0], p0[1]);
           triangle.close();
           canvas.drawPath(
-              triangle,
-              Paint()
-                ..color = nextColor
-                ..style = PaintingStyle.fill);
+            triangle,
+            Paint()
+              ..color = nextColor
+              ..style = PaintingStyle.fill,
+          );
           canvas.drawPath(
-              triangle,
-              Paint()
-                ..color = localLineColor
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.doubleValue);
+            triangle,
+            Paint()
+              ..color = localLineColor
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = lineWidth.doubleValue,
+          );
 
           // T3
           // Choose the next colour
@@ -455,16 +472,18 @@ void paintHexagons(
           triangle.lineTo(p0[0], p0[1]);
           triangle.close();
           canvas.drawPath(
-              triangle,
-              Paint()
-                ..color = nextColor
-                ..style = PaintingStyle.fill);
+            triangle,
+            Paint()
+              ..color = nextColor
+              ..style = PaintingStyle.fill,
+          );
           canvas.drawPath(
-              triangle,
-              Paint()
-                ..color = localLineColor
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.doubleValue);
+            triangle,
+            Paint()
+              ..color = localLineColor
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = lineWidth.doubleValue,
+          );
 
           // T4
           // Choose the next colour
@@ -487,16 +506,18 @@ void paintHexagons(
           triangle.lineTo(p0[0], p0[1]);
           triangle.close();
           canvas.drawPath(
-              triangle,
-              Paint()
-                ..color = nextColor
-                ..style = PaintingStyle.fill);
+            triangle,
+            Paint()
+              ..color = nextColor
+              ..style = PaintingStyle.fill,
+          );
           canvas.drawPath(
-              triangle,
-              Paint()
-                ..color = localLineColor
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.doubleValue);
+            triangle,
+            Paint()
+              ..color = localLineColor
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = lineWidth.doubleValue,
+          );
 
           // T5
           // Choose the next colour
@@ -519,16 +540,18 @@ void paintHexagons(
           triangle.lineTo(p0[0], p0[1]);
           triangle.close();
           canvas.drawPath(
-              triangle,
-              Paint()
-                ..color = nextColor
-                ..style = PaintingStyle.fill);
+            triangle,
+            Paint()
+              ..color = nextColor
+              ..style = PaintingStyle.fill,
+          );
           canvas.drawPath(
-              triangle,
-              Paint()
-                ..color = localLineColor
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.doubleValue);
+            triangle,
+            Paint()
+              ..color = localLineColor
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = lineWidth.doubleValue,
+          );
 
           // T6
           // Choose the next colour
@@ -551,16 +574,18 @@ void paintHexagons(
           triangle.lineTo(p0[0], p0[1]);
           triangle.close();
           canvas.drawPath(
-              triangle,
-              Paint()
-                ..color = nextColor
-                ..style = PaintingStyle.fill);
+            triangle,
+            Paint()
+              ..color = nextColor
+              ..style = PaintingStyle.fill,
+          );
           canvas.drawPath(
-              triangle,
-              Paint()
-                ..color = localLineColor
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = lineWidth.doubleValue);
+            triangle,
+            Paint()
+              ..color = localLineColor
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = lineWidth.doubleValue,
+          );
       }
     }
   }

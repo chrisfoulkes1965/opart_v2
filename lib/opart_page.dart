@@ -7,6 +7,7 @@ import 'package:opart_v2/canvas.dart';
 import 'package:opart_v2/home_page.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/mygallery.dart';
+import 'package:opart_v2/settings_overlay_layout.dart';
 import 'package:opart_v2/tabs/color_picker_widget.dart';
 import 'package:opart_v2/tabs/general_tab.dart';
 import 'package:opart_v2/tabs/tab_widget.dart';
@@ -47,6 +48,8 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
   late ChoosePaletteTab choosePaletteTab;
   late AnimationController animationController;
   late int seed;
+  final GlobalKey<CanvasWidgetState> _canvasKey =
+      GlobalKey<CanvasWidgetState>();
 
   @override
   void initState() {
@@ -148,254 +151,283 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
-        valueListenable: rebuildOpArtPage,
-        builder: (context, value, child) {
-          return PopScope(
-            canPop: false,
-            child: Scaffold(
-              key: _scaffoldKey,
-              extendBodyBehindAppBar: true,
-              appBar: showSettings
-                  ? AppBar(
-                      backgroundColor: Colors.cyan.withValues(alpha: 0.8),
-                      title: Text(
-                        opArt.name,
-                        style: const TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'Righteous',
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold),
+      valueListenable: rebuildOpArtPage,
+      builder: (context, value, child) {
+        return PopScope(
+          canPop: false,
+          child: Scaffold(
+            key: _scaffoldKey,
+            extendBodyBehindAppBar: true,
+            appBar: showSettings
+                ? AppBar(
+                    backgroundColor: Colors.cyan.withValues(alpha: 0.8),
+                    title: Text(
+                      opArt.name,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'Righteous',
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
-                      centerTitle: true,
-                      elevation: 1,
-                      leading: IconButton(
-                        icon: const Icon(
-                          Icons.home,
-                          color: Colors.black,
-                        ),
-                        onPressed: () {
-                          rebuildMain.value++;
-                          showDelete = false;
-                          showControls = false;
-                          showCustomColorPicker = false;
-                          opArt.setDefault();
-                          opArt.clearCache();
-                          SystemChrome.setEnabledSystemUIMode(
-                              SystemUiMode.manual,
-                              overlays: SystemUiOverlay.values);
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const MyHomePage(title: 'OpArt Lab'),
-                            ),
-                          );
-                        },
-                      ),
-                      actions: [
-                        IconButton(
-                            icon: const Icon(Icons.save, color: Colors.black),
-                            onPressed: () {
-                              opArt.saveToLocalDB();
-                              showDialog<void>(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return Dialog(
-                                        child: SizedBox(
-                                      height: 150,
-                                      width: 200,
-                                      child: Stack(
-                                        children: [
-                                          Center(
-                                            child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const Text(
-                                                      'Saved to My \nGallery',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold)),
-                                                  const SizedBox(height: 12),
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                      rebuildMain.value++;
-                                                      showDelete = false;
-                                                      showControls = false;
-                                                      showCustomColorPicker =
-                                                          false;
-                                                      opArt.setDefault();
-                                                      opArt.clearCache();
-                                                      SystemChrome
-                                                          .setEnabledSystemUIMode(
-                                                              SystemUiMode
-                                                                  .manual,
-                                                              overlays:
-                                                                  SystemUiOverlay
-                                                                      .values);
-                                                      Navigator.pop(context);
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  MyGallery(
-                                                                      savedOpArt
-                                                                          .length)));
-                                                      Navigator.pushReplacement(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  const MyHomePage(
-                                                                      title:
-                                                                          'OpArt Lab')));
-                                                    },
-                                                    child: const Text(
-                                                        'View My Gallery'),
-                                                  )
-                                                ]),
-                                          ),
-                                          const Align(
-                                              alignment: Alignment.topRight,
-                                              child: Material(
-                                                  child: Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: CloseButton(),
-                                              )))
-                                        ],
-                                      ),
-                                    ));
-                                  });
-                            }),
-                        IconButton(
-                          icon: const Icon(Icons.share, color: Colors.black),
-                          onPressed: _exportHighResPng,
-                        ),
-                      ],
-                    )
-                  : null,
-              body: Stack(
-                children: [
-                  GestureDetector(
-                      onDoubleTap: () {
-                        if (!showSettings) {
-                          opArt.randomizeSettings();
-                          opArt.randomizePalette();
-                          opArt.saveToCache();
-                          enableButton = false;
-                          rebuildCanvas.value++;
-                        }
-                      },
-                      onTap: () {
-                        if (changeSettingsView) {
-                          changeSettingsView = false;
-                          setState(() {
-                            if (showSettings) {
-                              slider = 100;
-                              if (showCustomColorPicker) {
-                                opArt.saveToCache();
-                              }
-                              showControls = false;
-                              showSettings = false;
-                              showCustomColorPicker = false;
-                            } else {
-                              showSettings = true;
-                              showCustomColorPicker = false;
-                            }
-                          });
-                          Future.delayed(const Duration(seconds: 1));
-                          changeSettingsView = true;
-                        }
-                      },
-                      child: Stack(
-                        children: [
-                          InteractiveViewer(
-                            child: ClipRect(
-                                child: CanvasWidget(
-                              fullScreen: showSettings,
-                              animationValue: widget.animationValue,
-                              opArt: opArt,
-                            )),
+                    ),
+                    centerTitle: true,
+                    elevation: 1,
+                    leading: IconButton(
+                      icon: const Icon(Icons.home, color: Colors.black),
+                      onPressed: () {
+                        rebuildMain.value++;
+                        showDelete = false;
+                        showControls = false;
+                        showCustomColorPicker = false;
+                        opArt.setDefault();
+                        opArt.clearCache();
+                        SystemChrome.setEnabledSystemUIMode(
+                          SystemUiMode.manual,
+                          overlays: SystemUiOverlay.values,
+                        );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const MyHomePage(title: 'OpArt Lab'),
                           ),
-                          if (showProgressIndicator)
-                            ColoredBox(
-                                color: Colors.white.withValues(alpha: 0.4),
-                                child: const Center(
-                                    child: CircularProgressIndicator()))
-                        ],
-                      )),
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: showSettings
-                        ? SafeArea(
-                            child: Container(
-                                color: Colors.white.withValues(alpha: 0.8),
-                                width: MediaQuery.of(context).size.width,
-                                height: 60,
-                                child: ValueListenableBuilder<int>(
-                                    valueListenable: rebuildCache,
-                                    builder: (context, value, child) {
-                                      final cacheLength = opArt.cache.length;
-                                      return cacheLength == 0
-                                          ? Container()
-                                          : ListView.builder(
-                                              scrollDirection: Axis.horizontal,
-                                              controller: scrollController,
-                                              itemCount: cacheLength,
-                                              itemBuilder: (context, index) {
-                                                if (index >=
-                                                    opArt.cache.length) {
-                                                  return const SizedBox
-                                                      .shrink();
-                                                }
-                                                final entry =
-                                                    opArt.cache[index];
-                                                return Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      vertical: 2.0,
-                                                      horizontal: 4),
-                                                  child: AspectRatio(
-                                                    aspectRatio: 1,
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        opArt.revertToCache(
-                                                            index);
-                                                      },
-                                                      child: Image.memory(
-                                                          entry['image']
-                                                              as Uint8List,
-                                                          fit: BoxFit.fitWidth),
+                        );
+                      },
+                    ),
+                    actions: [
+                      IconButton(
+                        icon: const Icon(Icons.save, color: Colors.black),
+                        onPressed: () {
+                          opArt.saveToLocalDB();
+                          showDialog<void>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Dialog(
+                                child: SizedBox(
+                                  height: 150,
+                                  width: 200,
+                                  child: Stack(
+                                    children: [
+                                      Center(
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Text(
+                                              'Saved to My \nGallery',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 12),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                rebuildMain.value++;
+                                                showDelete = false;
+                                                showControls = false;
+                                                showCustomColorPicker = false;
+                                                opArt.setDefault();
+                                                opArt.clearCache();
+                                                SystemChrome
+                                                    .setEnabledSystemUIMode(
+                                                  SystemUiMode.manual,
+                                                  overlays:
+                                                      SystemUiOverlay.values,
+                                                );
+                                                Navigator.pop(context);
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        MyGallery(
+                                                      savedOpArt.length,
+                                                    ),
+                                                  ),
+                                                );
+                                                Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const MyHomePage(
+                                                      title: 'OpArt Lab',
                                                     ),
                                                   ),
                                                 );
                                               },
-                                            );
-                                    })),
-                          )
-                        : Container(height: 0),
-                  ),
-                  if (showSettings) TabWidget(choosePaletteTab),
-                  if (showSettings) TabWidget(toolsTab),
-                  if (showSettings) TabWidget(paletteTab),
-                  if (showCustomColorPicker)
-                    Align(
-                        alignment: Alignment.bottomCenter,
-                        child: ColorPickerWidget(opArt: opArt)),
-                  if (showSettings)
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: customBottomAppBar(
-                        context: context,
-                        opArt: opArt,
+                                              child: const Text(
+                                                'View My Gallery',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const Align(
+                                        alignment: Alignment.topRight,
+                                        child: Material(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CloseButton(),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
+                      IconButton(
+                        icon: const Icon(Icons.share, color: Colors.black),
+                        onPressed: _exportHighResPng,
+                      ),
+                    ],
+                  )
+                : null,
+            body: Stack(
+              children: [
+                GestureDetector(
+                  onDoubleTap: () {
+                    if (!showSettings) {
+                      opArt.randomizeSettings();
+                      opArt.randomizePalette();
+                      opArt.saveToCache();
+                      enableButton = false;
+                      rebuildCanvas.value++;
+                    }
+                  },
+                  onTap: () {
+                    if (changeSettingsView) {
+                      changeSettingsView = false;
+                      setState(() {
+                        if (showSettings) {
+                          slider = 100;
+                          if (showCustomColorPicker) {
+                            opArt.saveToCache();
+                          }
+                          showControls = false;
+                          showSettings = false;
+                          showCustomColorPicker = false;
+                        } else {
+                          showSettings = true;
+                          showCustomColorPicker = false;
+                        }
+                      });
+                      Future.delayed(const Duration(seconds: 1));
+                      changeSettingsView = true;
+                    }
+                  },
+                  child: Stack(
+                    children: [
+                      InteractiveViewer(
+                        child: ClipRect(
+                          child: CanvasWidget(
+                            key: _canvasKey,
+                            fullScreen: showSettings,
+                            animationValue: widget.animationValue,
+                            opArt: opArt,
+                          ),
+                        ),
+                      ),
+                      if (showProgressIndicator)
+                        ColoredBox(
+                          color: Colors.white.withValues(alpha: 0.4),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: showSettings
+                      ? SafeArea(
+                          child: Container(
+                            color: Colors.white.withValues(alpha: 0.8),
+                            width: MediaQuery.of(context).size.width,
+                            height: kOpArtHistoryBarHeight,
+                            child: ValueListenableBuilder<int>(
+                              valueListenable: rebuildCache,
+                              builder: (context, value, child) {
+                                final cacheLength = opArt.cache.length;
+                                return cacheLength == 0
+                                    ? Container()
+                                    : ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        controller: scrollController,
+                                        itemCount: cacheLength,
+                                        itemBuilder: (context, index) {
+                                          if (index >= opArt.cache.length) {
+                                            return const SizedBox.shrink();
+                                          }
+                                          final entry = opArt.cache[index];
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 2.0,
+                                              horizontal: 4,
+                                            ),
+                                            child: AspectRatio(
+                                              aspectRatio: 1,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  opArt.revertToCache(index);
+                                                },
+                                                child: Image.memory(
+                                                  entry['image'] as Uint8List,
+                                                  fit: BoxFit.fitWidth,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                              },
+                            ),
+                          ),
+                        )
+                      : Container(height: 0),
+                ),
+                if (showSettings) TabWidget(choosePaletteTab),
+                if (showSettings) TabWidget(toolsTab),
+                if (showSettings) TabWidget(paletteTab),
+                if (showCustomColorPicker)
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: ColorPickerWidget(opArt: opArt),
+                  ),
+                if (showSettings)
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: customBottomAppBar(context: context, opArt: opArt),
+                  ),
+                if (showSettings && opArt.animation)
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: ValueListenableBuilder<int>(
+                      valueListenable: rebuildCanvas,
+                      builder: (context, _, __) {
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            left: 12,
+                            right: 12,
+                            bottom: settingsOverlayPlaybackBottom(context),
+                          ),
+                          child: _canvasKey.currentState
+                                  ?.buildPlaybackControls() ??
+                              const SizedBox.shrink(),
+                        );
+                      },
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 }

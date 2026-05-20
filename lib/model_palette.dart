@@ -78,7 +78,7 @@ SettingsModel paletteType = SettingsModel(
     'random',
     'blended random',
     'linear random',
-    'linear complementary'
+    'linear complementary',
   ],
   settingCategory: SettingCategory.palette,
   onChange: () {
@@ -177,8 +177,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFFD1EFED',
       '0xFF151E2A',
       '0xFF725549',
-      '0xFF074E71'
-    ]
+      '0xFF074E71',
+    ],
   ],
   [
     'Classic',
@@ -194,14 +194,14 @@ List<List<Object?>> defaultPalettes = [
       '0xFF2b7b1',
       '0xFFd63aa',
       '0xFF1f4ed',
-      '0xFF383c47'
-    ]
+      '0xFF383c47',
+    ],
   ],
   [
     'Black and White',
     2,
     '0xFF111111',
-    ['0xFF000000', '0xFFffffff']
+    ['0xFF000000', '0xFFffffff'],
   ],
   [
     'Rainbow',
@@ -213,14 +213,14 @@ List<List<Object?>> defaultPalettes = [
       '0xFFFFEB3B',
       '0xFF4CAF50',
       '0xFF2196F3',
-      '0xFF9C27B0'
+      '0xFF9C27B0',
     ],
   ],
   //  ['Doge Leonardo',10,'0xFFffffff',['0xFF335362','0xFF30444C','0xFF324B56','0xFF5C381E','0xFF403424','0xFF605239','0xFF7B6A4C','0xFF9A8564','0xFFB3A889','0xFF273638']],
   // ['The Birth of Venus',10,'0xFFffffff',['0xFF303227','0xFF13160F','0xFF514F3D','0xFF7AA58B','0xFF647A63','0xFF9C8E64','0xFFA9C9AB','0xFFC0B381','0xFF8C6240','0xFFE3E0B0']],
   // ['Bridget Riley - Achæan',10,'0xFFffffff',['0xFF37A7BC','0xFFB4B165','0xFFA47EA4','0xFF69ABCB','0xFF79B38E','0xFF17B8E0','0xFFD1EFED','0xFF151E2A','0xFF725549','0xFF074E71']],
   // ['Bridget Riley - Evoe 3',3,'0xFFffffff',['0xFFBDABB3','0xFF4A6FBA','0xFF468889']],
-//  ['Bridget Riley - Fete',10,'0xFFffffff',['0xFF45719C','0xFFC3605A','0xFF78A8D0','0xFF2C2F34','0xFFE8EAE3','0xFF6A9056','0xFFAC88AA','0xFFCFC177','0xFF72AD9A','0xFF856974']],
+  //  ['Bridget Riley - Fete',10,'0xFFffffff',['0xFF45719C','0xFFC3605A','0xFF78A8D0','0xFF2C2F34','0xFFE8EAE3','0xFF6A9056','0xFFAC88AA','0xFFCFC177','0xFF72AD9A','0xFF856974']],
   [
     'Bridget Riley',
     10,
@@ -235,8 +235,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF366A52',
       '0xFF92B159',
       '0xFF66874C',
-      '0xFF61A578'
-    ]
+      '0xFF61A578',
+    ],
   ],
   // ['Bridget Riley - Summers Day',10,'0xFFffffff',['0xFFF2EEF2','0xFFF3EAE0','0xFFC3AE7F','0xFFA5B0CD','0xFFB5AF97','0xFFACAEB7','0xFFCAAC96','0xFFC4ADAD','0xFFDECFBE','0xFFD0D2E1']],
   [
@@ -253,8 +253,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF251A0B',
       '0xFF787C7F',
       '0xFFA08F80',
-      '0xFFB5ADA5'
-    ]
+      '0xFFB5ADA5',
+    ],
   ],
   [
     'Mona Lisa',
@@ -270,12 +270,12 @@ List<List<Object?>> defaultPalettes = [
       '0xFFEAB439',
       '0xFF675D25',
       '0xFF814811',
-      '0xFFBD751B'
-    ]
+      '0xFFBD751B',
+    ],
   ],
   //['Gaugin - Woman of the Mango',10,'0xFFffffff',['0xFF222843','0xFF313350','0xFF121C2E','0xFFBD8F03','0xFF403825','0xFF614020','0xFF606E70','0xFF88928B','0xFFA68319','0xFF8D501A']],
-//  ['Gericault - Raft of the Medusa',10,'0xFFffffff',['0xFF46341A','0xFF21190E','0xFF342514','0xFF0D0D08','0xFF554525','0xFF695531','0xFF856A3E','0xFFA28250','0xFFBE9E63','0xFFE3C47F']],
-//  ['Grant Wood - American Gothic',10,'0xFFffffff',['0xFF1A1F24','0xFFC5B088','0xFF7E7966','0xFF6A624C','0xFFC0DECD','0xFFA49477','0xFFD7CAA4','0xFF50462E','0xFFCAEAE1','0xFFECE9C5']],
+  //  ['Gericault - Raft of the Medusa',10,'0xFFffffff',['0xFF46341A','0xFF21190E','0xFF342514','0xFF0D0D08','0xFF554525','0xFF695531','0xFF856A3E','0xFFA28250','0xFFBE9E63','0xFFE3C47F']],
+  //  ['Grant Wood - American Gothic',10,'0xFFffffff',['0xFF1A1F24','0xFFC5B088','0xFF7E7966','0xFF6A624C','0xFFC0DECD','0xFFA49477','0xFFD7CAA4','0xFF50462E','0xFFCAEAE1','0xFFECE9C5']],
   [
     'Hockney',
     10,
@@ -290,8 +290,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF52A3BC',
       '0xFFE5BD81',
       '0xFFA88451',
-      '0xFF51B871'
-    ]
+      '0xFF51B871',
+    ],
   ],
   // ['Hockney - Pacific Coast Highway',10,'0xFFffffff',['0xFF1157A0','0xFFB04A12','0xFF0B5B24','0xFF5C6E9D','0xFF6D942B','0xFF272A36','0xFF7BACAD','0xFFA87BA2','0xFF22846E','0xFFCBBC09']],
   // ['Hockney - The Arrival of Spring',10,'0xFFffffff',['0xFF15987B','0xFF2A6A3B','0xFF852308','0xFF502F18','0xFF0F4318','0xFF98553F','0xFF805986','0xFF5B955E','0xFFCCBF56','0xFF0FBF16']],
@@ -306,8 +306,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFFB7B5A2',
       '0xFF888B82',
       '0xFF4B5560',
-      '0xFF243042'
-    ]
+      '0xFF243042',
+    ],
   ],
   [
     'The Kiss',
@@ -323,8 +323,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF968E72',
       '0xFF66588F',
       '0xFFB85D3C',
-      '0xFF413526'
-    ]
+      '0xFF413526',
+    ],
   ],
   // ['Matisse - Danse',4,'0xFFffffff',['0xFF354762','0xFFB64237','0xFF27584C','0xFF6F2121']],
   //['Matisse - Danse I',5,'0xFFffffff',['0xFF495696','0xFFBE8A7E','0xFF4D6B68','0xFF334F49','0xFF2A2622']],
@@ -333,7 +333,7 @@ List<List<Object?>> defaultPalettes = [
     'Matisse - Jazz',
     5,
     '0xFFffffff',
-    ['0xFFE9E8D0', '0xFF07090A', '0xFFD92D2A', '0xFF1766F3', '0xFFE5F146']
+    ['0xFFE9E8D0', '0xFF07090A', '0xFFD92D2A', '0xFF1766F3', '0xFFE5F146'],
   ],
   [
     'Matisse - La Gerbe',
@@ -345,8 +345,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF255B37',
       '0xFF8DAA8A',
       '0xFFD7AA3F',
-      '0xFFB9454E'
-    ]
+      '0xFFB9454E',
+    ],
   ],
   //['Matisse - Les Codomas',8,'0xFFffffff',['0xFFCF881C','0xFFE6DF2D','0xFF1D1D14','0xFFD7DCD6','0xFF5A9C8A','0xFF97263F','0xFF264AC6','0xFFE2EBE9']],
   // ['Matisse - Snow Flowers',9,'0xFFffffff',['0xFFDC9E84','0xFFE2D7C5','0xFFD16886','0xFFE9E5DC','0xFF1E433E','0xFFCCCABF','0xFFA51612','0xFF527799']],
@@ -362,8 +362,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF0C7EBD',
       '0xFFF2F2F2',
       '0xFF000000',
-      '0xFF363636'
-    ]
+      '0xFF363636',
+    ],
   ],
   //['Monet - Charing Cross Bridge',10,'0xFFffffff',['0xFF929696','0xFF778D99','0xFF86918D','0xFF788B86','0xFF84969E','0xFF9CA19F','0xFF688796','0xFF9E9585','0xFF587D8A','0xFFB7AB9D']],
   //['Munch - The Scream',10,'0xFFffffff',['0xFF403130','0xFF644D3C','0xFFD6995C','0xFFCF5629','0xFF8D6D46','0xFFD57C42','0xFF21141B','0xFFAE8552','0xFF625E67','0xFFD18C2D']],
@@ -382,8 +382,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF132833',
       '0xFF8FD4E8',
       '0xFF417C8F',
-      '0xFF2D7CAD'
-    ]
+      '0xFF2D7CAD',
+    ],
   ],
   // ['Picasso - The Tragedy - reduced',5,'0xFFffffff',['0xFF5AA5C3','0xFF3D81A0','0xFF7DC8E5','0xFF26536D','0xFF173140']],
   //['Seurat - Sunday Afternoon',10,'0xFFffffff',['0xFF343C33','0xFF495B42','0xFF64665F','0xFF4A4956','0xFFB4AE79','0xFF7E7E7D','0xFF9F9A69','0xFF817E56','0xFFA0A6A9','0xFFC8C6BA']],
@@ -401,8 +401,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF7B7442',
       '0xFF556D65',
       '0xFFBFC092',
-      '0xFF4F4F2D'
-    ]
+      '0xFF4F4F2D',
+    ],
   ],
   //['Van Gogh - The Starry Night',10,'0xFFffffff',['0xFF44608A','0xFF191F1E','0xFF5A799D','0xFF283441','0xFF2C4175','0xFF8098A4','0xFF6E837F','0xFFA8B391','0xFF47585C','0xFFA79F39']],
   //['Van Gogh - Wheat Field with Cypresses',10,'0xFFffffff',['0xFF94A3A7','0xFFABB6B4','0xFF7E9196','0xFF8B791A','0xFF495936','0xFFC7CDC2','0xFF213421','0xFFAC9934','0xFF6C7B51','0xFF637982']],
@@ -410,7 +410,7 @@ List<List<Object?>> defaultPalettes = [
   //['Whistlers Mother',10,'0xFFffffff',['0xFF111012','0xFF2E2D30','0xFF888985','0xFFFEFEFE','0xFF42403D','0xFF5E594B','0xFF767772','0xFFE7E7E8','0xFFB2AA9C','0xFFC9C6BF']],
   //['Goat 1',8,'0xFFffffff',['0xFF413734','0xFF282222','0xFF76665E','0xFF674A3E','0xFF4E4F50','0xFF8E8078','0xFFB0A59C','0xFFDFD7CD']],
   //['Goat 2',8,'0xFFffffff',['0xFF3E3E40','0xFF202123','0xFF5E5C5C','0xFF82817F','0xFFA1A9AB','0xFFCDD2CE','0xFF7393AF','0xFF516E8A']],
-//  ['Goat 3',10,'0xFFffffff',['0xFF3E3E40','0xFF202123','0xFF5E5C5C','0xFF82817F','0xFFA1A9AB','0xFFCDD2CE','0xFF7393AF','0xFF516E8A','0xFF61493F','0xFF8D7569']],
+  //  ['Goat 3',10,'0xFFffffff',['0xFF3E3E40','0xFF202123','0xFF5E5C5C','0xFF82817F','0xFFA1A9AB','0xFFCDD2CE','0xFF7393AF','0xFF516E8A','0xFF61493F','0xFF8D7569']],
   //['Maits Stairs',10,'0xFFffffff',['0xFF5F6F82','0xFF393A37','0xFF52575A','0xFF1F1E1A','0xFFDCDAC7','0xFFCDC6AC','0xFFEAE9D9','0xFFB9B193','0xFF99937E','0xFF81755A']],
   //['Lilly',8,'0xFFffffff',['0xFFBEBFB1','0xFF273313','0xFFA9A894','0xFF807550','0xFF3F4B22','0xFF513C07','0xFFB3770D','0xFF101C09']],
   //['Man in blue hat',10,'0xFFffffff',['0xFF181714','0xFF1F1E1A','0xFF2A2822','0xFF5E6160','0xFF3D372E','0xFF494C4B','0xFFE5E6E2','0xFFD8BEA9','0xFFB58B71','0xFF919FBB']],
@@ -426,8 +426,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFFBB9E7F',
       '0xFFAA1C10',
       '0xFF5F3C28',
-      '0xFF8CCDEE'
-    ]
+      '0xFF8CCDEE',
+    ],
   ],
   [
     'Bo Kaap',
@@ -443,8 +443,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF441D21',
       '0xFF0F4C69',
       '0xFF5083AD',
-      '0xFFE4E4DE'
-    ]
+      '0xFFE4E4DE',
+    ],
   ],
   [
     'Pantone Pop Stripes',
@@ -463,8 +463,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFFE3C9CA',
       '0xFF8D1C15',
       '0xFFABC8CA',
-      '0xFFE27000'
-    ]
+      '0xFFE27000',
+    ],
   ],
   [
     'Purple Artichokes',
@@ -486,8 +486,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF899775',
       '0xFFD8E1D6',
       '0xFF91C0AB',
-      '0xFF6BA381'
-    ]
+      '0xFF6BA381',
+    ],
   ],
   [
     'Stained Glass',
@@ -503,8 +503,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF6D80DA',
       '0xFFC58CA8',
       '0xFFCF2C6E',
-      '0xFFF1E6E4'
-    ]
+      '0xFFF1E6E4',
+    ],
   ],
   [
     'Ferns',
@@ -520,8 +520,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF686D17',
       '0xFF181801',
       '0xFFB1C053',
-      '0xFF8F8A4E'
-    ]
+      '0xFF8F8A4E',
+    ],
   ],
   [
     'Rhubarb',
@@ -534,8 +534,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF821107',
       '0xFF8A1210',
       '0xFFC45A2E',
-      '0xFFD1605D'
-    ]
+      '0xFFD1605D',
+    ],
   ],
   [
     'SriDevi',
@@ -551,8 +551,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFFAB8F70',
       '0xFFB9858A',
       '0xFF936669',
-      '0xFFCCBEAF'
-    ]
+      '0xFFCCBEAF',
+    ],
   ],
   [
     'Peacock',
@@ -574,8 +574,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFF28A95E',
       '0xFFEFDA58',
       '0xFFA72F2B',
-      '0xFFB8B01E'
-    ]
+      '0xFFB8B01E',
+    ],
   ],
   [
     'Coronavirus',
@@ -589,8 +589,8 @@ List<List<Object?>> defaultPalettes = [
       '0xFFB8A49C',
       '0xFFBE4F4D',
       '0xFF695C57',
-      '0xFFDDD3CB'
-    ]
+      '0xFFDDD3CB',
+    ],
   ],
 ];
 
@@ -606,7 +606,7 @@ class OpArtPalette {
     Color(0x0ff2b7b1),
     Color(0x0ffd63aa),
     Color(0x0ff1f4ed),
-    Color(0xFF383c47)
+    Color(0xFF383c47),
   ];
   String paletteType = 'random';
 
@@ -625,22 +625,25 @@ class OpArtPalette {
       case 'random':
         {
           for (int colorIndex = 0; colorIndex < numberOfColours; colorIndex++) {
-            palette.add(Color((rnd.nextDouble() * 0xFFFFFF).toInt())
-                .withValues(alpha: 1));
+            palette.add(
+              Color((rnd.nextDouble() * 0xFFFFFF).toInt()).withValues(alpha: 1),
+            );
           }
         }
 
       // blended random
       case 'blended random':
         {
-          final Color blendColour =
-              Color(rnd.nextInt(0xFFFFFF)).withValues(alpha: 1);
+          final Color blendColour = Color(
+            rnd.nextInt(0xFFFFFF),
+          ).withValues(alpha: 1);
           palette.add(blendColour);
           for (int colourIndex = 1;
               colourIndex < numberOfColours;
               colourIndex++) {
             final Color randomColor = Color(rnd.nextInt(0xFFFFFF));
-            palette.add(Color.fromARGB(
+            palette.add(
+              Color.fromARGB(
                 (((blendColour.a * 255.0).round() & 0xff) * 2 +
                         ((randomColor.a * 255.0).round() & 0xff)) ~/
                     3,
@@ -652,7 +655,9 @@ class OpArtPalette {
                     3,
                 (((blendColour.b * 255.0).round() & 0xff) * 2 +
                         ((randomColor.b * 255.0).round() & 0xff)) ~/
-                    3));
+                    3,
+              ),
+            );
           }
         }
 
@@ -662,17 +667,18 @@ class OpArtPalette {
           final List<int> startColour = [
             rnd.nextInt(255),
             rnd.nextInt(255),
-            rnd.nextInt(255)
+            rnd.nextInt(255),
           ];
           final List<int> endColour = [
             rnd.nextInt(255),
             rnd.nextInt(255),
-            rnd.nextInt(255)
+            rnd.nextInt(255),
           ];
           for (int colourIndex = 0;
               colourIndex < numberOfColours;
               colourIndex++) {
-            palette.add(Color.fromRGBO(
+            palette.add(
+              Color.fromRGBO(
                 ((startColour[0] * colourIndex +
                             endColour[0] * (numberOfColours - colourIndex)) /
                         numberOfColours)
@@ -685,7 +691,9 @@ class OpArtPalette {
                             endColour[2] * (numberOfColours - colourIndex)) /
                         numberOfColours)
                     .round(),
-                1));
+                1,
+              ),
+            );
           }
         }
 
@@ -695,17 +703,18 @@ class OpArtPalette {
           final List<int> startColour = [
             rnd.nextInt(255),
             rnd.nextInt(255),
-            rnd.nextInt(255)
+            rnd.nextInt(255),
           ];
           final List<int> endColour = [
             255 - startColour[0],
             255 - startColour[1],
-            255 - startColour[2]
+            255 - startColour[2],
           ];
           for (int colourIndex = 0;
               colourIndex < numberOfColours;
               colourIndex++) {
-            palette.add(Color.fromRGBO(
+            palette.add(
+              Color.fromRGBO(
                 ((startColour[0] * colourIndex +
                             endColour[0] * (numberOfColours - colourIndex)) /
                         numberOfColours)
@@ -718,7 +727,9 @@ class OpArtPalette {
                             endColour[2] * (numberOfColours - colourIndex)) /
                         numberOfColours)
                     .round(),
-                1));
+                1,
+              ),
+            );
           }
         }
     }

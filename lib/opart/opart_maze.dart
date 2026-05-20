@@ -125,7 +125,7 @@ SettingsModel paletteType = SettingsModel(
     'random',
     'blended random',
     'linear random',
-    'linear complementary'
+    'linear complementary',
   ],
   settingCategory: SettingCategory.palette,
   onChange: () {
@@ -180,7 +180,12 @@ List<SettingsModel> initializeMazeAttributes() {
 }
 
 void paintMaze(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
@@ -208,10 +213,11 @@ void paintMaze(
 
   // draw the square
   canvas.drawRect(
-      Offset.zero & Size(canvasWidth, canvasHeight),
-      Paint()
-        ..color = (backgroundColor.colorValue).withValues(alpha: 1.0)
-        ..style = PaintingStyle.fill);
+    Offset.zero & Size(canvasWidth, canvasHeight),
+    Paint()
+      ..color = (backgroundColor.colorValue).withValues(alpha: 1.0)
+      ..style = PaintingStyle.fill,
+  );
 
   final List<String> shapesArray = [];
   if (lineHorizontal.boolValue) {
@@ -238,7 +244,7 @@ void paintMaze(
         final List<double> p2 = [x + (zoomOpArt.numValue), y];
         final List<double> p3 = [
           x + (zoomOpArt.numValue),
-          y + (zoomOpArt.numValue)
+          y + (zoomOpArt.numValue),
         ];
         final List<double> p4 = [x, y + (zoomOpArt.numValue)];
 
@@ -272,14 +278,14 @@ void paintMaze(
 
         // draw the line
         canvas.drawLine(
-            Offset(pA[0], pA[1]),
-            Offset(pB[0], pB[1]),
-            Paint()
-              ..color = nextColor
-              ..style = PaintingStyle.stroke
-              ..strokeWidth =
-                  (lineWidth.doubleValue) * (zoomOpArt.numValue) / 10
-              ..strokeCap = StrokeCap.round);
+          Offset(pA[0], pA[1]),
+          Offset(pB[0], pB[1]),
+          Paint()
+            ..color = nextColor
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = (lineWidth.doubleValue) * (zoomOpArt.numValue) / 10
+            ..strokeCap = StrokeCap.round,
+        );
       }
     }
   }

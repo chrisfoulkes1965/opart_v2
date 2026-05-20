@@ -8,9 +8,11 @@ class Loading extends StatefulWidget {
 
 class _LoadingState extends State<Loading> {
   Future<void> waitSome() async {
-    await Navigator.pushReplacementNamed(context, '/menu', arguments: {
-      'location': 'OpArt Menu',
-    });
+    await Navigator.pushReplacementNamed(
+      context,
+      '/menu',
+      arguments: {'location': 'OpArt Menu'},
+    );
   }
 
   @override
@@ -24,10 +26,7 @@ class _LoadingState extends State<Loading> {
     return Scaffold(
       backgroundColor: Colors.blue[900],
       body: const Center(
-        child: SpinKitFadingCube(
-          color: Colors.white,
-          size: 200.0,
-        ),
+        child: SpinKitFadingCube(color: Colors.white, size: 200.0),
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/opart_overlay_theme.dart';
+import 'package:opart_v2/settings_overlay_layout.dart';
 import 'package:opart_v2/tabs/general_tab.dart';
 
 class TabWidget extends StatefulWidget {
@@ -15,45 +17,49 @@ class _TabWidgetState extends State<TabWidget> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
-        valueListenable: rebuildTab,
-        builder: (context, value, child) {
-          return AnimatedPositioned(
-            duration: const Duration(milliseconds: 300),
-            left: tab.left ? tab.position : null,
-            right: tab.left ? null : tab.position,
-            top: 0,
-            bottom: 0,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 120, bottom: 70.0),
-              child: GestureDetector(
-                onPanUpdate: (details) {
-                  if (details.delta.dx > 0) {
-                    tab.left ? tab.openTab() : tab.closeTab();
-                  }
-                  if (details.delta.dx < 0) {
-                    tab.left ? tab.closeTab() : tab.openTab();
-                  }
-                },
-                child: Row(
-                  children: [
-                    if (tab.left) contentWidget(tab) else Container(),
-                    tabWidget(tab),
-                    if (!tab.left) contentWidget(tab) else Container(),
-                  ],
-                ),
+      valueListenable: rebuildTab,
+      builder: (context, value, child) {
+        return AnimatedPositioned(
+          duration: const Duration(milliseconds: 300),
+          left: tab.left ? tab.position : null,
+          right: tab.left ? null : tab.position,
+          top: 0,
+          bottom: 0,
+          child: Padding(
+            padding: settingsOverlayPanelPadding(context),
+            child: GestureDetector(
+              onPanUpdate: (details) {
+                if (details.delta.dx > 0) {
+                  tab.left ? tab.openTab() : tab.closeTab();
+                }
+                if (details.delta.dx < 0) {
+                  tab.left ? tab.closeTab() : tab.openTab();
+                }
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (tab.left) contentWidget(tab) else Container(),
+                  tabWidget(tab),
+                  if (!tab.left) contentWidget(tab) else Container(),
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   Widget contentWidget(GeneralTab tab) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(30),
       child: Container(
-          color: Colors.white.withValues(alpha: 0.8),
-          width: tab.width,
-          child: tab.content()),
+        color: opArtOverlayPanelBackground,
+        width: tab.width,
+        height: double.infinity,
+        child: tab.content(),
+      ),
     );
   }
 
@@ -69,10 +75,15 @@ class _TabWidgetState extends State<TabWidget> {
           child: ClipPath(
             clipper: CustomMenuClipper(),
             child: Container(
-                color: Colors.white.withValues(alpha: 0.8),
-                height: 100,
-                width: 45,
-                child: Icon(tab.icon, color: Colors.cyan, size: 35)),
+              color: opArtOverlayPanelBackground,
+              height: 100,
+              width: 45,
+              child: Icon(
+                tab.icon,
+                color: opArtOverlayIconDefault,
+                size: 35,
+              ),
+            ),
           ),
         ),
       ),

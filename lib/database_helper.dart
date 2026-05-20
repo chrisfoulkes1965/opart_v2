@@ -51,11 +51,7 @@ class DatabaseHelper {
 
   Future<void> delete(int id) async {
     final db = await database;
-    await db.delete(
-      'opart',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await db.delete('opart', where: 'id = ?', whereArgs: [id]);
   }
 
   /// Hydrates [savedOpArt] from SQLite. Each row's JSON is parsed once.
@@ -68,8 +64,9 @@ class DatabaseHelper {
 
       raw.forEach((key, value) {
         if (key == 'type') {
-          fixedData['type'] = OpArtType.values
-              .firstWhere((e) => e.toString() == raw['type'] as String);
+          fixedData['type'] = OpArtType.values.firstWhere(
+            (e) => e.toString() == raw['type'] as String,
+          );
         } else if (key == 'colors') {
           final List<String> stringList = value.toString().split(',');
           final List<Color> colorList = [];

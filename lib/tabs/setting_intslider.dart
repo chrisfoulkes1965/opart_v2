@@ -11,8 +11,17 @@ class SettingsIntSlider extends StatefulWidget {
   final ValueChanged<bool> toggleLock;
   final VoidCallback updateCache;
 
-  const SettingsIntSlider(this.label, this.tooltip, this.currentValue, this.min,
-      this.max, this.locked, this.onChanged, this.toggleLock, this.updateCache);
+  const SettingsIntSlider(
+    this.label,
+    this.tooltip,
+    this.currentValue,
+    this.min,
+    this.max,
+    this.locked,
+    this.onChanged,
+    this.toggleLock,
+    this.updateCache,
+  );
 
   @override
   _SettingsIntSliderState createState() => _SettingsIntSliderState();
@@ -35,9 +44,7 @@ class _SettingsIntSliderState extends State<SettingsIntSlider> {
           height: 50,
           child: Row(
             children: [
-              const Text(
-                "Don't Randomize",
-              ),
+              const Text("Don't Randomize"),
               Checkbox(
                 value: widget.locked,
                 onChanged: (bool? value) => widget.toggleLock(value ?? false),

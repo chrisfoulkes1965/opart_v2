@@ -100,7 +100,7 @@ SettingsModel paletteType = SettingsModel(
     'random',
     'blended random',
     'linear random',
-    'linear complementary'
+    'linear complementary',
   ],
   settingCategory: SettingCategory.palette,
   onChange: () {
@@ -137,7 +137,12 @@ List<SettingsModel> initializePlasmaAttributes() {
 }
 
 void paintPlasma(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
@@ -183,7 +188,9 @@ void paintPlasma(
     // print('numberOfCells: $numberOfCells');
 
     cells = List.generate(
-        numberOfCells + 1, (_) => List<double>.filled(numberOfCells + 1, 0.0));
+      numberOfCells + 1,
+      (_) => List<double>.filled(numberOfCells + 1, 0.0),
+    );
 
     // populate the corners
     cells[0][0] = rnd.nextDouble();
@@ -218,7 +225,7 @@ void paintPlasma(
     for (int j = 0; j <= numberOfCells; ++j) {
       final List<double> p1 = [i * cellWidth, j * cellHeight];
 
-// print('i: $i j: $j cells[i][j]: ${cells[i][j]} shades.length: ${shades.length} shades[ (shadeOffset + (cells[i][j]*shades.length).toInt()) % shades.length]: ${shades[ (shadeOffset + (cells[i][j]*shades.length).toInt()) % shades.length]}');
+      // print('i: $i j: $j cells[i][j]: ${cells[i][j]} shades.length: ${shades.length} shades[ (shadeOffset + (cells[i][j]*shades.length).toInt()) % shades.length]: ${shades[ (shadeOffset + (cells[i][j]*shades.length).toInt()) % shades.length]}');
 
       final Color nextColor = shades[
           (shadeOffset + ((cells[i][j] as num) * shades.length).toInt()) %
@@ -226,12 +233,13 @@ void paintPlasma(
 
       // draw the square
       canvas.drawRect(
-          Offset(p1[0], p1[1]) & Size(cellWidth, cellHeight),
-          Paint()
-            ..strokeWidth = 0.0
-            ..color = nextColor
-            ..isAntiAlias = false
-            ..style = PaintingStyle.fill);
+        Offset(p1[0], p1[1]) & Size(cellWidth, cellHeight),
+        Paint()
+          ..strokeWidth = 0.0
+          ..color = nextColor
+          ..isAntiAlias = false
+          ..style = PaintingStyle.fill,
+      );
     }
   }
 

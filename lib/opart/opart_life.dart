@@ -11,6 +11,7 @@ import 'package:opart_v2/model_settings.dart';
 // List<String> list = [];
 
 List<List<Color>> squaresI = [];
+double? _lastLifeAnimationVariable;
 
 SettingsModel reDraw = SettingsModel(
   name: 'reDraw',
@@ -23,6 +24,8 @@ SettingsModel reDraw = SettingsModel(
   proFeature: false,
   onChange: () {
     seed = DateTime.now().millisecond;
+    squaresI = [];
+    _lastLifeAnimationVariable = null;
   },
   silent: true,
 );
@@ -66,7 +69,7 @@ SettingsModel paletteType = SettingsModel(
     'random',
     'blended random',
     'linear random',
-    'linear complementary'
+    'linear complementary',
   ],
   settingCategory: SettingCategory.palette,
   onChange: () {
@@ -114,8 +117,61 @@ List<SettingsModel> initializeLifeAttributes() {
   ];
 }
 
+void _drawLifeGrid(
+  Canvas canvas,
+  int cellsX,
+  int cellsY,
+  double borderX,
+  double borderY,
+  List<List<Color>> grid,
+) {
+  final double cellSize = zoomOpArt.doubleValue;
+  for (int i = 0; i < cellsX; ++i) {
+    for (int j = 0; j < cellsY; ++j) {
+      final x = borderX + i * cellSize;
+      final y = borderY + j * cellSize;
+      canvas.drawRect(
+        Offset(x, y) & Size(cellSize, cellSize),
+        Paint()
+          ..strokeWidth = 0.0
+          ..color = grid[i][j]
+          ..isAntiAlias = false
+          ..style = PaintingStyle.fill,
+      );
+    }
+  }
+}
+
+List<List<Color>> _createInitialLifeGrid(
+  int cellsX,
+  int cellsY,
+  Random rnd,
+) {
+  final List<List<Color>> grid = [];
+  for (int i = 0; i < cellsX; ++i) {
+    final List<Color> row = [];
+    for (int j = 0; j < cellsY; ++j) {
+      row.add(
+        Color.fromRGBO(
+          rnd.nextDouble() > 0.65 ? rnd.nextInt(156) + 100 : 0,
+          rnd.nextDouble() > 0.65 ? rnd.nextInt(156) + 100 : 0,
+          rnd.nextDouble() > 0.65 ? rnd.nextInt(156) + 100 : 0,
+          1,
+        ),
+      );
+    }
+    grid.add(row);
+  }
+  return grid;
+}
+
 void paintLife(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(DateTime.now().millisecond);
 
   if (paletteList.value != opArt.palette.paletteName) {
@@ -138,10 +194,26 @@ void paintLife(
   borderY = (canvasHeight - (zoomOpArt.doubleValue) * cellsY) / 2;
   borderY = (canvasHeight - (zoomOpArt.doubleValue) * cellsY) / 2;
 
-  // Now make some art
+  final bool gridNeedsInit = squaresI.isEmpty ||
+      squaresI.length != cellsX ||
+      squaresI[0].length != cellsY;
+  final bool shouldEvolve =
+      gridNeedsInit || _lastLifeAnimationVariable != animationVariable;
 
-  // if first time through, initialise the squares
-  // print(squaresI.length);
+  if (gridNeedsInit) {
+    squaresI = _createInitialLifeGrid(cellsX, cellsY, Random(seed));
+    _lastLifeAnimationVariable = animationVariable;
+    _drawLifeGrid(canvas, cellsX, cellsY, borderX, borderY, squaresI);
+    return;
+  }
+
+  if (!shouldEvolve) {
+    _drawLifeGrid(canvas, cellsX, cellsY, borderX, borderY, squaresI);
+    return;
+  }
+
+  _lastLifeAnimationVariable = animationVariable;
+
   final List<List<Color>> oldSquaresI = squaresI;
   squaresI = [];
 
@@ -191,26 +263,16 @@ void paintLife(
               (!wasAliveBlue && neighboursBlue == 3);
 
       final Color nextColor = Color.fromRGBO(
-          nowAliveRed ? rnd.nextInt(156) + 100 : 0,
-          nowAliveGreen ? rnd.nextInt(156) + 100 : 0,
-          nowAliveBlue ? rnd.nextInt(156) + 100 : 0,
-          1);
+        nowAliveRed ? rnd.nextInt(156) + 100 : 0,
+        nowAliveGreen ? rnd.nextInt(156) + 100 : 0,
+        nowAliveBlue ? rnd.nextInt(156) + 100 : 0,
+        1,
+      );
 
-      //save the colour
       squaresJ.add(nextColor);
-
-      final x = borderX + i * (zoomOpArt.doubleValue);
-      final y = borderY + j * (zoomOpArt.doubleValue);
-
-      // draw the square
-      canvas.drawRect(
-          Offset(x, y) & Size(zoomOpArt.doubleValue, zoomOpArt.doubleValue),
-          Paint()
-            ..strokeWidth = 0.0
-            ..color = nextColor
-            ..isAntiAlias = false
-            ..style = PaintingStyle.fill);
     }
     squaresI.add(squaresJ);
   }
+
+  _drawLifeGrid(canvas, cellsX, cellsY, borderX, borderY, squaresI);
 }

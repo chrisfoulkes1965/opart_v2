@@ -136,7 +136,7 @@ SettingsModel paletteType = SettingsModel(
     'random',
     'blended random',
     'linear random',
-    'linear complementary'
+    'linear complementary',
   ],
   settingCategory: SettingCategory.palette,
   onChange: () {
@@ -192,15 +192,21 @@ List<SettingsModel> initializeStringAttributes() {
 }
 
 void paintString(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   // colour in the canvas
   canvas.drawRect(
-      Offset.zero & Size(size.width, size.height),
-      Paint()
-        ..color = backgroundColor.colorValue
-        ..style = PaintingStyle.fill);
+    Offset.zero & Size(size.width, size.height),
+    Paint()
+      ..color = backgroundColor.colorValue
+      ..style = PaintingStyle.fill,
+  );
 
   // double borderX = (size.width < size.height) ? 0 : (size.height - size.width)/2;
   // double borderY = (size.width > size.height) ? 0 : (size.width - size.height)/2;
@@ -221,43 +227,50 @@ void paintString(
         size.width / 2 +
             spiral * radius * cos(i * 2 * pi / (numberOfDivisions.intValue)),
         size.height / 2 -
-            spiral * radius * sin(i * 2 * pi / (numberOfDivisions.intValue))
+            spiral * radius * sin(i * 2 * pi / (numberOfDivisions.intValue)),
       ];
 
       final List<double> p1 = [
         size.width / 2 +
             spiral *
                 radius *
-                cos((i + 1 + j * (step.intValue) + (skip.intValue)) *
-                    2 *
-                    pi /
-                    (numberOfDivisions.intValue)),
+                cos(
+                  (i + 1 + j * (step.intValue) + (skip.intValue)) *
+                      2 *
+                      pi /
+                      (numberOfDivisions.intValue),
+                ),
         size.height / 2 -
             spiral *
                 radius *
-                sin((i + 1 + j * (step.numValue) + (skip.numValue)) *
-                    2 *
-                    pi /
-                    (numberOfDivisions.numValue))
+                sin(
+                  (i + 1 + j * (step.numValue) + (skip.numValue)) *
+                      2 *
+                      pi /
+                      (numberOfDivisions.numValue),
+                ),
       ];
 
       colourOrder++;
       spiral = spiral * (spiralRatio.numValue);
 
       nextColor = (randomColors.boolValue)
-          ? colorList[rnd.nextInt(numberOfColors.intValue)]
-              .withValues(alpha: opacity.doubleValue)
-          : colorList[colourOrder % (numberOfColors.intValue)]
-              .withValues(alpha: opacity.doubleValue);
+          ? colorList[rnd.nextInt(numberOfColors.intValue)].withValues(
+              alpha: opacity.doubleValue,
+            )
+          : colorList[colourOrder % (numberOfColors.intValue)].withValues(
+              alpha: opacity.doubleValue,
+            );
 
       canvas.drawLine(
-          Offset(p0[0], p0[1]),
-          Offset(p1[0], p1[1]),
-          Paint()
-            ..color = nextColor
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = lineWidth.doubleValue
-            ..strokeCap = StrokeCap.round);
+        Offset(p0[0], p0[1]),
+        Offset(p1[0], p1[1]),
+        Paint()
+          ..color = nextColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = lineWidth.doubleValue
+          ..strokeCap = StrokeCap.round,
+      );
     }
   }
 }

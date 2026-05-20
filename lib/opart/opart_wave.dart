@@ -169,7 +169,12 @@ List<SettingsModel> initializeWaveAttributes() {
 }
 
 void paintWave(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
@@ -228,8 +233,10 @@ void generateWave(
 
   // colour in the canvas
   //a rectangle
-  canvas.drawRect(Offset(borderX, borderY) & Size(imageWidth, imageHeight * 2),
-      Paint()..style = PaintingStyle.fill);
+  canvas.drawRect(
+    Offset(borderX, borderY) & Size(imageWidth, imageHeight * 2),
+    Paint()..style = PaintingStyle.fill,
+  );
 
   final double start = 0 - currentAmplitude;
   final double end = imageWidth + currentStepX + currentAmplitude;
@@ -251,25 +258,31 @@ void generateWave(
 
       if (currentZigZag == false) {
         delta = currentAmplitude *
-                sin(pi *
-                    2 *
-                    (j / imageHeight * currentFrequency +
-                        currentOffset *
-                            (animationVariable / 0.5) *
-                            (2 * i - imageWidth) /
-                            imageWidth)) +
+                sin(
+                  pi *
+                      2 *
+                      (j / imageHeight * currentFrequency +
+                          currentOffset *
+                              (animationVariable / 0.5) *
+                              (2 * i - imageWidth) /
+                              imageWidth),
+                ) +
             currentFanWidth *
                 ((i - (imageWidth / 2)) / imageWidth) *
                 (j / imageHeight);
       } else {
         delta = currentAmplitude *
-                asin(sin(pi *
-                    2 *
-                    (j / imageHeight * currentFrequency +
-                        currentOffset *
-                            (animationVariable / 0.5) *
-                            (2 * i - imageWidth) /
-                            imageWidth))) +
+                asin(
+                  sin(
+                    pi *
+                        2 *
+                        (j / imageHeight * currentFrequency +
+                            currentOffset *
+                                (animationVariable / 0.5) *
+                                (2 * i - imageWidth) /
+                                imageWidth),
+                  ),
+                ) +
             currentFanWidth *
                 ((i - (imageWidth / 2)) / imageWidth) *
                 (j / imageHeight);
@@ -286,25 +299,31 @@ void generateWave(
 
       if (currentZigZag == false) {
         delta = currentAmplitude *
-                sin(pi *
-                    2 *
-                    (k / imageHeight * currentFrequency +
-                        currentOffset *
-                            (animationVariable / 0.5) *
-                            (2 * (i + currentStepX) - imageWidth) /
-                            imageWidth)) +
+                sin(
+                  pi *
+                      2 *
+                      (k / imageHeight * currentFrequency +
+                          currentOffset *
+                              (animationVariable / 0.5) *
+                              (2 * (i + currentStepX) - imageWidth) /
+                              imageWidth),
+                ) +
             currentFanWidth *
                 (((i + currentStepX) - (imageWidth / 2)) / imageWidth) *
                 (k / imageHeight);
       } else {
         delta = currentAmplitude *
-                asin(sin(pi *
-                    2 *
-                    (k / imageHeight * currentFrequency +
-                        currentOffset *
-                            (animationVariable / 0.5) *
-                            (2 * (i + currentStepX) - imageWidth) /
-                            imageWidth))) +
+                asin(
+                  sin(
+                    pi *
+                        2 *
+                        (k / imageHeight * currentFrequency +
+                            currentOffset *
+                                (animationVariable / 0.5) *
+                                (2 * (i + currentStepX) - imageWidth) /
+                                imageWidth),
+                  ),
+                ) +
             currentFanWidth *
                 (((i + currentStepX) - (imageWidth / 2)) / imageWidth) *
                 (k / imageHeight);
@@ -313,14 +332,15 @@ void generateWave(
       wave.lineTo(borderX + i + currentStepX + delta, borderY + k);
     }
 
-//      wave.lineTo(borderX + imageWidth, borderY + imageHeight);
+    //      wave.lineTo(borderX + imageWidth, borderY + imageHeight);
     wave.close();
 
     canvas.drawPath(
-        wave,
-        Paint()
-          ..style = PaintingStyle.fill
-          ..color = waveColor);
+      wave,
+      Paint()
+        ..style = PaintingStyle.fill
+        ..color = waveColor,
+    );
   }
 
   // colour in the outer canvas
@@ -328,19 +348,23 @@ void generateWave(
     ..color = Colors.white
     ..style = PaintingStyle.fill;
   canvas.drawRect(
-      Offset(-canvasWidth, 0) & Size(canvasWidth + borderX, canvasHeight),
-      paint1);
+    Offset(-canvasWidth, 0) & Size(canvasWidth + borderX, canvasHeight),
+    paint1,
+  );
   canvas.drawRect(
-      Offset(canvasWidth - borderX, 0) &
-          Size(borderX + canvasWidth, canvasHeight),
-      paint1);
+    Offset(canvasWidth - borderX, 0) &
+        Size(borderX + canvasWidth, canvasHeight),
+    paint1,
+  );
 
   canvas.drawRect(
-      Offset(-canvasWidth, -canvasHeight) &
-          Size(3 * canvasWidth, canvasHeight + borderY),
-      paint1);
+    Offset(-canvasWidth, -canvasHeight) &
+        Size(3 * canvasWidth, canvasHeight + borderY),
+    paint1,
+  );
   canvas.drawRect(
-      Offset(-canvasWidth, borderY + canvasHeight) &
-          Size(3 * canvasWidth, borderY + canvasHeight * 2),
-      paint1);
+    Offset(-canvasWidth, borderY + canvasHeight) &
+        Size(3 * canvasWidth, borderY + canvasHeight * 2),
+    paint1,
+  );
 }

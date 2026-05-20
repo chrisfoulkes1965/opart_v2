@@ -5,21 +5,24 @@ import 'package:flutter/scheduler.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/opart_overlay_theme.dart';
 import 'package:screenshot/screenshot.dart';
 
 class CanvasWidget extends StatefulWidget {
   final bool fullScreen;
   final double animationValue;
   final OpArt opArt;
-  const CanvasWidget(
-      {this.fullScreen = false,
-      required this.animationValue,
-      required this.opArt});
+  const CanvasWidget({
+    super.key,
+    this.fullScreen = false,
+    required this.animationValue,
+    required this.opArt,
+  });
   @override
-  _CanvasWidgetState createState() => _CanvasWidgetState();
+  CanvasWidgetState createState() => CanvasWidgetState();
 }
 
-class _CanvasWidgetState extends State<CanvasWidget>
+class CanvasWidgetState extends State<CanvasWidget>
     with TickerProviderStateMixin {
   bool playing = true;
   late AnimationController animationController;
@@ -69,142 +72,134 @@ class _CanvasWidgetState extends State<CanvasWidget>
     return Stack(
       children: [
         ValueListenableBuilder<int>(
-            valueListenable: rebuildCanvas,
-            builder: (context, value, child) {
-              return Stack(
-                children: [
-                  Screenshot(
-                    controller: screenshotController,
-                    child: LayoutBuilder(
-                      builder: (_, constraints) => Container(
-                        color: Colors.white,
-                        width: constraints.widthConstraints().maxWidth,
-                        height: constraints.heightConstraints().maxHeight,
-                        child: CustomPaint(
-                          painter: OpArtPainter(
-                              seed,
-                              rnd,
-                              widget.opArt.animation
-                                  ? currentAnimation.value
-                                  : 1,
-                              widget.opArt),
+          valueListenable: rebuildCanvas,
+          builder: (context, value, child) {
+            return Stack(
+              children: [
+                Screenshot(
+                  controller: screenshotController,
+                  child: LayoutBuilder(
+                    builder: (_, constraints) => Container(
+                      color: Colors.white,
+                      width: constraints.widthConstraints().maxWidth,
+                      height: constraints.heightConstraints().maxHeight,
+                      child: CustomPaint(
+                        painter: OpArtPainter(
+                          seed,
+                          rnd,
+                          widget.opArt.animation ? currentAnimation.value : 1,
+                          widget.opArt,
                         ),
                       ),
                     ),
                   ),
-                ],
-              );
-            }),
-        if (widget.fullScreen)
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (widget.opArt.animation)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.width < 350 ? 40 : 50,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          if (showControls)
-                            RotatedBox(
-                                quarterTurns: 2,
-                                child: _controlButton(
-                                  Icons.fast_forward,
-                                  () {
-                                    if (timeDilation < 8) {
-                                      timeDilation = timeDilation * 2;
-                                    }
-                                  },
-                                  playing,
-                                ))
-                          else
-                            Container(),
-                          if (showControls)
-                            RotatedBox(
-                                quarterTurns: 2,
-                                child: _controlButton(Icons.play_arrow, () {
-                                  setState(() {
-                                    animationController.reverse();
-                                    playing = true;
-                                    _forward = false;
-                                  });
-                                }, _forward))
-                          else
-                            Container(),
-                          if (showControls)
-                            _controlButton(Icons.pause, () {
-                              setState(() {
-                                animationController.stop();
-                                playing = false;
-                              });
-                            }, playing)
-                          else
-                            Container(),
-                          if (showControls)
-                            _controlButton(
-                              Icons.play_arrow,
-                              () {
-                                setState(() {
-                                  animationController.forward();
-                                  playing = true;
-                                  _forward = true;
-                                });
-                              },
-                              !_forward || !playing,
-                            )
-                          else
-                            Container(),
-                          if (showControls)
-                            _controlButton(
-                              Icons.fast_forward,
-                              () {
-                                if (timeDilation > 0.2) {
-                                  timeDilation = timeDilation / 2;
-                                }
-                              },
-                              playing,
-                            )
-                          else
-                            Container(),
-                          _controlButton(
-                              showControls ? Icons.close : MdiIcons.playPause,
-                              () {
-                            setState(() {
-                              showControls = !showControls;
-                            });
-                          }, true),
-                        ],
-                      ),
-                    ),
-                  )
-                else
-                  Container(),
-                if (widget.fullScreen) Container(height: 70) else Container(),
+                ),
               ],
-            ),
-          )
-        else
-          Container(),
+            );
+          },
+        ),
       ],
     );
   }
 
+  /// Play/pause overlay; parent should place above the bottom toolbar in the stack.
+  Widget buildPlaybackControls() {
+    if (!widget.fullScreen || !widget.opArt.animation) {
+      return const SizedBox.shrink();
+    }
+
+    final bool compact = MediaQuery.sizeOf(context).width < 350;
+
+    return SizedBox(
+      height: compact ? 40 : 48,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (showControls)
+            RotatedBox(
+              quarterTurns: 2,
+              child: _controlButton(Icons.fast_forward, () {
+                if (timeDilation < 8) {
+                  timeDilation = timeDilation * 2;
+                }
+                _notifyPlaybackChanged();
+              }, playing),
+            )
+          else
+            const SizedBox(width: 40),
+          if (showControls)
+            RotatedBox(
+              quarterTurns: 2,
+              child: _controlButton(Icons.play_arrow, () {
+                setState(() {
+                  animationController.reverse();
+                  playing = true;
+                  _forward = false;
+                });
+                _notifyPlaybackChanged();
+              }, _forward),
+            )
+          else
+            const SizedBox(width: 40),
+          if (showControls)
+            _controlButton(Icons.pause, () {
+              setState(() {
+                animationController.stop();
+                playing = false;
+              });
+              _notifyPlaybackChanged();
+            }, playing)
+          else
+            const SizedBox(width: 40),
+          if (showControls)
+            _controlButton(Icons.play_arrow, () {
+              setState(() {
+                animationController.forward();
+                playing = true;
+                _forward = true;
+              });
+              _notifyPlaybackChanged();
+            }, !_forward || !playing)
+          else
+            const SizedBox(width: 40),
+          if (showControls)
+            _controlButton(Icons.fast_forward, () {
+              if (timeDilation > 0.2) {
+                timeDilation = timeDilation / 2;
+              }
+              _notifyPlaybackChanged();
+            }, playing)
+          else
+            const SizedBox(width: 40),
+          _controlButton(showControls ? Icons.close : MdiIcons.playPause, () {
+            setState(() {
+              showControls = !showControls;
+            });
+            _notifyPlaybackChanged();
+          }, true),
+        ],
+      ),
+    );
+  }
+
+  void _notifyPlaybackChanged() {
+    rebuildCanvas.value++;
+  }
+
   Widget _controlButton(IconData icon, VoidCallback onPressed, bool active) {
-    return Container(
-      decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(width: 3, color: Colors.white)),
-      child: FloatingActionButton(
-          backgroundColor: active ? Colors.cyan : Colors.grey,
-          heroTag: null,
-          onPressed: () {
-            onPressed();
-          },
-          child: Icon(icon)),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: opArtOverlayCircularButtonDecoration(active: active),
+          child: Icon(icon,
+              size: 20,
+              color: active ? opArtOverlayIconSelected : Colors.white),
+        ),
+      ),
     );
   }
 

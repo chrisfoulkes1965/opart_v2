@@ -28,7 +28,10 @@ class _MyHomePageState extends State<MyHomePage> {
     _opArtTypes = [
       OpArtTypes('Flow', OpArtType.Flow, 'lib/assets/flow_200.png'),
       OpArtTypes(
-          'Wallpaper', OpArtType.Wallpaper, 'lib/assets/wallpaper_200.png'),
+        'Wallpaper',
+        OpArtType.Wallpaper,
+        'lib/assets/wallpaper_200.png',
+      ),
       OpArtTypes('Diagonal', OpArtType.Diagonal, 'lib/assets/diagonal_200.png'),
       OpArtTypes('Shapes', OpArtType.Shapes, 'lib/assets/shapes_200.png'),
       OpArtTypes('Trees', OpArtType.Tree, 'lib/assets/tree_200.png'),
@@ -37,16 +40,25 @@ class _MyHomePageState extends State<MyHomePage> {
       OpArtTypes('String', OpArtType.String, 'lib/assets/string_200.png'),
       OpArtTypes('Rhombus', OpArtType.Rhombus, 'lib/assets/rhombus_200.png'),
       OpArtTypes(
-          'Triangles', OpArtType.Triangles, 'lib/assets/triangles_200.png'),
+        'Triangles',
+        OpArtType.Triangles,
+        'lib/assets/triangles_200.png',
+      ),
       OpArtTypes('Squares', OpArtType.Squares, 'lib/assets/squares_200.png'),
       OpArtTypes(
-          'Spirals', OpArtType.Fibonacci, 'lib/assets/fibonacci_200.png'),
+        'Spirals',
+        OpArtType.Fibonacci,
+        'lib/assets/fibonacci_200.png',
+      ),
       OpArtTypes('Eye', OpArtType.Eye, 'lib/assets/eye_200.png'),
       OpArtTypes('Hexagons', OpArtType.Hexagons, 'lib/assets/hexagons_200.png'),
       OpArtTypes('Waves', OpArtType.Wave, 'lib/assets/wave_200.png'),
       OpArtTypes('Riley', OpArtType.Riley, 'lib/assets/riley_200.png'),
       OpArtTypes(
-          'Neighbour', OpArtType.Neighbour, 'lib/assets/neighbour_200.png'),
+        'Neighbour',
+        OpArtType.Neighbour,
+        'lib/assets/neighbour_200.png',
+      ),
     ];
   }
 
@@ -122,8 +134,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                     color: Colors.white,
                                     boxShadow: [
                                       BoxShadow(
-                                        color:
-                                            Colors.grey.withValues(alpha: 0.9),
+                                        color: Colors.grey.withValues(
+                                          alpha: 0.9,
+                                        ),
                                         blurRadius: 5,
                                         offset: const Offset(5, 5),
                                       ),
@@ -133,8 +146,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                     borderRadius: BorderRadius.circular(20),
                                     child: GridTile(
                                       footer: Container(
-                                        color:
-                                            Colors.white.withValues(alpha: 0.7),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.7,
+                                        ),
                                         width: double.infinity,
                                         child: Text(
                                           opArtType.name,

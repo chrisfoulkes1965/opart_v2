@@ -91,8 +91,9 @@ class SettingsModel {
               : rnd.nextBool();
 
         case SettingType.color:
-          value =
-              Color((rnd.nextDouble() * 0xFFFFFF).toInt()).withValues(alpha: 1);
+          value = Color(
+            (rnd.nextDouble() * 0xFFFFFF).toInt(),
+          ).withValues(alpha: 1);
 
         case SettingType.button:
           value = false;
@@ -198,7 +199,9 @@ void checkNumberOfColors() {
     final String paletteType = attributes
         .firstWhere((element) => element.name == 'paletteType')
         .stringValue;
-    currentOpArtPageState?.opArt.palette
-        .randomize(paletteType, numberOfColours);
+    currentOpArtPageState?.opArt.palette.randomize(
+      paletteType,
+      numberOfColours,
+    );
   }
 }

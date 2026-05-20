@@ -110,7 +110,7 @@ SettingsModel paletteType = SettingsModel(
     'random',
     'blended random',
     'linear random',
-    'linear complementary'
+    'linear complementary',
   ],
   settingCategory: SettingCategory.palette,
   onChange: () {
@@ -163,7 +163,12 @@ List<SettingsModel> initializeRileyAttributes() {
 }
 
 void paintRiley(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   // if (paletteList.value != opArt.palette.paletteName){
@@ -283,49 +288,49 @@ void paintRiley(
       //9 points
       final List<double> pA = [
         borderX + cellSizeX * i,
-        borderY + cellSizeY * j
+        borderY + cellSizeY * j,
       ];
 
       final List<double> pB = [
         borderX + cellSizeX * (i + h0 + (j / cellsY) * (hN - h0)),
-        borderY + cellSizeY * j
+        borderY + cellSizeY * j,
       ];
 
       final List<double> pC = [
         borderX + cellSizeX * (i + 1),
-        borderY + cellSizeY * j
+        borderY + cellSizeY * j,
       ];
 
       final List<double> pD = [
         borderX + cellSizeX * (i + 1),
-        borderY + cellSizeY * (j + v0 + ((i + 1) / cellsX) * (vN - v0))
+        borderY + cellSizeY * (j + v0 + ((i + 1) / cellsX) * (vN - v0)),
       ];
 
       final List<double> pE = [
         borderX + cellSizeX * (i + 1),
-        borderY + cellSizeY * (j + 1)
+        borderY + cellSizeY * (j + 1),
       ];
 
       final List<double> pF = [
         borderX + cellSizeX * (i + h0 + ((j + 1) / cellsY) * (hN - h0)),
-        borderY + cellSizeY * (j + 1)
+        borderY + cellSizeY * (j + 1),
       ];
 
       final List<double> pG = [
         borderX + cellSizeX * i,
-        borderY + cellSizeY * (j + 1)
+        borderY + cellSizeY * (j + 1),
       ];
 
       final List<double> pH = [
         borderX + cellSizeX * i,
-        borderY + cellSizeY * (j + v0 + (i / cellsX) * (vN - v0))
+        borderY + cellSizeY * (j + v0 + (i / cellsX) * (vN - v0)),
       ];
 
       final double X =
           (j + v0 + (i + h0) * gradientV) / (gradientV - gradientH);
       final List<double> pO = [
         borderX + cellSizeX * X,
-        borderY + cellSizeY * (j + v0 + gradientH * X)
+        borderY + cellSizeY * (j + v0 + gradientH * X),
       ];
 
       // four quads...
@@ -365,8 +370,14 @@ void paintRiley(
   }
 }
 
-void fillQuad(Canvas canvas, List<double> p1, List<double> p2, List<double> p3,
-    List<double> p4, Color nextColor) {
+void fillQuad(
+  Canvas canvas,
+  List<double> p1,
+  List<double> p2,
+  List<double> p3,
+  List<double> p4,
+  Color nextColor,
+) {
   final Path quad = Path();
   quad.moveTo(p1[0], p1[1]);
   quad.lineTo(p2[0], p2[1]);
@@ -375,15 +386,17 @@ void fillQuad(Canvas canvas, List<double> p1, List<double> p2, List<double> p3,
   quad.close();
 
   canvas.drawPath(
-      quad,
-      Paint()
-        ..color = nextColor
-        ..style = PaintingStyle.fill);
+    quad,
+    Paint()
+      ..color = nextColor
+      ..style = PaintingStyle.fill,
+  );
 
   canvas.drawPath(
-      quad,
-      Paint()
-        ..color = nextColor
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 0.01);
+    quad,
+    Paint()
+      ..color = nextColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.01,
+  );
 }

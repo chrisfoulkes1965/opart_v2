@@ -220,7 +220,7 @@ SettingsModel paletteType = SettingsModel(
     'random',
     'blended random',
     'linear random',
-    'linear complementary'
+    'linear complementary',
   ],
   settingCategory: SettingCategory.palette,
   onChange: () {
@@ -299,7 +299,12 @@ List<SettingsModel> initializeEyeAttributes() {
 }
 
 void paintEye(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
@@ -308,53 +313,57 @@ void paintEye(
 
   // colour in the canvas
   canvas.drawRect(
-      Offset.zero & Size(size.width, size.height),
-      Paint()
-        ..color = backgroundColor.colorValue
-        ..style = PaintingStyle.fill);
+    Offset.zero & Size(size.width, size.height),
+    Paint()
+      ..color = backgroundColor.colorValue
+      ..style = PaintingStyle.fill,
+  );
 
   for (int t = 0; t < (numberOfTrees.intValue); t++) {
     final double treeAngle = t * 2 * pi / (numberOfTrees.numValue);
     final List<double> treeBase = [
       size.width / 2 + (irisRadius.numValue) * cos(treeAngle),
-      size.height / 2 - (irisRadius.numValue) * sin(treeAngle)
+      size.height / 2 - (irisRadius.numValue) * sin(treeAngle),
     ];
 
     drawSegment(
-        canvas,
-        rnd,
-        0,
-        0,
-        treeBase,
-        (trunkWidth.doubleValue) * (zoomOpArt.doubleValue),
-        ((segmentLength.numValue) * (zoomOpArt.numValue)).toDouble(),
-        treeAngle,
-        ratio.doubleValue,
-        0,
-        false,
-        animationVariable,
-        branch.doubleValue,
-        angle.doubleValue,
-        widthDecay.doubleValue,
-        segmentDecay.doubleValue,
-        maxDepth.intValue,
-        trunkFillColor.colorValue,
-        opacity.doubleValue,
-        colorDecay.doubleValue,
-        1.0,
-        numberOfColors.intValue,
-        opArt.palette.colorList,
-        0,
-        randomColors.boolValue);
+      canvas,
+      rnd,
+      0,
+      0,
+      treeBase,
+      (trunkWidth.doubleValue) * (zoomOpArt.doubleValue),
+      ((segmentLength.numValue) * (zoomOpArt.numValue)).toDouble(),
+      treeAngle,
+      ratio.doubleValue,
+      0,
+      false,
+      animationVariable,
+      branch.doubleValue,
+      angle.doubleValue,
+      widthDecay.doubleValue,
+      segmentDecay.doubleValue,
+      maxDepth.intValue,
+      trunkFillColor.colorValue,
+      opacity.doubleValue,
+      colorDecay.doubleValue,
+      1.0,
+      numberOfColors.intValue,
+      opArt.palette.colorList,
+      0,
+      randomColors.boolValue,
+    );
   }
 
   canvas.drawCircle(
-      Offset(size.width / 2, size.height / 2),
-      irisRadius.doubleValue,
-      Paint()
-        ..style = PaintingStyle.fill
-        ..color =
-            (trunkFillColor.colorValue).withValues(alpha: opacity.doubleValue));
+    Offset(size.width / 2, size.height / 2),
+    irisRadius.doubleValue,
+    Paint()
+      ..style = PaintingStyle.fill
+      ..color = (trunkFillColor.colorValue).withValues(
+        alpha: opacity.doubleValue,
+      ),
+  );
 }
 
 void drawSegment(
@@ -394,7 +403,11 @@ void drawSegment(
     }
 
     // blend the color with the trunk color
-    nextColor = Color.lerp(nextColor, trunkFillColor, colorRatio)!
+    nextColor = Color.lerp(
+      nextColor,
+      trunkFillColor,
+      colorRatio,
+    )!
         .withValues(alpha: opacity);
 
     //branch
@@ -487,10 +500,19 @@ void drawSegment(
       // draw the trunk
       final List<double> pD = [
         root[0] + segmentLength * cos(direction),
-        root[1] - segmentLength * sin(direction)
+        root[1] - segmentLength * sin(direction),
       ];
       drawTheTrunk(
-          canvas, rnd, borderX, borderY, root, pD, nextColor, opacity, width);
+        canvas,
+        rnd,
+        borderX,
+        borderY,
+        root,
+        pD,
+        nextColor,
+        opacity,
+        width,
+      );
 
       //grow
       drawSegment(
@@ -525,21 +547,23 @@ void drawSegment(
 }
 
 void drawTheTrunk(
-    Canvas canvas,
-    Random rnd,
-    double borderX,
-    double borderY,
-    List<double> p1,
-    List<double> p2,
-    Color trunkFillColor,
-    double opacity,
-    double width) {
+  Canvas canvas,
+  Random rnd,
+  double borderX,
+  double borderY,
+  List<double> p1,
+  List<double> p2,
+  Color trunkFillColor,
+  double opacity,
+  double width,
+) {
   canvas.drawLine(
-      Offset(p1[0], p1[1]),
-      Offset(p2[0], p2[1]),
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..color = trunkFillColor.withValues(alpha: opacity)
-        ..strokeWidth = width
-        ..strokeCap = StrokeCap.round);
+    Offset(p1[0], p1[1]),
+    Offset(p2[0], p2[1]),
+    Paint()
+      ..style = PaintingStyle.stroke
+      ..color = trunkFillColor.withValues(alpha: opacity)
+      ..strokeWidth = width
+      ..strokeCap = StrokeCap.round,
+  );
 }

@@ -169,7 +169,7 @@ SettingsModel paletteType = SettingsModel(
     'random',
     'blended random',
     'linear random',
-    'linear complementary'
+    'linear complementary',
   ],
   settingCategory: SettingCategory.palette,
   onChange: () {
@@ -229,7 +229,12 @@ List<SettingsModel> initializeFlowAttributes() {
 }
 
 void paintFlow(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
@@ -242,10 +247,11 @@ void paintFlow(
 
   // colour in the canvas
   canvas.drawRect(
-      Offset.zero & Size(canvasWidth, canvasHeight),
-      Paint()
-        ..color = backgroundColor.colorValue
-        ..style = PaintingStyle.fill);
+    Offset.zero & Size(canvasWidth, canvasHeight),
+    Paint()
+      ..color = backgroundColor.colorValue
+      ..style = PaintingStyle.fill,
+  );
 
   // Work out the X and Y
   // int cellsX = (canvasWidth / (zoomOpArt.value * squeezeX.value)+1.9999999).toInt();
@@ -325,10 +331,11 @@ void paintFlow(
 
         // fill the square
         canvas.drawRect(
-            Rect.fromLTRB(x, y, x + deltaX, y + deltaY),
-            Paint()
-              ..style = PaintingStyle.fill
-              ..color = nextColor.withValues(alpha: opacity.doubleValue));
+          Rect.fromLTRB(x, y, x + deltaX, y + deltaY),
+          Paint()
+            ..style = PaintingStyle.fill
+            ..color = nextColor.withValues(alpha: opacity.doubleValue),
+        );
       }
 
       do {
@@ -345,27 +352,30 @@ void paintFlow(
             }
 
             canvas.drawOval(
-                Rect.fromLTRB(
-                  pO[0] - deltaX / 2 * stepRatio,
-                  pO[1] - deltaY / 2 * stepRatio,
-                  pO[0] + deltaX / 2 * stepRatio,
-                  pO[1] + deltaY / 2 * stepRatio,
-                ),
-                Paint()
-                  ..style = PaintingStyle.fill
-                  ..color = nextColor.withValues(alpha: opacity.doubleValue));
+              Rect.fromLTRB(
+                pO[0] - deltaX / 2 * stepRatio,
+                pO[1] - deltaY / 2 * stepRatio,
+                pO[0] + deltaX / 2 * stepRatio,
+                pO[1] + deltaY / 2 * stepRatio,
+              ),
+              Paint()
+                ..style = PaintingStyle.fill
+                ..color = nextColor.withValues(alpha: opacity.doubleValue),
+            );
             canvas.drawOval(
-                Rect.fromLTRB(
-                  pO[0] - deltaX / 2 * stepRatio,
-                  pO[1] - deltaY / 2 * stepRatio,
-                  pO[0] + deltaX / 2 * stepRatio,
-                  pO[1] + deltaY / 2 * stepRatio,
+              Rect.fromLTRB(
+                pO[0] - deltaX / 2 * stepRatio,
+                pO[1] - deltaY / 2 * stepRatio,
+                pO[0] + deltaX / 2 * stepRatio,
+                pO[1] + deltaY / 2 * stepRatio,
+              ),
+              Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = lineWidth.doubleValue
+                ..color = (lineColor.colorValue).withValues(
+                  alpha: opacity.doubleValue,
                 ),
-                Paint()
-                  ..style = PaintingStyle.stroke
-                  ..strokeWidth = lineWidth.doubleValue
-                  ..color = (lineColor.colorValue)
-                      .withValues(alpha: opacity.doubleValue));
+            );
 
           case 'square':
 
@@ -379,25 +389,29 @@ void paintFlow(
             }
 
             canvas.drawRect(
-                Rect.fromLTRB(
-                    pO[0] - deltaX / 2 * stepRatio,
-                    pO[1] - deltaY / 2 * stepRatio,
-                    pO[0] + deltaX / 2 * stepRatio,
-                    pO[1] + deltaY / 2 * stepRatio),
-                Paint()
-                  ..style = PaintingStyle.fill
-                  ..color = nextColor.withValues(alpha: opacity.doubleValue));
+              Rect.fromLTRB(
+                pO[0] - deltaX / 2 * stepRatio,
+                pO[1] - deltaY / 2 * stepRatio,
+                pO[0] + deltaX / 2 * stepRatio,
+                pO[1] + deltaY / 2 * stepRatio,
+              ),
+              Paint()
+                ..style = PaintingStyle.fill
+                ..color = nextColor.withValues(alpha: opacity.doubleValue),
+            );
             canvas.drawRect(
               Rect.fromLTRB(
-                  pO[0] - deltaX / 2 * stepRatio,
-                  pO[1] - deltaY / 2 * stepRatio,
-                  pO[0] + deltaX / 2 * stepRatio,
-                  pO[1] + deltaY / 2 * stepRatio),
+                pO[0] - deltaX / 2 * stepRatio,
+                pO[1] - deltaY / 2 * stepRatio,
+                pO[0] + deltaX / 2 * stepRatio,
+                pO[1] + deltaY / 2 * stepRatio,
+              ),
               Paint()
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = lineWidth.doubleValue
-                ..color = (lineColor.colorValue)
-                    .withValues(alpha: opacity.doubleValue),
+                ..color = (lineColor.colorValue).withValues(
+                  alpha: opacity.doubleValue,
+                ),
             );
 
           case 'squaricle':
@@ -410,52 +424,60 @@ void paintFlow(
             final Path squaricle = Path();
 
             squaricle.arcTo(
-                Rect.fromCenter(
-                    center: Offset(
-                      pO[0] - deltaX / 2 * stepRatio + radius,
-                      pO[1] - deltaY / 2 * stepRatio + radius,
-                    ),
-                    height: radius,
-                    width: radius),
-                pi * (2 / 2),
-                pi / 2,
-                false);
+              Rect.fromCenter(
+                center: Offset(
+                  pO[0] - deltaX / 2 * stepRatio + radius,
+                  pO[1] - deltaY / 2 * stepRatio + radius,
+                ),
+                height: radius,
+                width: radius,
+              ),
+              pi * (2 / 2),
+              pi / 2,
+              false,
+            );
 
             squaricle.arcTo(
-                Rect.fromCenter(
-                    center: Offset(
-                      pO[0] + deltaX / 2 * stepRatio - radius,
-                      pO[1] - deltaY / 2 * stepRatio + radius,
-                    ),
-                    height: radius,
-                    width: radius),
-                pi * (3 / 2),
-                pi / 2,
-                false);
+              Rect.fromCenter(
+                center: Offset(
+                  pO[0] + deltaX / 2 * stepRatio - radius,
+                  pO[1] - deltaY / 2 * stepRatio + radius,
+                ),
+                height: radius,
+                width: radius,
+              ),
+              pi * (3 / 2),
+              pi / 2,
+              false,
+            );
 
             squaricle.arcTo(
-                Rect.fromCenter(
-                    center: Offset(
-                      pO[0] + deltaX / 2 * stepRatio - radius,
-                      pO[1] + deltaY / 2 * stepRatio - radius,
-                    ),
-                    height: radius,
-                    width: radius),
-                pi * (0 / 2),
-                pi / 2,
-                false);
+              Rect.fromCenter(
+                center: Offset(
+                  pO[0] + deltaX / 2 * stepRatio - radius,
+                  pO[1] + deltaY / 2 * stepRatio - radius,
+                ),
+                height: radius,
+                width: radius,
+              ),
+              pi * (0 / 2),
+              pi / 2,
+              false,
+            );
 
             squaricle.arcTo(
-                Rect.fromCenter(
-                    center: Offset(
-                      pO[0] - deltaX / 2 * stepRatio + radius,
-                      pO[1] + deltaY / 2 * stepRatio - radius,
-                    ),
-                    height: radius,
-                    width: radius),
-                pi * (1 / 2),
-                pi / 2,
-                false);
+              Rect.fromCenter(
+                center: Offset(
+                  pO[0] - deltaX / 2 * stepRatio + radius,
+                  pO[1] + deltaY / 2 * stepRatio - radius,
+                ),
+                height: radius,
+                width: radius,
+              ),
+              pi * (1 / 2),
+              pi / 2,
+              false,
+            );
 
             squaricle.close();
 
@@ -469,17 +491,20 @@ void paintFlow(
             }
 
             canvas.drawPath(
-                squaricle,
-                Paint()
-                  ..style = PaintingStyle.fill
-                  ..color = nextColor.withValues(alpha: opacity.doubleValue));
+              squaricle,
+              Paint()
+                ..style = PaintingStyle.fill
+                ..color = nextColor.withValues(alpha: opacity.doubleValue),
+            );
             canvas.drawPath(
-                squaricle,
-                Paint()
-                  ..style = PaintingStyle.stroke
-                  ..strokeWidth = lineWidth.doubleValue
-                  ..color = (lineColor.colorValue)
-                      .withValues(alpha: opacity.doubleValue));
+              squaricle,
+              Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = lineWidth.doubleValue
+                ..color = (lineColor.colorValue).withValues(
+                  alpha: opacity.doubleValue,
+                ),
+            );
 
             squaricle.reset();
         }

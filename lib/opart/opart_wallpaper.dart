@@ -305,7 +305,7 @@ SettingsModel paletteType = SettingsModel(
     'random',
     'blended random',
     'linear random',
-    'linear complementary'
+    'linear complementary',
   ],
   settingCategory: SettingCategory.palette,
   onChange: () {
@@ -375,7 +375,12 @@ List<SettingsModel> initializeWallpaperAttributes() {
 }
 
 void paintWallpaper(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
@@ -390,10 +395,11 @@ void paintWallpaper(
 
   // colour in the canvas
   canvas.drawRect(
-      Offset(borderX, borderY) & Size(canvasWidth, canvasHeight),
-      Paint()
-        ..color = backgroundColor.colorValue
-        ..style = PaintingStyle.fill);
+    Offset(borderX, borderY) & Size(canvasWidth, canvasHeight),
+    Paint()
+      ..color = backgroundColor.colorValue
+      ..style = PaintingStyle.fill,
+  );
 
   // Work out the X and Y
   final int cellsX =
@@ -464,7 +470,7 @@ void paintWallpaper(
             radius * (1 - (squeezeY.numValue)) +
             dY +
             (radius * (offsetY.numValue) * i) +
-            (j * 2 + 1) * radius * (squeezeY.numValue)
+            (j * 2 + 1) * radius * (squeezeY.numValue),
       ];
 
       // reset the colours
@@ -476,19 +482,19 @@ void paintWallpaper(
       if (box.boolValue) {
         final List<double> pA = [
           pO[0] + radius * sqrt(2) * cos(pi * (5 / 4 + localRotate)),
-          pO[1] + radius * sqrt(2) * sin(pi * (5 / 4 + localRotate))
+          pO[1] + radius * sqrt(2) * sin(pi * (5 / 4 + localRotate)),
         ];
         final List<double> pB = [
           pO[0] + radius * sqrt(2) * cos(pi * (7 / 4 + localRotate)),
-          pO[1] + radius * sqrt(2) * sin(pi * (7 / 4 + localRotate))
+          pO[1] + radius * sqrt(2) * sin(pi * (7 / 4 + localRotate)),
         ];
         final List<double> pC = [
           pO[0] + radius * sqrt(2) * cos(pi * (1 / 4 + localRotate)),
-          pO[1] + radius * sqrt(2) * sin(pi * (1 / 4 + localRotate))
+          pO[1] + radius * sqrt(2) * sin(pi * (1 / 4 + localRotate)),
         ];
         final List<double> pD = [
           pO[0] + radius * sqrt(2) * cos(pi * (3 / 4 + localRotate)),
-          pO[1] + radius * sqrt(2) * sin(pi * (3 / 4 + localRotate))
+          pO[1] + radius * sqrt(2) * sin(pi * (3 / 4 + localRotate)),
         ];
 
         // Choose the next colour
@@ -509,10 +515,11 @@ void paintWallpaper(
         path.close();
 
         canvas.drawPath(
-            path,
-            Paint()
-              ..style = PaintingStyle.fill
-              ..color = nextColor.withValues(alpha: opacity.doubleValue));
+          path,
+          Paint()
+            ..style = PaintingStyle.fill
+            ..color = nextColor.withValues(alpha: opacity.doubleValue),
+        );
 
         // if (lineWidth > 0) {
         //   canvas.drawPath(path, Paint() ..style = PaintingStyle.stroke ..strokeWidth = lineWidth ..color = lineColor);
@@ -532,7 +539,7 @@ void paintWallpaper(
             'squaricle',
             'polygon',
             'heart',
-            'random'
+            'random',
           ][rnd.nextInt(5)];
         }
         switch (shapeOption) {
@@ -548,46 +555,45 @@ void paintWallpaper(
             }
 
             canvas.drawCircle(
-                Offset(pO[0], pO[1]),
-                stepRadius,
-                Paint()
-                  ..style = PaintingStyle.fill
-                  ..color = nextColor.withValues(alpha: opacity.doubleValue));
+              Offset(pO[0], pO[1]),
+              stepRadius,
+              Paint()
+                ..style = PaintingStyle.fill
+                ..color = nextColor.withValues(alpha: opacity.doubleValue),
+            );
             canvas.drawCircle(
-                Offset(pO[0], pO[1]),
-                stepRadius,
-                Paint()
-                  ..style = PaintingStyle.stroke
-                  ..strokeWidth = lineWidth.doubleValue
-                  ..color = (lineColor.colorValue)
-                      .withValues(alpha: opacity.doubleValue));
+              Offset(pO[0], pO[1]),
+              stepRadius,
+              Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = lineWidth.doubleValue
+                ..color = (lineColor.colorValue).withValues(
+                  alpha: opacity.doubleValue,
+                ),
+            );
 
           case 'square':
             final Path square = Path();
 
             square.moveTo(
-                (pO[0]) +
-                    stepRadius * sqrt(2) * cos(pi * (1 / 4 + localRotate)),
-                (pO[1]) +
-                    stepRadius * sqrt(2) * sin(pi * (1 / 4 + localRotate)));
+              (pO[0]) + stepRadius * sqrt(2) * cos(pi * (1 / 4 + localRotate)),
+              (pO[1]) + stepRadius * sqrt(2) * sin(pi * (1 / 4 + localRotate)),
+            );
 
             square.lineTo(
-                (pO[0]) +
-                    stepRadius * sqrt(2) * cos(pi * (3 / 4 + localRotate)),
-                (pO[1]) +
-                    stepRadius * sqrt(2) * sin(pi * (3 / 4 + localRotate)));
+              (pO[0]) + stepRadius * sqrt(2) * cos(pi * (3 / 4 + localRotate)),
+              (pO[1]) + stepRadius * sqrt(2) * sin(pi * (3 / 4 + localRotate)),
+            );
 
             square.lineTo(
-                (pO[0]) +
-                    stepRadius * sqrt(2) * cos(pi * (5 / 4 + localRotate)),
-                (pO[1]) +
-                    stepRadius * sqrt(2) * sin(pi * (5 / 4 + localRotate)));
+              (pO[0]) + stepRadius * sqrt(2) * cos(pi * (5 / 4 + localRotate)),
+              (pO[1]) + stepRadius * sqrt(2) * sin(pi * (5 / 4 + localRotate)),
+            );
 
             square.lineTo(
-                (pO[0]) +
-                    stepRadius * sqrt(2) * cos(pi * (7 / 4 + localRotate)),
-                (pO[1]) +
-                    stepRadius * sqrt(2) * sin(pi * (7 / 4 + localRotate)));
+              (pO[0]) + stepRadius * sqrt(2) * cos(pi * (7 / 4 + localRotate)),
+              (pO[1]) + stepRadius * sqrt(2) * sin(pi * (7 / 4 + localRotate)),
+            );
 
             square.close();
 
@@ -601,17 +607,20 @@ void paintWallpaper(
             }
 
             canvas.drawPath(
-                square,
-                Paint()
-                  ..style = PaintingStyle.fill
-                  ..color = nextColor.withValues(alpha: opacity.doubleValue));
+              square,
+              Paint()
+                ..style = PaintingStyle.fill
+                ..color = nextColor.withValues(alpha: opacity.doubleValue),
+            );
             canvas.drawPath(
-                square,
-                Paint()
-                  ..style = PaintingStyle.stroke
-                  ..strokeWidth = lineWidth.doubleValue
-                  ..color = (lineColor.colorValue)
-                      .withValues(alpha: opacity.doubleValue));
+              square,
+              Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = lineWidth.doubleValue
+                ..color = (lineColor.colorValue).withValues(
+                  alpha: opacity.doubleValue,
+                ),
+            );
 
             square.reset();
 
@@ -624,60 +633,60 @@ void paintWallpaper(
             final Path squaricle = Path();
 
             squaricle.arcTo(
-                Rect.fromCenter(
-                    center: Offset(
-                        (pO[0]) +
-                            curveCentreRadius * cos(pi * (1 / 4 + localRotate)),
-                        (pO[1]) +
-                            curveCentreRadius *
-                                sin(pi * (1 / 4 + localRotate))),
-                    height: curveRadius,
-                    width: curveRadius),
-                pi * (0 / 2 + localRotate),
-                pi / 2,
-                false);
+              Rect.fromCenter(
+                center: Offset(
+                  (pO[0]) + curveCentreRadius * cos(pi * (1 / 4 + localRotate)),
+                  (pO[1]) + curveCentreRadius * sin(pi * (1 / 4 + localRotate)),
+                ),
+                height: curveRadius,
+                width: curveRadius,
+              ),
+              pi * (0 / 2 + localRotate),
+              pi / 2,
+              false,
+            );
 
             squaricle.arcTo(
-                Rect.fromCenter(
-                    center: Offset(
-                        (pO[0]) +
-                            curveCentreRadius * cos(pi * (3 / 4 + localRotate)),
-                        (pO[1]) +
-                            curveCentreRadius *
-                                sin(pi * (3 / 4 + localRotate))),
-                    height: curveRadius,
-                    width: curveRadius),
-                pi * (1 / 2 + localRotate),
-                pi / 2,
-                false);
+              Rect.fromCenter(
+                center: Offset(
+                  (pO[0]) + curveCentreRadius * cos(pi * (3 / 4 + localRotate)),
+                  (pO[1]) + curveCentreRadius * sin(pi * (3 / 4 + localRotate)),
+                ),
+                height: curveRadius,
+                width: curveRadius,
+              ),
+              pi * (1 / 2 + localRotate),
+              pi / 2,
+              false,
+            );
 
             squaricle.arcTo(
-                Rect.fromCenter(
-                    center: Offset(
-                        (pO[0]) +
-                            curveCentreRadius * cos(pi * (5 / 4 + localRotate)),
-                        (pO[1]) +
-                            curveCentreRadius *
-                                sin(pi * (5 / 4 + localRotate))),
-                    height: curveRadius,
-                    width: curveRadius),
-                pi * (2 / 2 + localRotate),
-                pi / 2,
-                false);
+              Rect.fromCenter(
+                center: Offset(
+                  (pO[0]) + curveCentreRadius * cos(pi * (5 / 4 + localRotate)),
+                  (pO[1]) + curveCentreRadius * sin(pi * (5 / 4 + localRotate)),
+                ),
+                height: curveRadius,
+                width: curveRadius,
+              ),
+              pi * (2 / 2 + localRotate),
+              pi / 2,
+              false,
+            );
 
             squaricle.arcTo(
-                Rect.fromCenter(
-                    center: Offset(
-                        (pO[0]) +
-                            curveCentreRadius * cos(pi * (7 / 4 + localRotate)),
-                        (pO[1]) +
-                            curveCentreRadius *
-                                sin(pi * (7 / 4 + localRotate))),
-                    height: curveRadius,
-                    width: curveRadius),
-                pi * (3 / 2 + localRotate),
-                pi / 2,
-                false);
+              Rect.fromCenter(
+                center: Offset(
+                  (pO[0]) + curveCentreRadius * cos(pi * (7 / 4 + localRotate)),
+                  (pO[1]) + curveCentreRadius * sin(pi * (7 / 4 + localRotate)),
+                ),
+                height: curveRadius,
+                width: curveRadius,
+              ),
+              pi * (3 / 2 + localRotate),
+              pi / 2,
+              false,
+            );
 
             squaricle.close();
 
@@ -691,17 +700,20 @@ void paintWallpaper(
             }
 
             canvas.drawPath(
-                squaricle,
-                Paint()
-                  ..style = PaintingStyle.stroke
-                  ..strokeWidth = lineWidth.doubleValue
-                  ..color = (lineColor.colorValue)
-                      .withValues(alpha: opacity.doubleValue));
+              squaricle,
+              Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = lineWidth.doubleValue
+                ..color = (lineColor.colorValue).withValues(
+                  alpha: opacity.doubleValue,
+                ),
+            );
             canvas.drawPath(
-                squaricle,
-                Paint()
-                  ..style = PaintingStyle.fill
-                  ..color = nextColor.withValues(alpha: opacity.doubleValue));
+              squaricle,
+              Paint()
+                ..style = PaintingStyle.fill
+                ..color = nextColor.withValues(alpha: opacity.doubleValue),
+            );
 
             squaricle.reset();
 
@@ -710,46 +722,65 @@ void paintWallpaper(
               final List<double> petalPoint = [
                 pO[0] +
                     stepRadius *
-                        cos(localRotate * pi +
-                            p * pi * 2 / localNumberOfPetals),
+                        cos(
+                          localRotate * pi + p * pi * 2 / localNumberOfPetals,
+                        ),
                 pO[1] +
                     stepRadius *
-                        sin(localRotate * pi + p * pi * 2 / localNumberOfPetals)
+                        sin(
+                          localRotate * pi + p * pi * 2 / localNumberOfPetals,
+                        ),
               ];
 
               final List<double> petalMidPointA = [
                 pO[0] +
                     localSquareness *
                         stepRadius *
-                        cos(localRotate * pi +
-                            (p - 1) * pi * 2 / localNumberOfPetals),
+                        cos(
+                          localRotate * pi +
+                              (p - 1) * pi * 2 / localNumberOfPetals,
+                        ),
                 pO[1] +
                     localSquareness *
                         stepRadius *
-                        sin(localRotate * pi +
-                            (p - 1) * pi * 2 / localNumberOfPetals)
+                        sin(
+                          localRotate * pi +
+                              (p - 1) * pi * 2 / localNumberOfPetals,
+                        ),
               ];
 
               final List<double> petalMidPointP = [
                 pO[0] +
                     localSquareness *
                         stepRadius *
-                        cos(localRotate * pi +
-                            (p + 1) * pi * 2 / localNumberOfPetals),
+                        cos(
+                          localRotate * pi +
+                              (p + 1) * pi * 2 / localNumberOfPetals,
+                        ),
                 pO[1] +
                     localSquareness *
                         stepRadius *
-                        sin(localRotate * pi +
-                            (p + 1) * pi * 2 / localNumberOfPetals)
+                        sin(
+                          localRotate * pi +
+                              (p + 1) * pi * 2 / localNumberOfPetals,
+                        ),
               ];
 
               final Path star = Path();
 
               star.moveTo(pO[0], pO[1]);
-              star.quadraticBezierTo(petalMidPointA[0], petalMidPointA[1],
-                  petalPoint[0], petalPoint[1]);
               star.quadraticBezierTo(
-                  petalMidPointP[0], petalMidPointP[1], pO[0], pO[1]);
+                petalMidPointA[0],
+                petalMidPointA[1],
+                petalPoint[0],
+                petalPoint[1],
+              );
+              star.quadraticBezierTo(
+                petalMidPointP[0],
+                petalMidPointP[1],
+                pO[0],
+                pO[1],
+              );
               star.close();
 
               // Choose the next colour
@@ -762,35 +793,43 @@ void paintWallpaper(
               }
 
               canvas.drawPath(
-                  star,
-                  Paint()
-                    ..style = PaintingStyle.stroke
-                    ..strokeWidth = lineWidth.doubleValue
-                    ..color = (lineColor.colorValue)
-                        .withValues(alpha: opacity.doubleValue));
+                star,
+                Paint()
+                  ..style = PaintingStyle.stroke
+                  ..strokeWidth = lineWidth.doubleValue
+                  ..color = (lineColor.colorValue).withValues(
+                    alpha: opacity.doubleValue,
+                  ),
+              );
               canvas.drawPath(
-                  star,
-                  Paint()
-                    ..style = PaintingStyle.fill
-                    ..color = nextColor.withValues(alpha: opacity.doubleValue));
+                star,
+                Paint()
+                  ..style = PaintingStyle.fill
+                  ..color = nextColor.withValues(alpha: opacity.doubleValue),
+              );
             }
 
           case 'polygon':
             final Path polygon = Path();
 
-            polygon.moveTo((pO[0]) + stepRadius * cos(localRotate),
-                (pO[1]) + stepRadius * sin(localRotate));
+            polygon.moveTo(
+              (pO[0]) + stepRadius * cos(localRotate),
+              (pO[1]) + stepRadius * sin(localRotate),
+            );
 
             for (int s = 1; s < (numberOfSides.intValue); s++) {
               polygon.lineTo(
-                  (pO[0]) +
-                      stepRadius *
-                          cos(pi * 2 * s / (numberOfSides.intValue) +
-                              localRotate),
-                  (pO[1]) +
-                      stepRadius *
-                          sin(pi * 2 * s / (numberOfSides.intValue) +
-                              localRotate));
+                (pO[0]) +
+                    stepRadius *
+                        cos(
+                          pi * 2 * s / (numberOfSides.intValue) + localRotate,
+                        ),
+                (pO[1]) +
+                    stepRadius *
+                        sin(
+                          pi * 2 * s / (numberOfSides.intValue) + localRotate,
+                        ),
+              );
             }
 
             polygon.close();
@@ -805,17 +844,20 @@ void paintWallpaper(
             }
 
             canvas.drawPath(
-                polygon,
-                Paint()
-                  ..style = PaintingStyle.stroke
-                  ..strokeWidth = lineWidth.doubleValue
-                  ..color = (lineColor.colorValue)
-                      .withValues(alpha: opacity.doubleValue));
+              polygon,
+              Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = lineWidth.doubleValue
+                ..color = (lineColor.colorValue).withValues(
+                  alpha: opacity.doubleValue,
+                ),
+            );
             canvas.drawPath(
-                polygon,
-                Paint()
-                  ..style = PaintingStyle.fill
-                  ..color = nextColor.withValues(alpha: opacity.doubleValue));
+              polygon,
+              Paint()
+                ..style = PaintingStyle.fill
+                ..color = nextColor.withValues(alpha: opacity.doubleValue),
+            );
 
             polygon.reset();
 
@@ -905,19 +947,22 @@ void paintWallpaper(
             }
 
             canvas.drawCircle(
-                Offset(pO[0], pO[1]),
-                centreRadius,
-                Paint()
-                  ..style = PaintingStyle.fill
-                  ..color = nextColor.withValues(alpha: opacity.doubleValue));
+              Offset(pO[0], pO[1]),
+              centreRadius,
+              Paint()
+                ..style = PaintingStyle.fill
+                ..color = nextColor.withValues(alpha: opacity.doubleValue),
+            );
             canvas.drawCircle(
-                Offset(pO[0], pO[1]),
-                centreRadius,
-                Paint()
-                  ..style = PaintingStyle.stroke
-                  ..strokeWidth = lineWidth.doubleValue
-                  ..color = (lineColor.colorValue)
-                      .withValues(alpha: opacity.doubleValue));
+              Offset(pO[0], pO[1]),
+              centreRadius,
+              Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = lineWidth.doubleValue
+                ..color = (lineColor.colorValue).withValues(
+                  alpha: opacity.doubleValue,
+                ),
+            );
 
             for (var petal = 0; petal < localNumberOfPetals; petal++) {
               // Choose the next colour
@@ -944,26 +989,26 @@ void paintWallpaper(
 
               final List<double> pN = [
                 pC[0] - petalRadius * cos(petalAngle),
-                pC[1] - petalRadius * sin(petalAngle)
+                pC[1] - petalRadius * sin(petalAngle),
               ];
 
               final List<double> pS = [
                 pC[0] - petalRadius * cos(petalAngle + pi),
-                pC[1] - petalRadius * sin(petalAngle + pi)
+                pC[1] - petalRadius * sin(petalAngle + pi),
               ];
 
               final List<double> pE = [
                 pC[0] -
                     localSquareness * petalRadius * cos(petalAngle + pi * 0.5),
                 pC[1] -
-                    localSquareness * petalRadius * sin(petalAngle + pi * 0.5)
+                    localSquareness * petalRadius * sin(petalAngle + pi * 0.5),
               ];
 
               final List<double> pW = [
                 pC[0] -
                     localSquareness * petalRadius * cos(petalAngle + pi * 1.5),
                 pC[1] -
-                    localSquareness * petalRadius * sin(petalAngle + pi * 1.5)
+                    localSquareness * petalRadius * sin(petalAngle + pi * 1.5),
               ];
 
               final Path path = Path();
@@ -973,17 +1018,20 @@ void paintWallpaper(
               path.close();
 
               canvas.drawPath(
-                  path,
-                  Paint()
-                    ..style = PaintingStyle.stroke
-                    ..strokeWidth = lineWidth.doubleValue
-                    ..color = (lineColor.colorValue)
-                        .withValues(alpha: opacity.doubleValue));
+                path,
+                Paint()
+                  ..style = PaintingStyle.stroke
+                  ..strokeWidth = lineWidth.doubleValue
+                  ..color = (lineColor.colorValue).withValues(
+                    alpha: opacity.doubleValue,
+                  ),
+              );
               canvas.drawPath(
-                  path,
-                  Paint()
-                    ..style = PaintingStyle.fill
-                    ..color = nextColor.withValues(alpha: opacity.doubleValue));
+                path,
+                Paint()
+                  ..style = PaintingStyle.fill
+                  ..color = nextColor.withValues(alpha: opacity.doubleValue),
+              );
             }
 
           case 'heart':
@@ -998,14 +1046,15 @@ void paintWallpaper(
             final Path heart = Path();
 
             heart.moveTo(
-                (pO[0]) +
-                    (stepRadius * (heartRadiusRatio + heartRadiusDelta) +
-                            cos(localRotate + pi / 2)) *
-                        cos(localRotate + pi / 2),
-                (pO[1]) +
-                    stepRadius *
-                        (heartRadiusRatio + heartRadiusDelta) *
-                        sin(localRotate + pi / 2));
+              (pO[0]) +
+                  (stepRadius * (heartRadiusRatio + heartRadiusDelta) +
+                          cos(localRotate + pi / 2)) *
+                      cos(localRotate + pi / 2),
+              (pO[1]) +
+                  stepRadius *
+                      (heartRadiusRatio + heartRadiusDelta) *
+                      sin(localRotate + pi / 2),
+            );
 
             for (int s = 1; s <= localNumberoOfSides; s++) {
               const double t = 0.4;
@@ -1022,88 +1071,114 @@ void paintWallpaper(
 
               if (s.isOdd) {
                 heart.cubicTo(
-                    (pO[0]) +
-                        stepRadius *
-                            (heartRadiusRatio * bezierPointRadiusDeltaA) *
-                            cos(pi * 2 * (s - t) / localNumberoOfSides +
+                  (pO[0]) +
+                      stepRadius *
+                          (heartRadiusRatio * bezierPointRadiusDeltaA) *
+                          cos(
+                            pi * 2 * (s - t) / localNumberoOfSides +
                                 localRotate +
-                                pi / 2),
-                    (pO[1]) +
-                        stepRadius *
-                            (heartRadiusRatio * bezierPointRadiusDeltaA) *
-                            sin(pi * 2 * (s - t) / localNumberoOfSides +
+                                pi / 2,
+                          ),
+                  (pO[1]) +
+                      stepRadius *
+                          (heartRadiusRatio * bezierPointRadiusDeltaA) *
+                          sin(
+                            pi * 2 * (s - t) / localNumberoOfSides +
                                 localRotate +
-                                pi / 2),
-                    (pO[0]) +
-                        stepRadius *
-                            (heartRadiusRatio * bezierPointRadiusDeltaB) *
-                            cos(pi * 2 * s / localNumberoOfSides +
+                                pi / 2,
+                          ),
+                  (pO[0]) +
+                      stepRadius *
+                          (heartRadiusRatio * bezierPointRadiusDeltaB) *
+                          cos(
+                            pi * 2 * s / localNumberoOfSides +
                                 localRotate +
-                                pi / 2),
-                    (pO[1]) +
-                        stepRadius *
-                            (heartRadiusRatio * bezierPointRadiusDeltaB) *
-                            sin(pi * 2 * s / localNumberoOfSides +
+                                pi / 2,
+                          ),
+                  (pO[1]) +
+                      stepRadius *
+                          (heartRadiusRatio * bezierPointRadiusDeltaB) *
+                          sin(
+                            pi * 2 * s / localNumberoOfSides +
                                 localRotate +
-                                pi / 2),
-                    (pO[0]) +
-                        stepRadius *
-                            (heartRadiusRatio +
-                                heartRadiusDelta *
-                                    cos(pi * 2 * s / localNumberoOfSides)) *
-                            cos(pi * 2 * s / localNumberoOfSides +
+                                pi / 2,
+                          ),
+                  (pO[0]) +
+                      stepRadius *
+                          (heartRadiusRatio +
+                              heartRadiusDelta *
+                                  cos(pi * 2 * s / localNumberoOfSides)) *
+                          cos(
+                            pi * 2 * s / localNumberoOfSides +
                                 localRotate +
-                                pi / 2),
-                    (pO[1]) +
-                        stepRadius *
-                            (heartRadiusRatio +
-                                heartRadiusDelta *
-                                    cos(pi * 2 * s / localNumberoOfSides)) *
-                            sin(pi * 2 * s / localNumberoOfSides +
+                                pi / 2,
+                          ),
+                  (pO[1]) +
+                      stepRadius *
+                          (heartRadiusRatio +
+                              heartRadiusDelta *
+                                  cos(pi * 2 * s / localNumberoOfSides)) *
+                          sin(
+                            pi * 2 * s / localNumberoOfSides +
                                 localRotate +
-                                pi / 2));
+                                pi / 2,
+                          ),
+                );
               } else {
                 heart.cubicTo(
-                    (pO[0]) +
-                        stepRadius *
-                            (heartRadiusRatio * bezierPointRadiusDeltaB) *
-                            cos(pi * 2 * (s - 1) / localNumberoOfSides +
+                  (pO[0]) +
+                      stepRadius *
+                          (heartRadiusRatio * bezierPointRadiusDeltaB) *
+                          cos(
+                            pi * 2 * (s - 1) / localNumberoOfSides +
                                 localRotate +
-                                pi / 2),
-                    (pO[1]) +
-                        stepRadius *
-                            (heartRadiusRatio * bezierPointRadiusDeltaB) *
-                            sin(pi * 2 * (s - 1) / localNumberoOfSides +
+                                pi / 2,
+                          ),
+                  (pO[1]) +
+                      stepRadius *
+                          (heartRadiusRatio * bezierPointRadiusDeltaB) *
+                          sin(
+                            pi * 2 * (s - 1) / localNumberoOfSides +
                                 localRotate +
-                                pi / 2),
-                    (pO[0]) +
-                        stepRadius *
-                            (heartRadiusRatio * bezierPointRadiusDeltaA) *
-                            cos(pi * 2 * (s - 1 + t) / localNumberoOfSides +
+                                pi / 2,
+                          ),
+                  (pO[0]) +
+                      stepRadius *
+                          (heartRadiusRatio * bezierPointRadiusDeltaA) *
+                          cos(
+                            pi * 2 * (s - 1 + t) / localNumberoOfSides +
                                 localRotate +
-                                pi / 2),
-                    (pO[1]) +
-                        stepRadius *
-                            (heartRadiusRatio * bezierPointRadiusDeltaA) *
-                            sin(pi * 2 * (s - 1 + t) / localNumberoOfSides +
+                                pi / 2,
+                          ),
+                  (pO[1]) +
+                      stepRadius *
+                          (heartRadiusRatio * bezierPointRadiusDeltaA) *
+                          sin(
+                            pi * 2 * (s - 1 + t) / localNumberoOfSides +
                                 localRotate +
-                                pi / 2),
-                    (pO[0]) +
-                        stepRadius *
-                            (heartRadiusRatio +
-                                heartRadiusDelta *
-                                    cos(pi * 2 * s / localNumberoOfSides)) *
-                            cos(pi * 2 * s / localNumberoOfSides +
+                                pi / 2,
+                          ),
+                  (pO[0]) +
+                      stepRadius *
+                          (heartRadiusRatio +
+                              heartRadiusDelta *
+                                  cos(pi * 2 * s / localNumberoOfSides)) *
+                          cos(
+                            pi * 2 * s / localNumberoOfSides +
                                 localRotate +
-                                pi / 2),
-                    (pO[1]) +
-                        stepRadius *
-                            (heartRadiusRatio +
-                                heartRadiusDelta *
-                                    cos(pi * 2 * s / localNumberoOfSides)) *
-                            sin(pi * 2 * s / localNumberoOfSides +
+                                pi / 2,
+                          ),
+                  (pO[1]) +
+                      stepRadius *
+                          (heartRadiusRatio +
+                              heartRadiusDelta *
+                                  cos(pi * 2 * s / localNumberoOfSides)) *
+                          sin(
+                            pi * 2 * s / localNumberoOfSides +
                                 localRotate +
-                                pi / 2));
+                                pi / 2,
+                          ),
+                );
               }
             }
 
@@ -1156,17 +1231,20 @@ void paintWallpaper(
             }
 
             canvas.drawPath(
-                heart,
-                Paint()
-                  ..style = PaintingStyle.stroke
-                  ..strokeWidth = lineWidth.doubleValue
-                  ..color = (lineColor.colorValue)
-                      .withValues(alpha: opacity.doubleValue));
+              heart,
+              Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = lineWidth.doubleValue
+                ..color = (lineColor.colorValue).withValues(
+                  alpha: opacity.doubleValue,
+                ),
+            );
             canvas.drawPath(
-                heart,
-                Paint()
-                  ..style = PaintingStyle.fill
-                  ..color = nextColor.withValues(alpha: opacity.doubleValue));
+              heart,
+              Paint()
+                ..style = PaintingStyle.fill
+                ..color = nextColor.withValues(alpha: opacity.doubleValue),
+            );
 
             heart.reset();
         }

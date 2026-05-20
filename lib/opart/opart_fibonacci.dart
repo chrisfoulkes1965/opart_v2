@@ -298,7 +298,12 @@ List<SettingsModel> initializeFibonacciAttributes() {
 }
 
 void paintFibonacci(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
@@ -374,10 +379,11 @@ void generateFlower(
   // colour in the canvas
   //a rectangle
   canvas.drawRect(
-      Offset(borderX, borderY) & Size(imageWidth, imageHeight * 2),
-      Paint()
-        ..color = currentBackgroundColor
-        ..style = PaintingStyle.fill);
+    Offset(borderX, borderY) & Size(imageWidth, imageHeight * 2),
+    Paint()
+      ..color = currentBackgroundColor
+      ..style = PaintingStyle.fill,
+  );
 
   int maxPetalCount = currentMaxPetals;
 
@@ -483,73 +489,87 @@ void drawPetal(
 
       final List<double> p1 = [
         p0[0] + radius * cos(angle),
-        p0[1] + radius * sin(angle)
+        p0[1] + radius * sin(angle),
       ];
       final petalRadius = radius * currentPetalToRadius;
 
       canvas.drawCircle(
+        Offset(p1[0], p1[1]),
+        petalRadius,
+        Paint()
+          ..style = PaintingStyle.fill
+          ..color = colour,
+      );
+      if (currentLineWidth > 0) {
+        canvas.drawCircle(
           Offset(p1[0], p1[1]),
           petalRadius,
           Paint()
-            ..style = PaintingStyle.fill
-            ..color = colour);
-      if (currentLineWidth > 0) {
-        canvas.drawCircle(
-            Offset(p1[0], p1[1]),
-            petalRadius,
-            Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = currentLineWidth
-              ..color = currentLineColor);
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = currentLineWidth
+            ..color = currentLineColor,
+        );
       }
 
     case 'triangle': //'triangle':
 
       final List<double> p1 = [
         p0[0] + radius * cos(angle),
-        p0[1] + radius * sin(angle)
+        p0[1] + radius * sin(angle),
       ];
       final double petalRadius = radius * currentPetalToRadius;
 
       final List<double> pA = [
         p1[0] +
             petalRadius *
-                cos(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio),
+                cos(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio,
+                ),
         p1[1] +
             petalRadius *
-                sin(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio)
+                sin(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio,
+                ),
       ];
       final List<double> pB = [
         p1[0] +
             petalRadius *
-                cos(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio +
-                    pi * currentPetalPointiness),
+                cos(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio +
+                      pi * currentPetalPointiness,
+                ),
         p1[1] +
             petalRadius *
-                sin(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio +
-                    pi * currentPetalPointiness)
+                sin(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio +
+                      pi * currentPetalPointiness,
+                ),
       ];
       final List<double> pC = [
         p1[0] +
             petalRadius *
-                cos(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio -
-                    pi * currentPetalPointiness),
+                cos(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio -
+                      pi * currentPetalPointiness,
+                ),
         p1[1] +
             petalRadius *
-                sin(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio -
-                    pi * currentPetalPointiness)
+                sin(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio -
+                      pi * currentPetalPointiness,
+                ),
       ];
 
       final Path triangle = Path();
@@ -559,101 +579,119 @@ void drawPetal(
       triangle.close();
 
       canvas.drawPath(
-          triangle,
-          Paint()
-            ..style = PaintingStyle.fill
-            ..color = colour);
+        triangle,
+        Paint()
+          ..style = PaintingStyle.fill
+          ..color = colour,
+      );
       if (currentLineWidth > 0) {
         canvas.drawPath(
-            triangle,
-            Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = currentLineWidth
-              ..color = currentLineColor);
+          triangle,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = currentLineWidth
+            ..color = currentLineColor,
+        );
       }
 
     case 'square': // 'square':
 
       final List<double> p1 = [
         p0[0] + radius * cos(angle),
-        p0[1] + radius * sin(angle)
+        p0[1] + radius * sin(angle),
       ];
       final double petalRadius = radius * currentPetalToRadius;
 
       final List<double> pA = [
         p1[0] +
             petalRadius *
-                cos(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio +
-                    pi * 0.0 +
-                    currentPetalPointiness +
-                    pi / 4),
+                cos(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio +
+                      pi * 0.0 +
+                      currentPetalPointiness +
+                      pi / 4,
+                ),
         p1[1] +
             petalRadius *
-                sin(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio +
-                    pi * 0.0 +
-                    currentPetalPointiness +
-                    pi / 4)
+                sin(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio +
+                      pi * 0.0 +
+                      currentPetalPointiness +
+                      pi / 4,
+                ),
       ];
 
       final List<double> pB = [
         p1[0] +
             petalRadius *
-                cos(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio +
-                    pi * 0.5 -
-                    currentPetalPointiness -
-                    pi / 4),
+                cos(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio +
+                      pi * 0.5 -
+                      currentPetalPointiness -
+                      pi / 4,
+                ),
         p1[1] +
             petalRadius *
-                sin(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio +
-                    pi * 0.5 -
-                    currentPetalPointiness -
-                    pi / 4)
+                sin(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio +
+                      pi * 0.5 -
+                      currentPetalPointiness -
+                      pi / 4,
+                ),
       ];
 
       final List<double> pC = [
         p1[0] +
             petalRadius *
-                cos(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio +
-                    pi * 1.0 +
-                    currentPetalPointiness +
-                    pi / 4),
+                cos(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio +
+                      pi * 1.0 +
+                      currentPetalPointiness +
+                      pi / 4,
+                ),
         p1[1] +
             petalRadius *
-                sin(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio +
-                    pi * 1.0 +
-                    currentPetalPointiness +
-                    pi / 4)
+                sin(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio +
+                      pi * 1.0 +
+                      currentPetalPointiness +
+                      pi / 4,
+                ),
       ];
 
       final List<double> pD = [
         p1[0] +
             petalRadius *
-                cos(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio +
-                    pi * 1.5 -
-                    currentPetalPointiness -
-                    pi / 4),
+                cos(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio +
+                      pi * 1.5 -
+                      currentPetalPointiness -
+                      pi / 4,
+                ),
         p1[1] +
             petalRadius *
-                sin(angle +
-                    currentPetalRotation +
-                    angle * currentPetalRotationRatio +
-                    pi * 1.5 -
-                    currentPetalPointiness -
-                    pi / 4)
+                sin(
+                  angle +
+                      currentPetalRotation +
+                      angle * currentPetalRotationRatio +
+                      pi * 1.5 -
+                      currentPetalPointiness -
+                      pi / 4,
+                ),
       ];
 
       final Path square = Path();
@@ -664,17 +702,19 @@ void drawPetal(
       square.close();
 
       canvas.drawPath(
-          square,
-          Paint()
-            ..style = PaintingStyle.fill
-            ..color = colour);
+        square,
+        Paint()
+          ..style = PaintingStyle.fill
+          ..color = colour,
+      );
       if (currentLineWidth > 0) {
         canvas.drawPath(
-            square,
-            Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = currentLineWidth
-              ..color = currentLineColor);
+          square,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = currentLineWidth
+            ..color = currentLineColor,
+        );
       }
 
     // case 'petal': //'petal':

@@ -95,7 +95,7 @@ SettingsModel paletteType = SettingsModel(
     'random',
     'blended random',
     'linear random',
-    'linear complementary'
+    'linear complementary',
   ],
   settingCategory: SettingCategory.palette,
   onChange: () {
@@ -149,7 +149,12 @@ List<SettingsModel> initializeRhombusAttributes() {
 }
 
 void paintRhombus(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
@@ -191,7 +196,7 @@ void paintRhombus(
       final List<double> p2 = [x + cellWidth, y - (offsetY.doubleValue)];
       final List<double> p3 = [
         x + cellWidth,
-        y + cellHeight - (offsetY.doubleValue)
+        y + cellHeight - (offsetY.doubleValue),
       ];
       final p4 = [x, y + cellHeight];
 
@@ -204,21 +209,24 @@ void paintRhombus(
       rhombus.close();
 
       canvas.drawPath(
-          rhombus,
-          Paint()
-            ..strokeWidth = 0.0
-            ..color = nextColor
-            ..isAntiAlias = false
-            ..style = PaintingStyle.fill);
+        rhombus,
+        Paint()
+          ..strokeWidth = 0.0
+          ..color = nextColor
+          ..isAntiAlias = false
+          ..style = PaintingStyle.fill,
+      );
 
       if (lineWidth.doubleValue > 0) {
         canvas.drawPath(
-            rhombus,
-            Paint()
-              ..color = (backgroundColor.colorValue)
-                  .withValues(alpha: opacity.doubleValue)
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = lineWidth.doubleValue);
+          rhombus,
+          Paint()
+            ..color = (backgroundColor.colorValue).withValues(
+              alpha: opacity.doubleValue,
+            )
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = lineWidth.doubleValue,
+        );
       }
     }
   }

@@ -214,7 +214,7 @@ class OpArt {
         'paid': false,
         'animationControllerValue': animation && animationController != null
             ? animationController!.value
-            : 1.0
+            : 1.0,
       });
 
       final DatabaseHelper helper = DatabaseHelper.instance;
@@ -235,7 +235,9 @@ class OpArt {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
         final Uint8List? imageBytes = await screenshotController.capture(
-            delay: const Duration(milliseconds: 200), pixelRatio: 0.2);
+          delay: const Duration(milliseconds: 200),
+          pixelRatio: 0.2,
+        );
 
         if (imageBytes != null) {
           final Map<String, dynamic> map = {};
@@ -250,7 +252,7 @@ class OpArt {
             'numberOfColors': numberOfColors.value,
             'animationControllerValue': animation && animationController != null
                 ? animationController!.value
-                : 1.0
+                : 1.0,
           });
 
           cache.add(map);
@@ -258,9 +260,10 @@ class OpArt {
           rebuildCache.value++;
           if (scrollController.hasClients) {
             await scrollController.animateTo(
-                scrollController.position.maxScrollExtent,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.fastOutSlowIn);
+              scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.fastOutSlowIn,
+            );
           }
           enableButton = true;
         } else {
@@ -276,8 +279,9 @@ class OpArt {
   void revertToCache(int index) {
     seed = cache[index]['seed'] as int;
     if (animation && animationController != null) {
-      animationController!
-          .forward(from: cache[index]['animationControllerValue'] as double);
+      animationController!.forward(
+        from: cache[index]['animationControllerValue'] as double,
+      );
     }
     for (int i = 0; i < attributes.length; i++) {
       attributes[i].value = cache[index][attributes[i].label];
@@ -352,11 +356,13 @@ class OpArt {
 
   // select a palette from the list
   void selectPalette(String paletteName) {
-    final List<Object?> newPalette = defaultPalettes
-        .firstWhere((List<Object?> palette) => palette[0] == paletteName);
+    final List<Object?> newPalette = defaultPalettes.firstWhere(
+      (List<Object?> palette) => palette[0] == paletteName,
+    );
     palette.colorList = [];
     final List<String> colorStrings = List<String>.from(
-        (newPalette[3]! as List<Object?>).map((e) => e.toString()));
+      (newPalette[3]! as List<Object?>).map((e) => e.toString()),
+    );
     for (var z = 0; z < colorStrings.length; z++) {
       palette.colorList.add(Color(int.parse(colorStrings[z])));
     }
@@ -365,10 +371,9 @@ class OpArt {
     backgroundColor.value = Color(int.parse(newPalette[2]! as String));
   }
 
-  // randomise the palette
+  // randomise the palette (does not change [seed] — shape stays stable)
   void randomizePalette() {
-    seed = DateTime.now().millisecond;
-    final Random rnd = Random(seed);
+    final Random rnd = Random();
 
     for (int i = 0; i < attributes.length; i++) {
       if (attributes[i].settingCategory == SettingCategory.palette) {
@@ -395,13 +400,15 @@ class OpArt {
       attributes[i].setDefault();
     }
 
-    final List<Object?> newPalette = defaultPalettes
-        .firstWhere((List<Object?> palette) => palette[0] == 'Default');
+    final List<Object?> newPalette = defaultPalettes.firstWhere(
+      (List<Object?> palette) => palette[0] == 'Default',
+    );
 
     backgroundColor.value = Color(int.parse(newPalette[2]! as String));
     palette.colorList = [];
     final List<String> colorStrings = List<String>.from(
-        (newPalette[3]! as List<Object?>).map((e) => e.toString()));
+      (newPalette[3]! as List<Object?>).map((e) => e.toString()),
+    );
     for (var z = 0; z < colorStrings.length; z++) {
       palette.colorList.add(Color(int.parse(colorStrings[z])));
     }

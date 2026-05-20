@@ -120,7 +120,7 @@ SettingsModel paletteType = SettingsModel(
     'random',
     'blended random',
     'linear random',
-    'linear complementary'
+    'linear complementary',
   ],
   settingCategory: SettingCategory.palette,
   onChange: () {
@@ -161,7 +161,12 @@ List<SettingsModel> initializeQuadsAttributes() {
 }
 
 void paintQuads(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
@@ -205,29 +210,31 @@ void paintQuads(
 }
 
 void drawQuadrilateral(
-    Canvas canvas,
-    List<Color> colorList,
-    List<double> p0,
-    List<double> p1,
-    List<double> p2,
-    List<double> p3,
-    int recursionDepth,
-    int minimumDepth,
-    int maximumDepth,
-    double ratio,
-    double density,
-    bool randomiseRatio,
-    int colourOrder,
-    int direction,
-    Color lineColor,
-    double lineWidth) {
+  Canvas canvas,
+  List<Color> colorList,
+  List<double> p0,
+  List<double> p1,
+  List<double> p2,
+  List<double> p3,
+  int recursionDepth,
+  int minimumDepth,
+  int maximumDepth,
+  double ratio,
+  double density,
+  bool randomiseRatio,
+  int colourOrder,
+  int direction,
+  Color lineColor,
+  double lineWidth,
+) {
   Color nextColor;
 
   var orderIndex = colourOrder;
   // Choose the next colour
   orderIndex++;
-  nextColor = colorList[orderIndex % (numberOfColors.intValue)]
-      .withValues(alpha: opacity.doubleValue);
+  nextColor = colorList[orderIndex % (numberOfColors.intValue)].withValues(
+    alpha: opacity.doubleValue,
+  );
   Color localLineColor = lineColor;
   if (lineWidth == 0) {
     localLineColor = nextColor;
@@ -240,16 +247,18 @@ void drawQuadrilateral(
   quad.lineTo(p3[0], p3[1]);
   quad.close();
   canvas.drawPath(
-      quad,
-      Paint()
-        ..color = nextColor
-        ..style = PaintingStyle.fill);
+    quad,
+    Paint()
+      ..color = nextColor
+      ..style = PaintingStyle.fill,
+  );
   canvas.drawPath(
-      quad,
-      Paint()
-        ..color = localLineColor
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = lineWidth);
+    quad,
+    Paint()
+      ..color = localLineColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = lineWidth,
+  );
 
   if (recursionDepth < minimumDepth ||
       (recursionDepth < maximumDepth && rnd.nextDouble() < density)) {
@@ -263,91 +272,95 @@ void drawQuadrilateral(
     if (direction == 0) {
       final List<double> pA = [
         p0[0] * localRatio + p1[0] * (1 - localRatio),
-        p0[1] * localRatio + p1[1] * (1 - localRatio)
+        p0[1] * localRatio + p1[1] * (1 - localRatio),
       ];
       final List<double> pB = [
         p2[0] * localRatio + p3[0] * (1 - localRatio),
-        p2[1] * localRatio + p3[1] * (1 - localRatio)
+        p2[1] * localRatio + p3[1] * (1 - localRatio),
       ];
 
       drawQuadrilateral(
-          canvas,
-          colorList,
-          p0,
-          pA,
-          pB,
-          p3,
-          recursionDepth + 1,
-          minimumDepth,
-          maximumDepth,
-          ratio,
-          density,
-          randomiseRatio,
-          orderIndex + 1,
-          1,
-          lineColor,
-          lineWidth);
+        canvas,
+        colorList,
+        p0,
+        pA,
+        pB,
+        p3,
+        recursionDepth + 1,
+        minimumDepth,
+        maximumDepth,
+        ratio,
+        density,
+        randomiseRatio,
+        orderIndex + 1,
+        1,
+        lineColor,
+        lineWidth,
+      );
       drawQuadrilateral(
-          canvas,
-          colorList,
-          p1,
-          pA,
-          pB,
-          p2,
-          recursionDepth + 1,
-          minimumDepth,
-          maximumDepth,
-          ratio,
-          density,
-          randomiseRatio,
-          orderIndex + 1,
-          1,
-          lineColor,
-          lineWidth);
+        canvas,
+        colorList,
+        p1,
+        pA,
+        pB,
+        p2,
+        recursionDepth + 1,
+        minimumDepth,
+        maximumDepth,
+        ratio,
+        density,
+        randomiseRatio,
+        orderIndex + 1,
+        1,
+        lineColor,
+        lineWidth,
+      );
     } else {
       final List<double> pA = [
         p1[0] * localRatio + p2[0] * (1 - localRatio),
-        p1[1] * localRatio + p2[1] * (1 - localRatio)
+        p1[1] * localRatio + p2[1] * (1 - localRatio),
       ];
       final List<double> pB = [
         p3[0] * localRatio + p0[0] * (1 - localRatio),
-        p3[1] * localRatio + p0[1] * (1 - localRatio)
+        p3[1] * localRatio + p0[1] * (1 - localRatio),
       ];
 
       drawQuadrilateral(
-          canvas,
-          colorList,
-          p0,
-          p1,
-          pA,
-          pB,
-          recursionDepth + 1,
-          minimumDepth,
-          maximumDepth,
-          ratio,
-          density,
-          randomiseRatio,
-          orderIndex + 1,
-          0,
-          lineColor,
-          lineWidth);
+        canvas,
+        colorList,
+        p0,
+        p1,
+        pA,
+        pB,
+        recursionDepth + 1,
+        minimumDepth,
+        maximumDepth,
+        ratio,
+        density,
+        randomiseRatio,
+        orderIndex + 1,
+        0,
+        lineColor,
+        lineWidth,
+      );
       drawQuadrilateral(
-          canvas,
-          colorList,
-          p2,
-          p3,
-          pB,
-          pA,
-          recursionDepth + 1,
-          minimumDepth,
-          maximumDepth,
-          ratio,
-          density,
-          randomiseRatio,
-          orderIndex + 1,
-          0,
-          lineColor,
-          lineWidth);
+        canvas,
+        colorList,
+        p2,
+        p3,
+        pB,
+        pA,
+        recursionDepth + 1,
+        minimumDepth,
+        maximumDepth,
+        ratio,
+        density,
+        randomiseRatio,
+        orderIndex + 1,
+        0,
+        lineColor,
+        lineWidth,
+      );
     }
   } else {}
 }

@@ -12,13 +12,15 @@ Widget choosePaletteTabWidget() {
 
   List<Widget> circularPalette(int index) {
     final List<String> paletteColors = List<String>.from(
-        (defaultPalettes[index][3]! as List<Object?>).map((e) => e.toString()));
+      (defaultPalettes[index][3]! as List<Object?>).map((e) => e.toString()),
+    );
     final int sizeOfPalette = paletteColors.length;
 
     final List<Widget> list = [];
     if (sizeOfPalette < 11) {
       for (int i = 0; i < sizeOfPalette; i++) {
-        list.add(Transform.rotate(
+        list.add(
+          Transform.rotate(
             angle: i * 2 * pi / sizeOfPalette,
             child: Align(
               alignment: Alignment.centerLeft,
@@ -31,12 +33,15 @@ Widget choosePaletteTabWidget() {
                 height: 15,
                 width: 15,
               ),
-            )));
+            ),
+          ),
+        );
       }
     } else {
       for (int i = 0; i < sizeOfPalette; i++) {
         if (i < 10) {
-          list.add(Transform.rotate(
+          list.add(
+            Transform.rotate(
               angle: i * 2 * pi / 10,
               child: Align(
                 alignment: Alignment.centerLeft,
@@ -49,9 +54,12 @@ Widget choosePaletteTabWidget() {
                   height: 15,
                   width: 15,
                 ),
-              )));
+              ),
+            ),
+          );
         } else {
-          list.add(Transform.rotate(
+          list.add(
+            Transform.rotate(
               angle: i * 2 * pi / (sizeOfPalette - 10),
               child: Align(
                 alignment: Alignment.centerLeft,
@@ -67,7 +75,9 @@ Widget choosePaletteTabWidget() {
                     width: 15,
                   ),
                 ),
-              )));
+              ),
+            ),
+          );
         }
       }
     }
@@ -75,49 +85,53 @@ Widget choosePaletteTabWidget() {
   }
 
   return ListView.builder(
-      itemCount: defaultPalettes.length,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            final List<String> newPalette = List<String>.from(
-                (defaultPalettes[index][3]! as List<Object?>)
-                    .map((e) => e.toString()));
-            opart_page.currentOpArtPageState?.opArt.palette.colorList = [];
-            opacity.value = 1.0;
-            for (int i = 0; i < newPalette.length; i++) {
-              opart_page.currentOpArtPageState?.opArt.palette.colorList
-                  .add(Color(int.parse(newPalette[i])));
-            }
-            numberOfColors.value = newPalette.length;
-            rebuildTab.value++;
-            rebuildCanvas.value++;
-            opart_page.currentOpArtPageState?.opArt.saveToCache();
-          },
-          child: Column(
-            children: [
-              Container(
-                height: 80,
-                decoration: const BoxDecoration(
-                    color: Colors.white, shape: BoxShape.circle),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.zero,
-                      child: Stack(
-                        children: circularPalette(index),
-                      ),
-                    ),
+    itemCount: defaultPalettes.length,
+    itemBuilder: (context, index) {
+      return GestureDetector(
+        onTap: () {
+          final List<String> newPalette = List<String>.from(
+            (defaultPalettes[index][3]! as List<Object?>).map(
+              (e) => e.toString(),
+            ),
+          );
+          opart_page.currentOpArtPageState?.opArt.palette.colorList = [];
+          opacity.value = 1.0;
+          for (int i = 0; i < newPalette.length; i++) {
+            opart_page.currentOpArtPageState?.opArt.palette.colorList.add(
+              Color(int.parse(newPalette[i])),
+            );
+          }
+          numberOfColors.value = newPalette.length;
+          rebuildTab.value++;
+          rebuildCanvas.value++;
+          opart_page.currentOpArtPageState?.opArt.saveToCache();
+        },
+        child: Column(
+          children: [
+            Container(
+              height: 80,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.zero,
+                    child: Stack(children: circularPalette(index)),
                   ),
                 ),
               ),
-              Text(
-                defaultPalettes[index][0]!.toString(),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      });
+            ),
+            Text(
+              defaultPalettes[index][0]!.toString(),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      );
+    },
+  );
 }

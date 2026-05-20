@@ -3,6 +3,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/opart_page.dart';
+import 'package:opart_v2/settings_overlay_layout.dart';
 import 'package:opart_v2/tabs/palette_widget.dart';
 
 class ColorPickerWidget extends StatefulWidget {
@@ -29,67 +30,74 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
       }
     }
 
+    final panelPadding = settingsOverlayPanelPadding(context);
     return Padding(
-      padding: const EdgeInsets.only(left: 80.0, bottom: 70, right: 10),
+      padding: EdgeInsets.only(
+        left: 80,
+        right: 10,
+        bottom: panelPadding.bottom,
+      ),
       child: Container(
-          decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.8),
-              borderRadius: BorderRadius.circular(10)),
-          child: ValueListenableBuilder<int>(
-              valueListenable: rebuildColorPicker,
-              builder: (context, value, child) {
-                return SizedBox(
-                  height: 190,
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: ColorPicker(
-                                pickerAreaHeightPercent: 0.2,
-                                displayThumbColor: true,
-                                labelTypes: const [],
-                                enableAlpha: false,
-                                pickerColor: oldColor,
-                                onColorChanged: (color) {
-                                  oldColor = color;
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.8),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: ValueListenableBuilder<int>(
+          valueListenable: rebuildColorPicker,
+          builder: (context, value, child) {
+            return SizedBox(
+              height: 190,
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: ColorPicker(
+                            pickerAreaHeightPercent: 0.2,
+                            displayThumbColor: true,
+                            labelTypes: const [],
+                            enableAlpha: false,
+                            pickerColor: oldColor,
+                            onColorChanged: (color) {
+                              oldColor = color;
 
-                                  if (currentColor > 100) {
-                                    widget.opArt.attributes[currentColor - 100]
-                                        .value = color;
-                                  } else {
-                                    widget.opArt.palette
-                                        .colorList[currentColor] = color;
-                                  }
-                                  rebuildTab.value++;
-                                  rebuildCanvas.value++;
-                                  rebuildColorPicker.value++;
-                                },
-                              ),
-                            ),
-                          ],
+                              if (currentColor > 100) {
+                                widget.opArt.attributes[currentColor - 100]
+                                    .value = color;
+                              } else {
+                                widget.opArt.palette.colorList[currentColor] =
+                                    color;
+                              }
+                              rebuildTab.value++;
+                              rebuildCanvas.value++;
+                              rebuildColorPicker.value++;
+                            },
+                          ),
                         ),
-                      ),
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () {
-                            currentOpArtPageState?.showCustomColorPicker =
-                                false;
-                            widget.opArt.saveToCache();
-                            rebuildOpArtPage.value++;
-                          },
-                        ),
-                      )
-                    ],
+                      ],
+                    ),
                   ),
-                );
-              })),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        currentOpArtPageState?.showCustomColorPicker = false;
+                        widget.opArt.saveToCache();
+                        rebuildOpArtPage.value++;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

@@ -86,7 +86,7 @@ SettingsModel paletteType = SettingsModel(
     'random',
     'blended random',
     'linear random',
-    'linear complementary'
+    'linear complementary',
   ],
   settingCategory: SettingCategory.palette,
   onChange: () {
@@ -137,7 +137,12 @@ List<SettingsModel> initializeSquaresAttributes() {
 }
 
 void paintSquares(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
@@ -188,20 +193,22 @@ void paintSquares(
 
       // draw the square
       canvas.drawRect(
-          Offset(p1[0], p1[1]) &
-              Size(zoomOpArt.doubleValue, zoomOpArt.doubleValue),
-          Paint()
-            ..strokeWidth = 0.0
-            ..color = nextColor
-            ..isAntiAlias = false
-            ..style = PaintingStyle.fill);
+        Offset(p1[0], p1[1]) &
+            Size(zoomOpArt.doubleValue, zoomOpArt.doubleValue),
+        Paint()
+          ..strokeWidth = 0.0
+          ..color = nextColor
+          ..isAntiAlias = false
+          ..style = PaintingStyle.fill,
+      );
       canvas.drawRect(
-          Offset(p1[0], p1[1]) &
-              Size(zoomOpArt.doubleValue, zoomOpArt.doubleValue),
-          Paint()
-            ..color = nextColor
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 0.1);
+        Offset(p1[0], p1[1]) &
+            Size(zoomOpArt.doubleValue, zoomOpArt.doubleValue),
+        Paint()
+          ..color = nextColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 0.1,
+      );
     }
     squares.add(squaresJ);
   }
@@ -234,7 +241,7 @@ void paintSquares(
         final List<double> p2 = [x + (zoomOpArt.numValue), y];
         final List<double> p3 = [
           x + (zoomOpArt.numValue),
-          y + (zoomOpArt.numValue)
+          y + (zoomOpArt.numValue),
         ];
         final p4 = [x, y + (zoomOpArt.numValue)];
 
@@ -341,23 +348,33 @@ void paintSquares(
         bulgeDirectionArray[i][j] = bulgeDirection;
 
         // Draw the bulge
-        drawBulge(canvas, colour, p1, p2, p3, p4, bulgeDirection,
-            zoomOpArt.doubleValue, bulge.value.toString());
+        drawBulge(
+          canvas,
+          colour,
+          p1,
+          p2,
+          p3,
+          p4,
+          bulgeDirection,
+          zoomOpArt.doubleValue,
+          bulge.value.toString(),
+        );
       }
     }
   }
 }
 
 void drawBulge(
-    Canvas canvas,
-    Color colour,
-    List<double> p1,
-    List<double> p2,
-    List<double> p3,
-    List<double> p4,
-    int direction,
-    double radius,
-    String bulge) {
+  Canvas canvas,
+  Color colour,
+  List<double> p1,
+  List<double> p2,
+  List<double> p3,
+  List<double> p4,
+  int direction,
+  double radius,
+  String bulge,
+) {
   final Paint paint = Paint()
     ..color = colour
     ..isAntiAlias = false
@@ -372,57 +389,61 @@ void drawBulge(
       switch (direction) {
         case 1: // bulge right
           canvas.drawArc(
-              Rect.fromCenter(
-                  center:
-                      Offset(((p2[0]) + (p3[0])) / 2, ((p2[1]) + (p3[1])) / 2),
-                  height: radius,
-                  width: radius),
-              pi * 1.5,
-              pi,
-              true,
-              paint);
+            Rect.fromCenter(
+              center: Offset(((p2[0]) + (p3[0])) / 2, ((p2[1]) + (p3[1])) / 2),
+              height: radius,
+              width: radius,
+            ),
+            pi * 1.5,
+            pi,
+            true,
+            paint,
+          );
 
           canvas.drawLine(Offset(p2[0], p2[1]), Offset(p3[0], p3[1]), paint);
 
         case 2: // bulge bottom
           canvas.drawArc(
-              Rect.fromCenter(
-                  center:
-                      Offset(((p3[0]) + (p4[0])) / 2, ((p3[1]) + (p4[1])) / 2),
-                  height: radius,
-                  width: radius),
-              pi * 0.0,
-              pi,
-              true,
-              paint);
+            Rect.fromCenter(
+              center: Offset(((p3[0]) + (p4[0])) / 2, ((p3[1]) + (p4[1])) / 2),
+              height: radius,
+              width: radius,
+            ),
+            pi * 0.0,
+            pi,
+            true,
+            paint,
+          );
 
           canvas.drawLine(Offset(p3[0], p3[1]), Offset(p4[0], p4[1]), paint);
 
         case 3: // bulge left
           canvas.drawArc(
-              Rect.fromCenter(
-                  center:
-                      Offset(((p4[0]) + (p1[0])) / 2, ((p4[1]) + (p1[1])) / 2),
-                  height: radius,
-                  width: radius),
-              pi * 0.5,
-              pi,
-              true,
-              paint);
+            Rect.fromCenter(
+              center: Offset(((p4[0]) + (p1[0])) / 2, ((p4[1]) + (p1[1])) / 2),
+              height: radius,
+              width: radius,
+            ),
+            pi * 0.5,
+            pi,
+            true,
+            paint,
+          );
 
           canvas.drawLine(Offset(p4[0], p4[1]), Offset(p1[0], p1[1]), paint);
 
         case 4: // top
           canvas.drawArc(
-              Rect.fromCenter(
-                  center:
-                      Offset(((p1[0]) + (p2[0])) / 2, ((p1[1]) + (p2[1])) / 2),
-                  height: radius,
-                  width: radius),
-              pi * 1.0,
-              pi,
-              true,
-              paint);
+            Rect.fromCenter(
+              center: Offset(((p1[0]) + (p2[0])) / 2, ((p1[1]) + (p2[1])) / 2),
+              height: radius,
+              width: radius,
+            ),
+            pi * 1.0,
+            pi,
+            true,
+            paint,
+          );
 
           canvas.drawLine(Offset(p1[0], p1[1]), Offset(p2[0], p2[1]), paint);
       }
@@ -437,7 +458,9 @@ void drawBulge(
           triangle.moveTo(p2[0], p2[1]);
           triangle.lineTo(p3[0], p3[1]);
           triangle.lineTo(
-              (p2[0]) + radius * pointiness, ((p2[1]) + (p3[1])) / 2);
+            (p2[0]) + radius * pointiness,
+            ((p2[1]) + (p3[1])) / 2,
+          );
           triangle.close();
           canvas.drawPath(triangle, paint);
 
@@ -446,7 +469,9 @@ void drawBulge(
           triangle.moveTo(p4[0], p4[1]);
           triangle.lineTo(p3[0], p3[1]);
           triangle.lineTo(
-              ((p3[0]) + (p4[0])) / 2, (p3[1]) + radius * pointiness);
+            ((p3[0]) + (p4[0])) / 2,
+            (p3[1]) + radius * pointiness,
+          );
           triangle.close();
           canvas.drawPath(triangle, paint);
 
@@ -455,7 +480,9 @@ void drawBulge(
           triangle.moveTo(p1[0], p1[1]);
           triangle.lineTo(p4[0], p4[1]);
           triangle.lineTo(
-              (p1[0]) - radius * pointiness, ((p1[1]) + (p4[1])) / 2);
+            (p1[0]) - radius * pointiness,
+            ((p1[1]) + (p4[1])) / 2,
+          );
           triangle.close();
           canvas.drawPath(triangle, paint);
 
@@ -464,7 +491,9 @@ void drawBulge(
           triangle.moveTo(p1[0], p1[1]);
           triangle.lineTo(p2[0], p2[1]);
           triangle.lineTo(
-              ((p1[0]) + (p2[0])) / 2, (p1[1]) - radius * pointiness);
+            ((p1[0]) + (p2[0])) / 2,
+            (p1[1]) - radius * pointiness,
+          );
           triangle.close();
           canvas.drawPath(triangle, paint);
       }
@@ -625,6 +654,7 @@ void drawBulge(
     //   break;
   }
 }
+
 //
 // function drawTriangle(canvas, colour, p1, p2, p3, lineWidth, lineColour) {
 //

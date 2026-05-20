@@ -118,7 +118,7 @@ SettingsModel paletteType = SettingsModel(
     'random',
     'blended random',
     'linear random',
-    'linear complementary'
+    'linear complementary',
   ],
   settingCategory: SettingCategory.palette,
   onChange: () {
@@ -161,7 +161,12 @@ List<SettingsModel> initializeNeighbourAttributes() {
 }
 
 void paintNeighbour(
-    Canvas canvas, Size size, int seed, double animationVariable, OpArt opArt) {
+  Canvas canvas,
+  Size size,
+  int seed,
+  double animationVariable,
+  OpArt opArt,
+) {
   rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
@@ -174,10 +179,11 @@ void paintNeighbour(
 
   // draw the square
   canvas.drawRect(
-      Offset.zero & Size(canvasWidth, canvasHeight),
-      Paint()
-        ..color = (backgroundColor.colorValue).withValues(alpha: 1.0)
-        ..style = PaintingStyle.fill);
+    Offset.zero & Size(canvasWidth, canvasHeight),
+    Paint()
+      ..color = (backgroundColor.colorValue).withValues(alpha: 1.0)
+      ..style = PaintingStyle.fill,
+  );
 
   // Now make some art
   drawNeighbours(
@@ -193,29 +199,34 @@ void paintNeighbour(
 }
 
 Future<void> drawNeighbours(
-    Canvas canvas,
-    List<Color> colorList,
-    double canvasWidth,
-    double canvasHeight,
-    double lineWidth,
-    int numberOfPoints,
-    int numberToLink,
-    int skipPoints) async {
+  Canvas canvas,
+  List<Color> colorList,
+  double canvasWidth,
+  double canvasHeight,
+  double lineWidth,
+  int numberOfPoints,
+  int numberToLink,
+  int skipPoints,
+) async {
   int colourOrder = 0;
 
   final List<List<double>> points = [];
   for (int i = 0; i < numberOfPoints; i++) {
-    points
-        .add([canvasWidth * rnd.nextDouble(), canvasHeight * rnd.nextDouble()]);
+    points.add([
+      canvasWidth * rnd.nextDouble(),
+      canvasHeight * rnd.nextDouble(),
+    ]);
   }
 
   // process each point
   for (final point in points) {
     final List<List<double>> sortedPoints = List<List<double>>.from(points);
-    sortedPoints.sort((point1, point2) =>
-        ((pow(point1[0] - point[0], 2) + pow(point1[1] - point[1], 2)) -
-                (pow(point2[0] - point[0], 2) + pow(point2[1] - point[1], 2)))
-            .toInt());
+    sortedPoints.sort(
+      (point1, point2) =>
+          ((pow(point1[0] - point[0], 2) + pow(point1[1] - point[1], 2)) -
+                  (pow(point2[0] - point[0], 2) + pow(point2[1] - point[1], 2)))
+              .toInt(),
+    );
 
     for (int j = 1 + skipPoints; j < numberToLink + skipPoints; j++) {
       // print('$countPoints - $j');
@@ -229,15 +240,16 @@ Future<void> drawNeighbours(
       nextColor = nextColor.withValues(alpha: opacity.doubleValue);
 
       canvas.drawLine(
-          Offset(point[0], point[1]),
-          Offset(sortedPoints[j][0], sortedPoints[j][1]),
-          Paint()
-            ..color = nextColor
-            // ..color = Colors.black
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = lineWidth
-            // ..strokeWidth = 1
-            ..strokeCap = StrokeCap.round);
+        Offset(point[0], point[1]),
+        Offset(sortedPoints[j][0], sortedPoints[j][1]),
+        Paint()
+          ..color = nextColor
+          // ..color = Colors.black
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = lineWidth
+          // ..strokeWidth = 1
+          ..strokeCap = StrokeCap.round,
+      );
     }
   }
 }
