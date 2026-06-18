@@ -1,9 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:opart_v2/print/basket/print_basket_cubit.dart';
 import 'package:opart_v2/print/cubit/print_flow_cubit.dart';
 import 'package:opart_v2/print/cubit/print_flow_state.dart';
 import 'package:opart_v2/print/models/print_models.dart';
+import 'package:opart_v2/print/models/shipping_countries.dart';
+import 'package:opart_v2/print/widgets/order_price_breakdown.dart';
+import 'package:opart_v2/print/widgets/shipping_country_picker.dart';
 
 class PrintCheckoutStep extends StatefulWidget {
   const PrintCheckoutStep({super.key});
@@ -14,39 +20,57 @@ class PrintCheckoutStep extends StatefulWidget {
 
 class _PrintCheckoutStepState extends State<PrintCheckoutStep> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _nameController;
-  late final TextEditingController _emailController;
-  late final TextEditingController _address1Controller;
-  late final TextEditingController _address2Controller;
-  late final TextEditingController _cityController;
-  late final TextEditingController _stateController;
   late final TextEditingController _zipController;
-  String _countryCode = 'US';
+  late final FocusNode _zipFocus;
+  late ShippingCountry _selectedCountry;
 
   @override
   void initState() {
     super.initState();
-    final address = context.read<PrintFlowCubit>().state.shippingAddress;
-    _nameController = TextEditingController(text: address.name);
-    _emailController = TextEditingController(text: address.email);
-    _address1Controller = TextEditingController(text: address.address1);
-    _address2Controller = TextEditingController(text: address.address2);
-    _cityController = TextEditingController(text: address.city);
-    _stateController = TextEditingController(text: address.stateCode);
+    final flowAddress = context.read<PrintFlowCubit>().state.shippingAddress;
+    final basketAddress =
+        context.read<PrintBasketCubit>().state.shippingAddress;
+    final address = basketAddress.canEstimate ? basketAddress : flowAddress;
     _zipController = TextEditingController(text: address.zip);
-    _countryCode = address.countryCode;
+    _selectedCountry = ShippingCountry.resolveSupported(address.countryCode);
+    if (basketAddress.canEstimate) {
+      context.read<PrintFlowCubit>().updateShippingAddress(basketAddress);
+    }
+    _zipFocus = FocusNode();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      final cubit = context.read<PrintFlowCubit>();
+      if (cubit.state.shippingAddress.canEstimate &&
+          cubit.state.estimate == null) {
+        unawaited(cubit.estimateShipping());
+      }
+    });
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _address1Controller.dispose();
-    _address2Controller.dispose();
-    _cityController.dispose();
-    _stateController.dispose();
     _zipController.dispose();
+    _zipFocus.dispose();
     super.dispose();
+  }
+
+  void _maybeEstimate() {
+    final address = _buildAddress();
+    if (!address.canEstimate) {
+      return;
+    }
+    final cubit = context.read<PrintFlowCubit>();
+    cubit.updateShippingAddress(address);
+    unawaited(context.read<PrintBasketCubit>().updateShippingAddress(address));
+    unawaited(cubit.estimateShipping());
+  }
+
+  void _onCountryChanged(ShippingCountry country) {
+    setState(() => _selectedCountry = country);
+    _maybeEstimate();
   }
 
   @override
@@ -58,6 +82,7 @@ class _PrintCheckoutStepState extends State<PrintCheckoutStep> {
           child: AutofillGroup(
             child: ListView(
               padding: const EdgeInsets.all(16),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: [
                 if (state.selectedVariant != null)
                   Text(
@@ -67,100 +92,42 @@ class _PrintCheckoutStepState extends State<PrintCheckoutStep> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                const SizedBox(height: 16),
-                _field(
-                  controller: _nameController,
-                  label: 'Full name',
-                  autofillHints: const [AutofillHints.name],
-                  textCapitalization: TextCapitalization.words,
-                  validator: _required,
-                ),
-                _field(
-                  controller: _emailController,
-                  label: 'Email',
-                  keyboardType: TextInputType.emailAddress,
-                  autofillHints: const [AutofillHints.email],
-                  autocorrect: false,
-                  validator: _required,
-                ),
-                _field(
-                  controller: _address1Controller,
-                  label: 'Address line 1',
-                  autofillHints: const [AutofillHints.streetAddressLine1],
-                  validator: _required,
-                ),
-                _field(
-                  controller: _address2Controller,
-                  label: 'Address line 2 (optional)',
-                  autofillHints: const [AutofillHints.streetAddressLine2],
-                ),
-                _field(
-                  controller: _cityController,
-                  label: 'City',
-                  autofillHints: const [AutofillHints.addressCity],
-                  textCapitalization: TextCapitalization.words,
-                  validator: _required,
-                ),
-                _field(
-                  controller: _stateController,
-                  label: 'State / Province',
-                  autofillHints: const [AutofillHints.addressState],
-                  textCapitalization: TextCapitalization.characters,
-                  validator: _required,
-                ),
-                DropdownButtonFormField<String>(
-                  initialValue: _countryCode,
-                  decoration: const InputDecoration(
-                    labelText: 'Country',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 'US', child: Text('United States')),
-                    DropdownMenuItem(
-                        value: 'GB', child: Text('United Kingdom')),
-                    DropdownMenuItem(value: 'CA', child: Text('Canada')),
-                    DropdownMenuItem(value: 'AU', child: Text('Australia')),
-                    DropdownMenuItem(value: 'DE', child: Text('Germany')),
-                  ],
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() => _countryCode = value);
-                    }
-                  },
-                ),
                 const SizedBox(height: 12),
+                Text(
+                  'Enter your delivery region to see the total. '
+                  'Name, email, and full address are collected securely at payment.',
+                  style: TextStyle(color: Colors.grey.shade700),
+                ),
+                const SizedBox(height: 16),
+                ShippingCountryPickerFormField(
+                  initialValue: _selectedCountry,
+                  onChanged: _onCountryChanged,
+                ),
                 _field(
                   controller: _zipController,
+                  focusNode: _zipFocus,
                   label: 'ZIP / Postal code',
                   autofillHints: const [AutofillHints.postalCode],
                   keyboardType: TextInputType.visiblePassword,
                   autocorrect: false,
+                  textInputAction: TextInputAction.done,
+                  onFieldSubmitted: (_) => _unfocus(),
                   validator: _required,
+                  onChanged: (_) => _maybeEstimate(),
                 ),
-                const SizedBox(height: 16),
-                OutlinedButton(
-                  onPressed: state.isBusy ? null : _updateAndEstimate,
-                  child: const Text('Calculate total'),
-                ),
-                if (state.estimate != null) ...[
+                if (state.isBusy || state.estimate != null) ...[
                   const SizedBox(height: 16),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        'Total: ${state.estimate!.formattedRetailTotal}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                  OrderPriceBreakdown(
+                    estimate: state.estimate,
+                    productLabel: 'Product',
+                    isLoading: state.isBusy && state.estimate == null,
                   ),
                 ],
                 const SizedBox(height: 24),
                 FilledButton(
-                  onPressed: state.isBusy ? null : _pay,
-                  child: const Text('Pay with Stripe'),
+                  onPressed:
+                      state.isBusy || state.estimate == null ? null : _pay,
+                  child: const Text('Pay'),
                 ),
               ],
             ),
@@ -172,17 +139,22 @@ class _PrintCheckoutStepState extends State<PrintCheckoutStep> {
 
   Widget _field({
     required TextEditingController controller,
+    required FocusNode focusNode,
     required String label,
     String? Function(String?)? validator,
     TextInputType? keyboardType,
     Iterable<String>? autofillHints,
     TextCapitalization textCapitalization = TextCapitalization.none,
     bool autocorrect = true,
+    TextInputAction textInputAction = TextInputAction.next,
+    ValueChanged<String>? onFieldSubmitted,
+    ValueChanged<String>? onChanged,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
         controller: controller,
+        focusNode: focusNode,
         decoration: InputDecoration(
           labelText: label,
           border: const OutlineInputBorder(),
@@ -191,9 +163,16 @@ class _PrintCheckoutStepState extends State<PrintCheckoutStep> {
         autofillHints: autofillHints,
         textCapitalization: textCapitalization,
         autocorrect: autocorrect,
+        textInputAction: textInputAction,
+        onFieldSubmitted: onFieldSubmitted,
+        onChanged: onChanged,
         validator: validator,
       ),
     );
+  }
+
+  void _unfocus() {
+    FocusScope.of(context).unfocus();
   }
 
   String? _required(String? value) {
@@ -205,24 +184,14 @@ class _PrintCheckoutStepState extends State<PrintCheckoutStep> {
 
   ShippingAddress _buildAddress() {
     return ShippingAddress(
-      name: _nameController.text.trim(),
-      email: _emailController.text.trim(),
-      address1: _address1Controller.text.trim(),
-      address2: _address2Controller.text.trim(),
-      city: _cityController.text.trim(),
-      stateCode: _stateController.text.trim(),
-      countryCode: _countryCode,
+      name: '',
+      email: '',
+      address1: '',
+      city: '',
+      stateCode: '',
+      countryCode: _selectedCountry.code,
       zip: _zipController.text.trim(),
     );
-  }
-
-  void _updateAndEstimate() {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-    final cubit = context.read<PrintFlowCubit>();
-    cubit.updateShippingAddress(_buildAddress());
-    cubit.estimateShipping();
   }
 
   void _pay() {

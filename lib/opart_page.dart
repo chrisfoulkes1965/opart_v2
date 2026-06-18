@@ -6,12 +6,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:opart_v2/app_shell.dart';
+import 'package:opart_v2/app_state.dart';
 import 'package:opart_v2/bottom_app_bar.dart';
 import 'package:opart_v2/canvas.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/model_settings.dart';
 import 'package:opart_v2/print/models/opart_recipe.dart';
-import 'package:opart_v2/print/pages/print_flow_page.dart';
 import 'package:opart_v2/settings_overlay_layout.dart';
 import 'package:opart_v2/tabs/color_picker_widget.dart';
 import 'package:opart_v2/tabs/general_tab.dart';
@@ -55,7 +55,6 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
   late PaletteTab paletteTab;
   late ChoosePaletteTab choosePaletteTab;
   late AnimationController animationController;
-  late int seed;
   final GlobalKey<CanvasWidgetState> _canvasKey =
       GlobalKey<CanvasWidgetState>();
 
@@ -68,6 +67,7 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
     animationController = AnimationController(
       duration: const Duration(seconds: 72000),
       vsync: this,
+      value: widget.animationValue,
     );
 
     final settings = Map<String, dynamic>.from(widget.opArtSettings);
@@ -77,8 +77,11 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
     opArt = OpArtRecipe.toOpArt(settings);
     opArt.animationController = animationController;
     seed = OpArtRecipe.seedFrom(settings);
+    if (seed == 0 && widget.opArtSettings.isEmpty) {
+      seed = DateTime.now().millisecond;
+    }
     checkNumberOfColors();
-    rebuildCanvas.value++;
+    opArt.syncPaletteForRender();
 
     scrollController = ScrollController();
     toolsTab = ToolsTab();
@@ -271,22 +274,20 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
     }
   }
 
-  /// Opens the print-on-demand shop for the current design.
-  void _openPrintShop() {
-    final recipe = OpArtRecipe.fromOpArt(
-      opArt,
-      seed: seed,
-      animationValue:
-          (widget.opArtSettings['animationControllerValue'] as double?) ?? 1.0,
-    );
-    unawaited(PrintFlowPage.open(context, recipe: recipe));
-  }
-
   @override
   Widget build(BuildContext context) {
+    final canvasLayer = CanvasWidget(
+      key: _canvasKey,
+      fullScreen: showSettings,
+      animationValue: widget.animationValue,
+      opArt: opArt,
+      playAnimation: false,
+    );
+
     return ValueListenableBuilder<int>(
       valueListenable: rebuildOpArtPage,
-      builder: (context, value, child) {
+      child: canvasLayer,
+      builder: (context, value, canvas) {
         return PopScope(
           canPop: false,
           child: Scaffold(
@@ -404,12 +405,6 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                           );
                         },
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.local_print_shop,
-                            color: Colors.black),
-                        tooltip: 'Print this design',
-                        onPressed: _openPrintShop,
-                      ),
                     ],
                   )
                 : null,
@@ -450,12 +445,7 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                     children: [
                       InteractiveViewer(
                         child: ClipRect(
-                          child: CanvasWidget(
-                            key: _canvasKey,
-                            fullScreen: showSettings,
-                            animationValue: widget.animationValue,
-                            opArt: opArt,
-                          ),
+                          child: canvas,
                         ),
                       ),
                       if (showProgressIndicator)
@@ -530,25 +520,25 @@ class _OpArtPageState extends State<OpArtPage> with TickerProviderStateMixin {
                     alignment: Alignment.bottomCenter,
                     child: customBottomAppBar(context: context, opArt: opArt),
                   ),
-                if (showSettings && opArt.animation)
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ValueListenableBuilder<int>(
-                      valueListenable: rebuildCanvas,
-                      builder: (context, _, __) {
-                        return Padding(
-                          padding: EdgeInsets.only(
-                            left: 12,
-                            right: 12,
-                            bottom: settingsOverlayPlaybackBottom(context),
-                          ),
-                          child: _canvasKey.currentState
-                                  ?.buildPlaybackControls() ??
-                              const SizedBox.shrink(),
-                        );
-                      },
-                    ),
-                  ),
+                // if (showSettings && opArt.animation)
+                //   Align(
+                //     alignment: Alignment.bottomCenter,
+                //     child: ValueListenableBuilder<int>(
+                //       valueListenable: rebuildCanvas,
+                //       builder: (context, _, __) {
+                //         return Padding(
+                //           padding: EdgeInsets.only(
+                //             left: 12,
+                //             right: 12,
+                //             bottom: settingsOverlayPlaybackBottom(context),
+                //           ),
+                //           child: _canvasKey.currentState
+                //                   ?.buildPlaybackControls() ??
+                //               const SizedBox.shrink(),
+                //         );
+                //       },
+                //     ),
+                //   ),
               ],
             ),
           ),

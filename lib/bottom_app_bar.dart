@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/opart_overlay_theme.dart';
 import 'package:opart_v2/settings_overlay_layout.dart';
@@ -102,34 +102,35 @@ class _BottomToolButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 48,
-      child: Material(
-        color: opArtOverlayButtonBackground,
-        borderRadius: BorderRadius.circular(10),
-        child: Tooltip(
-          message: 'Tap to $label', // Customize this as appropriate
-          waitDuration: const Duration(milliseconds: 350),
-          child: GestureDetector(
-            onTap: () {
-              HapticFeedback.heavyImpact();
-
-              onPressed();
-            },
+    return Material(
+      color: opArtOverlayButtonBackground,
+      borderRadius: BorderRadius.circular(10),
+      child: Tooltip(
+        message: 'Tap to $label',
+        waitDuration: const Duration(milliseconds: 350),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: () {
+            HapticFeedback.selectionClick();
+            onPressed();
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
               children: [
                 icon,
                 const SizedBox(width: 4),
-                Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 11,
-                    height: 1,
+                Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 11,
+                      height: 1,
+                    ),
                   ),
                 ),
               ],

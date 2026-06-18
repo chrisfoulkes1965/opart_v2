@@ -224,3 +224,29 @@ export async function buildMockupFilePayload(
     },
   };
 }
+
+export interface PrintfulEstimateRecipientInput {
+  name?: string;
+  address1?: string;
+  address2?: string;
+  city?: string;
+  state_code?: string;
+  country_code: string;
+  zip?: string;
+}
+
+const REGIONAL_ESTIMATE_ADDRESS1 = 'Regional estimate';
+
+export function recipientForEstimateCosts(
+  input: PrintfulEstimateRecipientInput,
+): Record<string, string> {
+  return {
+    name: input.name?.trim() || 'Customer',
+    address1: input.address1?.trim() || REGIONAL_ESTIMATE_ADDRESS1,
+    address2: input.address2?.trim() ?? '',
+    city: input.city?.trim() || 'N/A',
+    state_code: input.state_code?.trim() ?? '',
+    country_code: input.country_code,
+    zip: input.zip?.trim() ?? '',
+  };
+}

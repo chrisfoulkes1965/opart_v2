@@ -56,15 +56,6 @@ class OpArtCatalogPicker extends StatelessWidget {
                           width: 3,
                         ),
                         color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withValues(
-                              alpha: isSelected ? 0.35 : 0.2,
-                            ),
-                            blurRadius: isSelected ? 6 : 4,
-                            offset: const Offset(2, 2),
-                          ),
-                        ],
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(13),

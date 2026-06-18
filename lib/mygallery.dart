@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:carousel_slider/carousel_slider.dart';
@@ -7,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:opart_v2/database_helper.dart';
 import 'package:opart_v2/model_opart.dart';
 import 'package:opart_v2/opart_page.dart';
-import 'package:opart_v2/print/pages/print_flow_page.dart';
 
 CarouselSliderController buttonCarouselController = CarouselSliderController();
 
@@ -33,11 +31,6 @@ class _MyGalleryState extends State<MyGallery> {
 
   final _rebuildDelete = ValueNotifier(0);
   bool showDelete = false;
-
-  void _openPrintShop(int index) {
-    final settings = Map<String, dynamic>.from(savedOpArt[index]);
-    unawaited(PrintFlowPage.open(context, recipe: settings));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,14 +145,6 @@ class _MyGalleryState extends State<MyGallery> {
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(height: 12),
-                                      FilledButton.icon(
-                                        onPressed: () => _openPrintShop(index),
-                                        icon:
-                                            const Icon(Icons.local_print_shop),
-                                        label: const Text('Order Print'),
-                                      ),
-                                      const SizedBox(height: 12),
                                     ],
                                   ),
                                   ValueListenableBuilder<int>(
@@ -204,18 +189,7 @@ class _MyGalleryState extends State<MyGallery> {
                                                 ),
                                               ),
                                             )
-                                          : Positioned(
-                                              right: 8,
-                                              bottom: 56,
-                                              child: FloatingActionButton.small(
-                                                heroTag: 'print_$index',
-                                                onPressed: () =>
-                                                    _openPrintShop(index),
-                                                child: const Icon(
-                                                  Icons.local_print_shop,
-                                                ),
-                                              ),
-                                            );
+                                          : Container();
                                     },
                                   ),
                                 ],

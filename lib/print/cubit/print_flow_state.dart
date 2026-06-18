@@ -6,6 +6,7 @@ import 'package:opart_v2/print/models/print_catalog.dart';
 import 'package:opart_v2/print/models/print_models.dart';
 import 'package:opart_v2/print/models/print_placement.dart';
 import 'package:opart_v2/print/models/print_spec.dart';
+import 'package:opart_v2/print/models/shipping_countries.dart';
 
 enum PrintFlowStep {
   product,
@@ -26,7 +27,17 @@ enum PrintFlowStatus {
 }
 
 class PrintFlowState extends Equatable {
-  const PrintFlowState({
+  static final ShippingAddress defaultShippingAddress = ShippingAddress(
+    name: '',
+    address1: '',
+    city: '',
+    stateCode: '',
+    countryCode: ShippingCountry.deviceDefault.code,
+    zip: '',
+    email: '',
+  );
+
+  PrintFlowState({
     this.step = PrintFlowStep.product,
     this.status = PrintFlowStatus.initial,
     this.recipe = const {},
@@ -51,18 +62,10 @@ class PrintFlowState extends Equatable {
     this.estimate,
     this.checkoutSession,
     this.completedOrder,
-    this.shippingAddress = const ShippingAddress(
-      name: '',
-      address1: '',
-      city: '',
-      stateCode: '',
-      countryCode: 'US',
-      zip: '',
-      email: '',
-    ),
+    ShippingAddress? shippingAddress,
     this.errorMessage,
     this.progressMessage,
-  });
+  }) : shippingAddress = shippingAddress ?? defaultShippingAddress;
 
   final PrintFlowStep step;
   final PrintFlowStatus status;
@@ -137,6 +140,7 @@ class PrintFlowState extends Equatable {
     RegisteredDesign? registeredDesign,
     PrintEstimate? estimate,
     CheckoutSession? checkoutSession,
+    bool clearCheckoutSession = false,
     PrintOrderSummary? completedOrder,
     ShippingAddress? shippingAddress,
     String? errorMessage,
@@ -178,7 +182,8 @@ class PrintFlowState extends Equatable {
       printAreaResolved: printAreaResolved ?? this.printAreaResolved,
       registeredDesign: registeredDesign ?? this.registeredDesign,
       estimate: estimate ?? this.estimate,
-      checkoutSession: checkoutSession ?? this.checkoutSession,
+      checkoutSession:
+          clearCheckoutSession ? null : checkoutSession ?? this.checkoutSession,
       completedOrder: completedOrder ?? this.completedOrder,
       shippingAddress: shippingAddress ?? this.shippingAddress,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,

@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:opart_v2/app_warmup.dart';
 import 'package:opart_v2/home_page.dart';
 import 'package:opart_v2/mygallery.dart';
-import 'package:opart_v2/shop_page.dart';
 
-enum AppTab { home, gallery, shop }
+enum AppTab { home, gallery }
 
 class AppShell extends StatefulWidget {
   AppShell() : super(key: shellKey);
@@ -34,6 +36,17 @@ class _AppShellState extends State<AppShell> {
   int get _selectedIndex => _selectedTab.index;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      unawaited(warmUpOpArtLab(context));
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
@@ -47,7 +60,6 @@ class _AppShellState extends State<AppShell> {
               _galleryIndex,
               showHomeButton: false,
             ),
-            ShopPage(),
           ],
         ),
         bottomNavigationBar: NavigationBar(
@@ -67,11 +79,6 @@ class _AppShellState extends State<AppShell> {
               icon: Icon(Icons.photo_library_outlined),
               selectedIcon: Icon(Icons.photo_library),
               label: 'Gallery',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.storefront_outlined),
-              selectedIcon: Icon(Icons.storefront),
-              label: 'Shop',
             ),
           ],
         ),

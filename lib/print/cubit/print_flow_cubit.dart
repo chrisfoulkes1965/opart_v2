@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -644,6 +645,10 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
         clearError: true,
       ),
     );
+
+    if (state.shippingAddress.canEstimate) {
+      unawaited(estimateShipping());
+    }
   }
 
   void updateShippingAddress(ShippingAddress address) {
@@ -708,13 +713,10 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
     }
 
     final address = state.shippingAddress;
-    if (address.name.isEmpty ||
-        address.address1.isEmpty ||
-        address.city.isEmpty ||
-        address.email.isEmpty) {
+    if (!address.canStartCheckout) {
       _emitError(
         context: 'startCheckout',
-        message: 'Please complete all required shipping fields.',
+        message: 'Enter country and postal code to continue.',
       );
       return;
     }
@@ -722,8 +724,9 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
     emit(
       state.copyWith(
         status: PrintFlowStatus.submitting,
-        progressMessage: 'Opening secure checkout…',
+        progressMessage: 'Preparing payment…',
         clearError: true,
+        clearCheckoutSession: true,
       ),
     );
 
@@ -737,7 +740,7 @@ class PrintFlowCubit extends Cubit<PrintFlowState> {
       emit(
         state.copyWith(
           checkoutSession: session,
-          status: PrintFlowStatus.success,
+          status: PrintFlowStatus.ready,
           progressMessage: null,
           clearError: true,
         ),

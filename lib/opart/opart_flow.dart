@@ -69,7 +69,7 @@ SettingsModel frequency = SettingsModel(
   settingType: SettingType.double,
   label: 'Frequency',
   tooltip: 'The frequency of concentric the wave',
-  min: 0.0,
+  min: 1.0,
   max: 200.0,
   zoom: 100,
   defaultValue: 70.0,
@@ -285,14 +285,16 @@ void paintFlow(
       ((amplitude.doubleValue) < (zoomOpArt.doubleValue) * 0.9)
           ? (amplitude.doubleValue)
           : (zoomOpArt.doubleValue) * 0.9;
-  final double frequencyX = frequency.doubleValue;
+  final double frequencyX = frequency.doubleValue > 0
+      ? frequency.doubleValue
+      : (frequency.defaultValue as num).toDouble();
+  final double frequencyY = frequencyX;
 
   final double baseY = baseX * 1.0;
   final double amplitudeY =
       ((amplitude.doubleValue) < (zoomOpArt.doubleValue) * 0.9)
           ? (amplitude.doubleValue)
           : (zoomOpArt.doubleValue) * 0.9;
-  final double frequencyY = frequency.doubleValue;
 
   double x = 0.0;
   int i = 0;

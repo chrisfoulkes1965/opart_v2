@@ -12,6 +12,7 @@ import 'package:opart_v2/model_settings.dart';
 
 List<List<Color>> squaresI = [];
 double? _lastLifeAnimationVariable;
+OpArt? _lastLifeOpArt;
 
 SettingsModel reDraw = SettingsModel(
   name: 'reDraw',
@@ -172,7 +173,13 @@ void paintLife(
   double animationVariable,
   OpArt opArt,
 ) {
-  rnd = Random(DateTime.now().millisecond);
+  if (_lastLifeOpArt != opArt) {
+    _lastLifeOpArt = opArt;
+    squaresI = [];
+    _lastLifeAnimationVariable = null;
+  }
+
+  rnd = Random(seed);
 
   if (paletteList.value != opArt.palette.paletteName) {
     opArt.selectPalette(paletteList.stringValue);

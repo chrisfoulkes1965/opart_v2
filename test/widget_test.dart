@@ -13,6 +13,5 @@ void main() {
     expect(find.text('OpArt Lab'), findsOneWidget);
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Gallery'), findsOneWidget);
-    expect(find.text('Shop'), findsOneWidget);
   });
 }

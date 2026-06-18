@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:opart_v2/print/basket/print_basket_cubit.dart';
 import 'package:opart_v2/print/cubit/print_flow_cubit.dart';
 import 'package:opart_v2/print/cubit/print_flow_state.dart';
+import 'package:opart_v2/print/pages/print_basket_checkout_page.dart';
 import 'package:opart_v2/print/widgets/print_crop_editor.dart';
 
 class PrintPreviewStep extends StatelessWidget {
@@ -197,11 +201,18 @@ class PrintPreviewStep extends StatelessWidget {
                     child: const Text('Edit crop'),
                   ),
                   const SizedBox(height: 8),
+                  OutlinedButton(
+                    onPressed: hasMockup && !state.isBusy
+                        ? () => _addToBasket(context, state)
+                        : null,
+                    child: const Text('Add to basket'),
+                  ),
+                  const SizedBox(height: 8),
                   FilledButton(
                     onPressed: hasMockup && !state.isBusy
-                        ? () => context.read<PrintFlowCubit>().goToCheckout()
+                        ? () => _checkoutNow(context, state)
                         : null,
-                    child: const Text('Continue to Checkout'),
+                    child: const Text('Checkout now'),
                   ),
                 ],
               ),
@@ -210,5 +221,63 @@ class PrintPreviewStep extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _addToBasket(BuildContext context, PrintFlowState state) async {
+    final design = state.registeredDesign;
+    final variant = state.selectedVariant;
+    final product = state.selectedProduct;
+    if (design == null || variant == null || product == null) {
+      return;
+    }
+
+    await context.read<PrintBasketCubit>().addFromFlow(
+          designId: design.designId,
+          variantId: variant.id,
+          productId: product.id,
+          productTitle: product.title,
+          variantLabel: variant.displayLabel,
+          mockupUrl: state.previewMockupUrl,
+        );
+
+    if (!context.mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Added to basket')),
+    );
+    Navigator.of(context).pop();
+  }
+
+  Future<void> _checkoutNow(BuildContext context, PrintFlowState state) async {
+    final design = state.registeredDesign;
+    final variant = state.selectedVariant;
+    final product = state.selectedProduct;
+    if (design == null || variant == null || product == null) {
+      return;
+    }
+
+    final basketCubit = context.read<PrintBasketCubit>();
+    final hadOtherItems = basketCubit.state.items.isNotEmpty;
+
+    if (hadOtherItems) {
+      await basketCubit.addFromFlow(
+        designId: design.designId,
+        variantId: variant.id,
+        productId: product.id,
+        productTitle: product.title,
+        variantLabel: variant.displayLabel,
+        mockupUrl: state.previewMockupUrl,
+      );
+      if (!context.mounted) {
+        return;
+      }
+      Navigator.of(context).pop();
+      await PrintBasketCheckoutPage.open(context);
+      return;
+    }
+
+    context.read<PrintFlowCubit>().goToCheckout();
   }
 }

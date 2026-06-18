@@ -14,6 +14,8 @@ List<Color> colorList = [];
 int shadeOffset = 0;
 int recursionDepthOld = 0;
 double randomizerOld = 0.0;
+OpArt? _lastPlasmaOpArt;
+double? _lastPlasmaAnimationVariable;
 
 SettingsModel reDraw = SettingsModel(
   name: 'reDraw',
@@ -145,6 +147,12 @@ void paintPlasma(
 ) {
   rnd = Random(seed);
 
+  if (_lastPlasmaOpArt != opArt) {
+    _lastPlasmaOpArt = opArt;
+    _lastPlasmaAnimationVariable = null;
+    shadeOffset = 0;
+  }
+
   if (paletteList.value != opArt.palette.paletteName) {
     opArt.selectPalette(paletteList.stringValue);
   }
@@ -155,6 +163,7 @@ void paintPlasma(
           (opArt.palette.colorList.length) * (colorDepth.numValue)) {
     // generate the palette
     shadeOffset = 0;
+    _lastPlasmaAnimationVariable = null;
     colorList = opArt.palette.colorList;
 
     final int numberOfColors = opArt.palette.colorList.length;
@@ -177,6 +186,8 @@ void paintPlasma(
       randomizerOld != randomizer.value) {
     recursionDepthOld = recursionDepth.intValue;
     randomizerOld = randomizer.doubleValue;
+    _lastPlasmaAnimationVariable = null;
+    shadeOffset = 0;
 
     // reseed - otherwise it's boring
     rnd = Random(DateTime.now().millisecond);
@@ -243,8 +254,14 @@ void paintPlasma(
     }
   }
 
-  // print('shadeOffset: $shadeOffset');
-  shadeOffset++;
+  if (_lastPlasmaAnimationVariable != animationVariable) {
+    if (_lastPlasmaAnimationVariable != null) {
+      shadeOffset++;
+    } else if (animationVariable > 0 && shades.isNotEmpty) {
+      shadeOffset = (animationVariable * shades.length * 50).toInt();
+    }
+    _lastPlasmaAnimationVariable = animationVariable;
+  }
 }
 
 // fill the centre of the square

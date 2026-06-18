@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:opart_v2/config/supabase_config.dart';
 import 'package:opart_v2/print/models/opart_recipe.dart';
 import 'package:opart_v2/print/models/print_models.dart';
 import 'package:opart_v2/print/models/print_print_area.dart';
@@ -134,12 +133,26 @@ class PrintfulRepository {
     required ShippingAddress address,
     int quantity = 1,
   }) async {
+    return estimateBasket(
+      items: [
+        BasketLineInput(
+          variantId: variantId,
+          designId: designId,
+          quantity: quantity,
+        ),
+      ],
+      address: address,
+    );
+  }
+
+  Future<PrintEstimate> estimateBasket({
+    required List<BasketLineInput> items,
+    required ShippingAddress address,
+  }) async {
     final response = await _invoke(
       'orders-estimate',
       body: {
-        'variant_id': variantId,
-        'design_id': designId,
-        'quantity': quantity,
+        'items': items.map((item) => item.toJson()).toList(),
         'recipient': {
           'country_code': address.countryCode,
           'state_code': address.stateCode,
@@ -160,16 +173,28 @@ class PrintfulRepository {
     required ShippingAddress address,
     int quantity = 1,
   }) async {
+    return createBasketCheckoutSession(
+      items: [
+        CheckoutLineInput(
+          designId: designId,
+          variantId: variant.id,
+          productName: productName,
+          quantity: quantity,
+        ),
+      ],
+      address: address,
+    );
+  }
+
+  Future<CheckoutSession> createBasketCheckoutSession({
+    required List<CheckoutLineInput> items,
+    required ShippingAddress address,
+  }) async {
     final response = await _invoke(
       'checkout-create-session',
       body: {
-        'design_id': designId,
-        'variant_id': variant.id,
-        'product_name': productName,
-        'quantity': quantity,
+        'items': items.map((item) => item.toJson()).toList(),
         'recipient': address.toJson(),
-        'success_url': SupabaseConfig.stripeSuccessUrl,
-        'cancel_url': SupabaseConfig.stripeCancelUrl,
       },
     );
     final data = _asMap(response.data);

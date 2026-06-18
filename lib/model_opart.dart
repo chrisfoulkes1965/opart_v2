@@ -168,6 +168,7 @@ class OpArt {
       case OpArtType.Wave:
         attributes = initializeWaveAttributes();
         name = 'Wave';
+        animation = false;
       case OpArtType.Neighbour:
         attributes = initializeNeighbourAttributes();
         name = 'Neighbour';
@@ -312,9 +313,8 @@ class OpArt {
     markRenderDirty();
     seed = cache[index]['seed'] as int;
     if (animation && animationController != null) {
-      animationController!.forward(
-        from: cache[index]['animationControllerValue'] as double,
-      );
+      animationController!.value =
+          cache[index]['animationControllerValue'] as double;
     }
     for (int i = 0; i < attributes.length; i++) {
       attributes[i].value = cache[index][attributes[i].label];
@@ -485,12 +485,11 @@ class OpArt {
     );
 
     final SettingsModel? lineWidthSetting = _attributeByName('lineWidth');
+    final SettingsModel? lineColorSetting = _attributeByName('lineColor');
     if (background != null &&
         lineWidthSetting != null &&
-        lineWidthSetting.doubleValue > 0) {
-      final SettingsModel lineColorSetting = attributes.firstWhere(
-        (element) => element.name == 'lineColor',
-      );
+        lineWidthSetting.doubleValue > 0 &&
+        lineColorSetting != null) {
       lineColorSetting.value = ensureContrastAgainstBackground(
         color: lineColorSetting.colorValue,
         background: background,

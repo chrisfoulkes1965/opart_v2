@@ -11,7 +11,7 @@ class SupabaseService {
   static SupabaseClient get client => Supabase.instance.client;
 
   static Future<void> initialize() async {
-    if (_initialized || !SupabaseConfig.isConfigured) {
+    if (_initialized || !isConfigured) {
       return;
     }
 

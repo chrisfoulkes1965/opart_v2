@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opart_v2/model_opart.dart';
+import 'package:opart_v2/print/basket/print_basket_cubit.dart';
+import 'package:opart_v2/print/basket/print_basket_state.dart';
 import 'package:opart_v2/print/cubit/print_flow_cubit.dart';
 import 'package:opart_v2/print/cubit/print_flow_state.dart';
+import 'package:opart_v2/print/pages/print_basket_page.dart';
 import 'package:opart_v2/print/models/opart_recipe.dart';
 import 'package:opart_v2/print/models/print_models.dart';
 import 'package:opart_v2/print/pages/print_flow_page.dart';
@@ -85,6 +88,25 @@ class _ShopPageState extends State<ShopPage> {
                   color: Colors.black,
                 ),
               ),
+              actions: [
+                BlocBuilder<PrintBasketCubit, PrintBasketState>(
+                  builder: (context, basketState) {
+                    final count = basketState.itemCount;
+                    return IconButton(
+                      tooltip: 'Basket',
+                      onPressed: () => PrintBasketPage.open(context),
+                      icon: Badge(
+                        isLabelVisible: count > 0,
+                        label: Text('$count'),
+                        child: const Icon(
+                          Icons.shopping_basket_outlined,
+                          color: Colors.black,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
             body: Stack(
               children: [

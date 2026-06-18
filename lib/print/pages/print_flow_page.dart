@@ -14,7 +14,7 @@ import 'package:opart_v2/print/pages/print_phone_case_step.dart';
 import 'package:opart_v2/print/pages/print_preview_step.dart';
 import 'package:opart_v2/print/pages/print_product_step.dart';
 import 'package:opart_v2/print/pages/print_variant_step.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:opart_v2/print/widgets/print_checkout_payment.dart';
 
 class PrintFlowPage extends StatefulWidget {
   const PrintFlowPage({
@@ -79,21 +79,41 @@ class _PrintFlowPageState extends State<PrintFlowPage> {
     super.dispose();
   }
 
+  Future<void> _presentCheckoutPayment(
+    BuildContext context,
+    PrintFlowState state,
+  ) async {
+    final checkout = state.checkoutSession;
+    if (checkout == null) {
+      return;
+    }
+
+    await PrintCheckoutPayment.present(
+      context: context,
+      checkout: checkout,
+      estimateAddress: state.shippingAddress,
+      estimate: state.estimate,
+      onSuccess: () {
+        if (!context.mounted) {
+          return;
+        }
+        unawaited(
+          context.read<PrintFlowCubit>().completeOrder(checkout.orderId),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: _cubit,
       child: BlocConsumer<PrintFlowCubit, PrintFlowState>(
         listenWhen: (previous, current) =>
-            previous.checkoutSession != current.checkoutSession,
-        listener: (context, state) async {
-          final checkoutUrl = state.checkoutSession?.checkoutUrl;
-          if (checkoutUrl != null && checkoutUrl.isNotEmpty) {
-            final uri = Uri.parse(checkoutUrl);
-            if (await canLaunchUrl(uri)) {
-              await launchUrl(uri, mode: LaunchMode.externalApplication);
-            }
-          }
+            previous.checkoutSession != current.checkoutSession &&
+            current.checkoutSession != null,
+        listener: (context, state) {
+          unawaited(_presentCheckoutPayment(context, state));
         },
         builder: (context, state) {
           return Scaffold(

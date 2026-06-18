@@ -103,33 +103,123 @@ class PrintMockup extends Equatable {
 class PrintEstimate extends Equatable {
   const PrintEstimate({
     required this.currency,
+    required this.printfulSubtotalCents,
+    required this.printfulDeliveryCents,
+    required this.printfulTaxCents,
     required this.printfulTotalCents,
+    required this.retailSubtotalCents,
+    required this.retailDeliveryCents,
+    required this.retailTaxCents,
     required this.retailTotalCents,
-    required this.printfulShippingCents,
   });
 
   factory PrintEstimate.fromJson(Map<String, dynamic> json) {
+    final retailTotal = json['retail_total_cents'] as int? ?? 0;
+    final retailSubtotal = json['retail_subtotal_cents'] as int? ?? retailTotal;
+    final retailDelivery = json['retail_delivery_cents'] as int? ??
+        json['retail_shipping_cents'] as int? ??
+        applyRetailMarkup(json['printful_shipping_cents'] as int? ?? 0);
+    final retailTax = json['retail_tax_cents'] as int? ??
+        applyRetailMarkup(json['printful_tax_cents'] as int? ?? 0);
+
     return PrintEstimate(
       currency: json['currency'] as String? ?? 'USD',
+      printfulSubtotalCents: json['printful_subtotal_cents'] as int? ?? 0,
+      printfulDeliveryCents: json['printful_shipping_cents'] as int? ?? 0,
+      printfulTaxCents: json['printful_tax_cents'] as int? ?? 0,
       printfulTotalCents: json['printful_total_cents'] as int? ?? 0,
-      retailTotalCents: json['retail_total_cents'] as int? ?? 0,
-      printfulShippingCents: json['printful_shipping_cents'] as int? ?? 0,
+      retailSubtotalCents: retailSubtotal,
+      retailDeliveryCents: retailDelivery,
+      retailTaxCents: retailTax,
+      retailTotalCents: retailTotal,
     );
   }
 
-  final String currency;
-  final int printfulTotalCents;
-  final int retailTotalCents;
-  final int printfulShippingCents;
+  static int applyRetailMarkup(int printfulCents) {
+    const markupPercent = 30;
+    return (printfulCents * (1 + markupPercent / 100)).round();
+  }
 
-  String get formattedRetailTotal {
-    final amount = retailTotalCents / 100;
+  final String currency;
+  final int printfulSubtotalCents;
+  final int printfulDeliveryCents;
+  final int printfulTaxCents;
+  final int printfulTotalCents;
+  final int retailSubtotalCents;
+  final int retailDeliveryCents;
+  final int retailTaxCents;
+  final int retailTotalCents;
+
+  String formatMoney(int cents) {
+    final amount = cents / 100;
     return '${currency.toUpperCase()} ${amount.toStringAsFixed(2)}';
   }
 
+  String get formattedRetailTotal => formatMoney(retailTotalCents);
+
+  bool get hasTax => retailTaxCents > 0;
+
   @override
-  List<Object?> get props =>
-      [currency, printfulTotalCents, retailTotalCents, printfulShippingCents];
+  List<Object?> get props => [
+        currency,
+        printfulSubtotalCents,
+        printfulDeliveryCents,
+        printfulTaxCents,
+        printfulTotalCents,
+        retailSubtotalCents,
+        retailDeliveryCents,
+        retailTaxCents,
+        retailTotalCents,
+      ];
+}
+
+class BasketLineInput extends Equatable {
+  const BasketLineInput({
+    required this.variantId,
+    required this.designId,
+    this.quantity = 1,
+  });
+
+  final int variantId;
+  final String designId;
+  final int quantity;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'variant_id': variantId,
+      'design_id': designId,
+      'quantity': quantity,
+    };
+  }
+
+  @override
+  List<Object?> get props => [variantId, designId, quantity];
+}
+
+class CheckoutLineInput extends Equatable {
+  const CheckoutLineInput({
+    required this.designId,
+    required this.variantId,
+    required this.productName,
+    this.quantity = 1,
+  });
+
+  final String designId;
+  final int variantId;
+  final String productName;
+  final int quantity;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'design_id': designId,
+      'variant_id': variantId,
+      'product_name': productName,
+      'quantity': quantity,
+    };
+  }
+
+  @override
+  List<Object?> get props => [designId, variantId, productName, quantity];
 }
 
 class ShippingAddress extends Equatable {
@@ -167,6 +257,34 @@ class ShippingAddress extends Equatable {
       'email': email,
       'phone': phone,
     };
+  }
+
+  bool get canEstimate => countryCode.isNotEmpty && zip.isNotEmpty;
+
+  bool get canStartCheckout => canEstimate;
+
+  ShippingAddress copyWith({
+    String? name,
+    String? address1,
+    String? address2,
+    String? city,
+    String? stateCode,
+    String? countryCode,
+    String? zip,
+    String? email,
+    String? phone,
+  }) {
+    return ShippingAddress(
+      name: name ?? this.name,
+      address1: address1 ?? this.address1,
+      address2: address2 ?? this.address2,
+      city: city ?? this.city,
+      stateCode: stateCode ?? this.stateCode,
+      countryCode: countryCode ?? this.countryCode,
+      zip: zip ?? this.zip,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+    );
   }
 
   @override
@@ -227,22 +345,26 @@ class RegisteredDesign extends Equatable {
 class CheckoutSession extends Equatable {
   const CheckoutSession({
     required this.orderId,
-    required this.checkoutUrl,
+    required this.clientSecret,
     required this.retailTotalCents,
+    required this.currencyCode,
   });
 
   factory CheckoutSession.fromJson(Map<String, dynamic> json) {
     return CheckoutSession(
       orderId: json['order_id'] as String,
-      checkoutUrl: json['checkout_url'] as String,
+      clientSecret: json['client_secret'] as String,
       retailTotalCents: json['retail_total_cents'] as int? ?? 0,
+      currencyCode: json['currency_code'] as String? ?? 'usd',
     );
   }
 
   final String orderId;
-  final String checkoutUrl;
+  final String clientSecret;
   final int retailTotalCents;
+  final String currencyCode;
 
   @override
-  List<Object?> get props => [orderId, checkoutUrl, retailTotalCents];
+  List<Object?> get props =>
+      [orderId, clientSecret, retailTotalCents, currencyCode];
 }

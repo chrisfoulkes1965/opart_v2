@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:opart_v2/information.dart';
 import 'package:opart_v2/op_art_catalog.dart';
 import 'package:opart_v2/opart_page.dart';
@@ -79,15 +78,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
                                   color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withValues(
-                                        alpha: 0.9,
-                                      ),
-                                      blurRadius: 5,
-                                      offset: const Offset(5, 5),
-                                    ),
-                                  ],
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(20),

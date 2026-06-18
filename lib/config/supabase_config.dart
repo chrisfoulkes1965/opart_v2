@@ -4,6 +4,9 @@
 /// `--dart-define=SUPABASE_URL=https://xxx.supabase.co`
 /// `--dart-define=SUPABASE_ANON_KEY=eyJ...`
 class SupabaseConfig {
+  /// Set to true when re-enabling the print shop backend.
+  static const enabled = false;
+
   static const url = String.fromEnvironment(
     'SUPABASE_URL',
     defaultValue: '',
@@ -24,5 +27,6 @@ class SupabaseConfig {
     defaultValue: 'opartlab://print/checkout/cancel',
   );
 
-  static bool get isConfigured => url.isNotEmpty && anonKey.isNotEmpty;
+  static bool get isConfigured =>
+      enabled && url.isNotEmpty && anonKey.isNotEmpty;
 }
